@@ -21,14 +21,14 @@
 	],
 	"license": "UNLICENSED",
 	"dependencies": {
-		"@sern/handler": "alpha",
+		"@sern/handler": "^3.0.2",
 		"@spark.ts/logger": "^1.4.0",
 		"axios": "^1.4.0",
 		"canvas": "^2.11.2",
 		"chalk": "^5.3.0",
 		"colorette": "^2.0.20",
-		"discord.js": "^14.11.0",
-		"mongoose": "^7.3.1"
+		"discord.js": "^14.12.1",
+		"mongoose": "^7.4.3"
 	},
 	"devDependencies": {
 		"@types/node": "^20.3.2",

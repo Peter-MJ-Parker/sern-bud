@@ -44,7 +44,9 @@ export default eventModule({
 			embeds: [
 				new EmbedBuilder()
 					.setDescription(
-						`${member.user.username} left the server.\n
+						`[${member.user.username}](https://discord.com/users/${
+							member.user.id
+						}) left the server.\n
         ${
 					member.guild.name
 				} now has a total of **${Guild?.userCount!}** members!`

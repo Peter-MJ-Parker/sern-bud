@@ -18,7 +18,6 @@ import { webhookCreate, welcomeCreate, sticker } from '#utils';
 
 export class Utils {
 	constructor() {}
-
 	get welcomeCreate() {
 		return welcomeCreate;
 	}
@@ -28,6 +27,7 @@ export class Utils {
 	get webhookCreate() {
 		return webhookCreate;
 	}
+
 	public getId(mention: string) {
 		let reg: RegExp;
 		if (mention.includes('@') && !mention.includes('&')) {
@@ -151,7 +151,7 @@ export class Utils {
 			let nsfw: any[] = [];
 			let non_nsfw: any[] = [];
 			if (data.length > 0) {
-				data.forEach((meme) => {
+				data.forEach((meme: any) => {
 					if (meme.data.over_18 === true) {
 						nsfw.push(meme.data);
 					} else non_nsfw.push(meme.data);
@@ -169,6 +169,7 @@ export class Utils {
 					return await interact.reply({
 						content:
 							"I don't support NSFW memes. Please run this command in a non-nsfw channel.",
+						embeds: [],
 						ephemeral: true,
 					});
 				await interact.reply({
@@ -211,8 +212,13 @@ export class Utils {
 					.setFooter({ text: `Meme by ${meme.author}` })
 					.setImage(meme.url);
 			}
-		} catch (error) {
+		} catch (error: any) {
 			console.error;
+			await interact.reply({
+				embeds: [],
+				content: `Failed to fetch meme. Please try again.\nError Code: ${error.message}`,
+				ephemeral: true,
+			});
 		}
 	}
 }
