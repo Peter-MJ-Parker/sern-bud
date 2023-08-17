@@ -1,6 +1,6 @@
 {
 	"name": "budbot",
-	"version": "3.0.0",
+	"version": "3.1.0",
 	"description": "Discord bot for the Joint Streaming Community.",
 	"type": "module",
 	"main": "dist/Structures/client/index.js",
@@ -8,10 +8,7 @@
 		"build": "tsc",
 		"tsc:watch": "tsc -w",
 		"start/dev": "tsc && nodemon ./dist/Structures/client/index.js",
-		"start/node": "tsc && node ./dist/Structures/client/index.js",
-		"pm2:start": "pm2 start dist/Structures/client/index.js --name sernbud",
-		"pm2:restart": "pm2 restart sernbud",
-		"pm2:rebuild/restart": "rm -rf dist && tsc && pm2 restart sernbud"
+		"start/node": "tsc && node ./dist/Structures/client/index.js"
 	},
 	"keywords": [
 		"typescript",
@@ -31,7 +28,7 @@
 		"mongoose": "^7.4.3"
 	},
 	"devDependencies": {
-		"@types/node": "^20.3.2",
+		"@types/node": "^20.5.0",
 		"typescript": "^5.1.6"
 	},
 	"imports": {
