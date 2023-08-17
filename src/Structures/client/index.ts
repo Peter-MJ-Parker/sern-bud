@@ -21,6 +21,13 @@ await makeDependencies({
 
 Sern.init('file');
 
-env.MODE === 'PROD'
-	? Service('@sern/client').login(env.DISCORD_PROD_TOKEN)
-	: Service('@sern/client').login(env.DISCORD_DEV_TOKEN);
+//MODE in .env should be PROD for Production or DEV for Development
+switch (env.MODE) {
+	case 'PROD':
+		Service('@sern/client').login(env.DISCORD_PROD_TOKEN);
+		break;
+
+	case 'DEV':
+		Service('@sern/client').login(env.DISCORD_DEV_TOKEN);
+		break;
+}
