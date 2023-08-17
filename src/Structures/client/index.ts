@@ -19,11 +19,8 @@ await makeDependencies({
 });
 //View docs for all options
 
-Sern.init({
-	commands: 'dist/commands',
-	events: 'dist/events',
-	mode: 'PROD',
-	defaultPrefix: env.defaultPrefix!,
-});
+Sern.init('file');
 
-Service('@sern/client').login(env.DISCORD_DEV_TOKEN);
+env.MODE === 'PROD'
+	? Service('@sern/client').login(env.DISCORD_PROD_TOKEN)
+	: Service('@sern/client').login(env.DISCORD_DEV_TOKEN);

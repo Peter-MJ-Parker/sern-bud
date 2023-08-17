@@ -1,4 +1,5 @@
 {
+	"defaultPrefix": "?",
 	"language": "typescript",
 	"paths": {
 		"base": "src",

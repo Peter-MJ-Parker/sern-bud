@@ -59,4 +59,5 @@ export const env = load({
 	defaultPrefix: String,
 	GIPHY: String,
 	ownerIDs: Array,
+	MODE: String,
 });
