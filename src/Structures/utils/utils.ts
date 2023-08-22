@@ -144,81 +144,99 @@ export class Utils {
 		channel: TextChannel,
 		interact: ChatInputCommandInteraction | ButtonInteraction
 	) {
-		try {
-			const response = await axios.get('https://reddit.com/r/memes.json');
-			const data = response.data.data.children;
+		const response = await axios.get('https://reddit.com/r/memes/random/.json');
+		if (response.status === 200) {
+			try {
+				const { data } = response;
+				const fetchedMeme = data[0].data.children[0].data;
+				let nsfw: any[] = [];
+				let non_nsfw: any[] = [];
+				if (fetchedMeme.over_18 === true) {
+					nsfw.push(fetchedMeme);
+				} else non_nsfw.push(fetchedMeme);
 
-			let nsfw: any[] = [];
-			let non_nsfw: any[] = [];
-			if (data.length > 0) {
-				data.forEach((meme: any) => {
-					if (meme.data.over_18 === true) {
-						nsfw.push(meme.data);
-					} else non_nsfw.push(meme.data);
-				});
-			}
-			let meme: any;
-			if (channel.nsfw === true) {
-				meme = nsfw[Math.floor(Math.random() * nsfw.length)];
-			}
-			if (channel.nsfw === false) {
-				meme = non_nsfw[Math.floor(Math.random() * non_nsfw.length)];
-			}
-			if (interact.isChatInputCommand()) {
-				if (!meme)
-					return await interact.reply({
-						content:
-							"I don't support NSFW memes. Please run this command in a non-nsfw channel.",
-						embeds: [],
-						ephemeral: true,
+				let meme: any;
+				if (channel.nsfw === true) {
+					meme = nsfw[Math.floor(Math.random() * nsfw.length)];
+				}
+				if (channel.nsfw === false) {
+					meme = non_nsfw[Math.floor(Math.random() * non_nsfw.length)];
+				}
+				console.log(meme);
+				const { author, downs, permalink, subreddit, title, ups, url } = meme;
+				if (interact.isChatInputCommand()) {
+					if (meme.over_18 === true)
+						return await interact.reply({
+							content:
+								'I have found an nsfw meme. Please try again as I do not support showing these memes.',
+							embeds: [],
+							ephemeral: true,
+						});
+					if (meme.is_video === true)
+						return await interact.reply({
+							content: url,
+							embeds: [],
+							ephemeral: true,
+						});
+					await interact.reply({
+						content: '',
+						embeds: [
+							new EmbedBuilder()
+								.setColor('NotQuiteBlack')
+								.setURL('https://reddit.com' + permalink)
+								.setTitle(title)
+								.setDescription(
+									`🤖 **Sub-Reddit**: \`r/${subreddit}\`\n⬆️ **Upvotes**: \`${ups}\` - ⬇️ **Downvotes**: \`${downs}\``
+								)
+								.setFooter({ text: `Meme by ${author}` })
+								.setImage(url),
+						],
+						components: [
+							new ActionRowBuilder<ButtonBuilder>({
+								components: [
+									new ButtonBuilder({
+										custom_id: 'meme-next',
+										label: 'Next Meme',
+										style: ButtonStyle.Success,
+									}),
+									new ButtonBuilder({
+										custom_id: 'meme-stop',
+										label: 'STOP',
+										style: ButtonStyle.Danger,
+									}),
+								],
+							}),
+						],
 					});
+				} else if (interact.isButton()) {
+					meme.is_video === false
+						? await interact.update({
+								content: '',
+								embeds: [
+									new EmbedBuilder()
+										.setColor('NotQuiteBlack')
+										.setURL('https://reddit.com' + permalink)
+										.setTitle(title)
+										.setDescription(
+											`🤖 **Sub-Reddit**: \`r/${subreddit}\`\n⬆️ **Upvotes**: \`${ups}\` - ⬇️ **Downvotes**: \`${downs}\``
+										)
+										.setFooter({ text: `Meme by ${author}` })
+										.setImage(url),
+								],
+						  })
+						: await interact.update({
+								content: url,
+								embeds: [],
+						  });
+				}
+			} catch (error: any) {
+				console.log(error);
 				await interact.reply({
-					embeds: [
-						new EmbedBuilder()
-							.setColor('NotQuiteBlack')
-							.setURL('https://reddit.com' + meme.permalink)
-							.setTitle(meme.title)
-							.setDescription(
-								`🤖 **Sub-Reddit**: \`r/${meme.subreddit}\`\n⬆️ **Upvotes**: \`${meme.ups}\` - ⬇️ **Downvotes**: \`${meme.downs}\``
-							)
-							.setFooter({ text: `Meme by ${meme.author}` })
-							.setImage(meme.url),
-					],
-					components: [
-						new ActionRowBuilder<ButtonBuilder>({
-							components: [
-								new ButtonBuilder({
-									custom_id: 'meme-next',
-									label: 'Next Meme',
-									style: ButtonStyle.Success,
-								}),
-								new ButtonBuilder({
-									custom_id: 'meme-stop',
-									label: 'STOP',
-									style: ButtonStyle.Danger,
-								}),
-							],
-						}),
-					],
+					embeds: [],
+					content: `Failed to fetch meme. Please try again.\nError Code: ${error.message}`,
+					ephemeral: true,
 				});
-			} else if (interact.isButton()) {
-				return new EmbedBuilder()
-					.setColor('NotQuiteBlack')
-					.setURL('https://reddit.com' + meme.permalink)
-					.setTitle(meme.title)
-					.setDescription(
-						`🤖 **Sub-Reddit**: \`r/${meme.subreddit}\`\n⬆️ **Upvotes**: \`${meme.ups}\` - ⬇️ **Downvotes**: \`${meme.downs}\``
-					)
-					.setFooter({ text: `Meme by ${meme.author}` })
-					.setImage(meme.url);
 			}
-		} catch (error: any) {
-			console.error;
-			await interact.reply({
-				embeds: [],
-				content: `Failed to fetch meme. Please try again.\nError Code: ${error.message}`,
-				ephemeral: true,
-			});
 		}
 	}
 }

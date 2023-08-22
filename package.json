@@ -18,7 +18,7 @@
 	],
 	"license": "UNLICENSED",
 	"dependencies": {
-		"@sern/handler": "^3.0.2",
+		"@sern/handler": "^3.0.3",
 		"@spark.ts/logger": "^1.4.0",
 		"axios": "^1.4.0",
 		"canvas": "^2.11.2",
