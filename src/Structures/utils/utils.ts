@@ -162,7 +162,6 @@ export class Utils {
 				if (channel.nsfw === false) {
 					meme = non_nsfw[Math.floor(Math.random() * non_nsfw.length)];
 				}
-				console.log(meme);
 				const { author, downs, permalink, subreddit, title, ups, url } = meme;
 				if (interact.isChatInputCommand()) {
 					if (meme.over_18 === true)
