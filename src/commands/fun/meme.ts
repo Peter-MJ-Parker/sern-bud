@@ -8,9 +8,10 @@ export default commandModule({
 	description: 'Gets a meme from reddit.',
 	options: [],
 	execute: async (ctx) => {
-		const meme = await Service('@sern/utils').getMeme(
+		const { getMeme } = Service('@sern/utils');
+		await getMeme(
 			ctx.channel as TextChannel,
-			ctx.interaction
+			ctx.interaction //required to get the interaction of context
 		);
 	},
 });
