@@ -32,9 +32,8 @@ export function buttonConfirmation(options?: Partial<ConfirmationOptions>) {
 		options = {
 			content: 'Do you want to proceed?',
 			denialMessage: 'Cancelled',
-			labels: ['Yes', 'No'],
-			time: 60_000,
-			wrongUserResponse: 'Not for you!',
+			labels: ['No', 'Yes'],
+			time: 10000,
 			...options,
 		};
 
@@ -42,9 +41,10 @@ export function buttonConfirmation(options?: Partial<ConfirmationOptions>) {
 			return new ButtonBuilder()
 				.setCustomId(l)
 				.setLabel(l)
-				.setStyle(i === 0 ? ButtonStyle.Success : ButtonStyle.Danger);
+				.setStyle(i === 0 ? ButtonStyle.Danger : ButtonStyle.Success);
 		});
 		const sent = await ctx.reply({
+			ephemeral: true,
 			content: options.content,
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().setComponents(buttons),
@@ -59,21 +59,15 @@ export function buttonConfirmation(options?: Partial<ConfirmationOptions>) {
 
 		return new Promise((resolve) => {
 			collector.on('collect', async (i) => {
-				await i.deferUpdate();
-
+				await i.update({ components: [] });
 				collector.stop();
-				if (i.customId === options!.labels![0]) {
-					await sent.delete();
+				if (i.customId === options!.labels![1]) {
 					resolve(controller.next());
 					return;
 				}
-				const m = await i.editReply({
+				await i.editReply({
 					content: options?.denialMessage,
 				});
-				setTimeout(async () => {
-					await m.delete();
-				}, 5000);
-
 				resolve(controller.stop());
 			});
 
@@ -86,13 +80,6 @@ export function buttonConfirmation(options?: Partial<ConfirmationOptions>) {
 					],
 				});
 			});
-
-			collector.on('ignore', async (i) => {
-				await i.reply({
-					content: options?.wrongUserResponse,
-					ephemeral: true,
-				});
-			});
 		});
 	});
 }
@@ -102,5 +89,4 @@ interface ConfirmationOptions {
 	denialMessage: string;
 	time: number;
 	labels: [string, string];
-	wrongUserResponse: string;
 }
