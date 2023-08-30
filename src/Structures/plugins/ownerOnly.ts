@@ -17,14 +17,20 @@
  * ```
  */
 
-import { CommandType, CommandControlPlugin, controller } from "@sern/handler";
-const ownerIDs = ["697795666373640213"]; //! Fill your ID
-export function ownerOnly(override?: string[]) {
-	return CommandControlPlugin<CommandType.Both>((ctx) => {
-		if ((override ?? ownerIDs).includes(ctx.user.id))
+import { CommandControlPlugin, controller, Context } from '@sern/handler';
+import { env } from '#utils';
+export function ownerOnly(owners?: string[]) {
+	return CommandControlPlugin<CommandType.Both>(async (ctx: Context) => {
+		const [config] = env.OWNERIDS;
+		if (!owners) {
+			if (!config || config.length < 1) {
+				return controller.stop(); //! Important: It stops the execution of command!
+			} else owners = config;
+		}
+		if (owners && owners.includes(ctx.user.id)) {
 			return controller.next();
-		//* If you want to reply when the command fails due to user not being owner, you can use following
-		// await ctx.reply("Only owner can run it!!!");
+		}
+		await ctx.reply('Only bot owners can use this feature!!!');
 		return controller.stop(); //! Important: It stops the execution of command!
 	});
 }
