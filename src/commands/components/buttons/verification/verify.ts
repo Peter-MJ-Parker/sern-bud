@@ -1,7 +1,7 @@
 import { commandModule, CommandType, Service } from '@sern/handler';
 import guildSchema from '#schemas/guild';
 import memberSchema from '#schemas/member';
-import { BaseGuildVoiceChannel, EmbedBuilder, TextChannel } from 'discord.js';
+import { EmbedBuilder, TextChannel } from 'discord.js';
 import { buttonConfirmation } from '#plugins';
 
 export default commandModule({
@@ -53,18 +53,7 @@ export default commandModule({
 						},
 					}
 				);
-				const chan1 = button.guild?.channels.cache.get(
-					'825555222281060363'
-				) as BaseGuildVoiceChannel;
-				const chan2 = button.guild?.channels.cache.get(
-					'825555223321640970'
-				) as BaseGuildVoiceChannel;
-				const chan3 = button.guild?.channels.cache.get(
-					'825555224147263549'
-				) as BaseGuildVoiceChannel;
-				await chan1.setName(`Total Members: ${counts.total.toLocaleString()}`);
-				await chan2.setName(`Users: ${counts.users.toLocaleString()}`);
-				await chan3.setName(`Bots: ${counts.bots.toLocaleString()}`);
+				await Service('@sern/utils').channelUpdater(member.guild);
 			});
 	},
 });
