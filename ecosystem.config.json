@@ -1,0 +1,13 @@
+{
+	"apps": [
+		{
+			"name": "BudBot",
+			"script": "./dist/Structures/client/index.js",
+			"watch": ["./dist"],
+			"ignore_watch": ["node_modules", "./src"],
+			"watch_options": {
+				"followSymlinks": false
+			}
+		}
+	]
+}
