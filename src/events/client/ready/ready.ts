@@ -10,5 +10,8 @@ export default eventModule({
 			'Logged into Discord as ' + Service('@sern/client').user?.username
 		);
 		await Service('@sern/utils').mongoConnect(env.CONNECT);
+		const guild =
+			Service('@sern/client').guilds.cache.get('678398938046267402')!;
+		await Service('@sern/utils').channelUpdater(guild);
 	},
 });

@@ -10,6 +10,8 @@ import {
 	EmbedBuilder,
 	Guild,
 	ModalBuilder,
+	Snowflake,
+	SnowflakeUtil,
 	TextChannel,
 	TextInputBuilder,
 } from 'discord.js';
@@ -88,32 +90,54 @@ export class Utils {
 			Service('@sern/logger').warning('[DATABASE]- Mongoose connection lost');
 		});
 	}
+
 	public capitalise(string: string) {
 		return string
 			.split(' ')
 			.map((str) => str.slice(0, 1).toUpperCase() + str.slice(1))
 			.join(' ');
 	}
+
 	public async channelUpdater(guild: Guild) {
+		const chans = await (
+			await import('#schemas/guild')
+		).default.findOne({ gID: guild.id });
 		const counts = {
-			users: guild.members.cache.filter((m) => !m.user.bot).size,
-			bots: guild.members.cache.filter((m) => m.user.bot).size,
-			total: guild.memberCount,
+			total: Number(guild.memberCount),
+			users: Number(guild.members.cache.filter((m) => !m.user.bot).size),
+			bots: Number(guild.members.cache.filter((m) => m.user.bot).size),
 		};
-		setInterval(async () => {
-			const chan1 = guild.channels.cache.get(
-				'825555222281060363'
-			) as BaseGuildVoiceChannel;
-			const chan2 = guild.channels.cache.get(
-				'825555223321640970'
-			) as BaseGuildVoiceChannel;
-			const chan3 = guild.channels.cache.get(
-				'825555224147263549'
-			) as BaseGuildVoiceChannel;
-			await chan1.setName(`Total Members: ${counts.total.toLocaleString()}`);
-			await chan2.setName(`Users: ${counts.users.toLocaleString()}`);
-			await chan3.setName(`Bots: ${counts.bots.toLocaleString()}`);
-		});
+		const total = guild?.channels.cache.get(
+			chans?.allCountChan!
+		) as BaseGuildVoiceChannel;
+		const users = guild?.channels.cache.get(
+			chans?.userCountChan!
+		) as BaseGuildVoiceChannel;
+		const bots = guild?.channels.cache.get(
+			chans?.botCountChan!
+		) as BaseGuildVoiceChannel;
+		const amounts = {
+			total: Number(total.name.split(': ')[1]),
+			users: Number(users.name.split(': ')[1]),
+			bots: Number(bots.name.split(': ')[1]),
+		};
+		if (Object.entries(counts)[1] !== Object.entries(amounts)[1]) {
+			await (
+				await import('#schemas/guild')
+			).default.findOneAndUpdate(
+				{ gID: guild.id },
+				{
+					$set: {
+						userCount: counts.users,
+						allCount: counts.total,
+						botCount: counts.bots,
+					},
+				}
+			);
+			await total.setName(`Total Members: ${counts.total.toLocaleString()}`);
+			await users.setName(`Users: ${counts.users.toLocaleString()}`);
+			await bots.setName(`Bots: ${counts.bots.toLocaleString()}`);
+		}
 	}
 	public createModal(
 		custom_id: string,
@@ -140,6 +164,18 @@ export class Utils {
 			components: rows,
 		});
 	}
+	/**
+	 * Check if a string is a valid Discord Snowflake.
+	 *
+	 * @param {Snowflake} id The ID to check.
+	 * @return {boolean} Is the ID a valid Discord Snowflake?
+	 */
+	public isValidSnowflake(id: Snowflake): boolean {
+		// Discord Epoch (January 1, 2015) 1420070400000
+		const deconstructed = SnowflakeUtil.deconstruct(id);
+		return deconstructed.timestamp >= 1420070400000;
+	}
+
 	public async getMeme(
 		channel: TextChannel,
 		interact: ChatInputCommandInteraction | ButtonInteraction
