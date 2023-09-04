@@ -9,6 +9,7 @@ import {
 	ChatInputCommandInteraction,
 	EmbedBuilder,
 	Guild,
+	Message,
 	ModalBuilder,
 	Snowflake,
 	SnowflakeUtil,
@@ -174,6 +175,21 @@ export class Utils {
 		// Discord Epoch (January 1, 2015) 1420070400000
 		const deconstructed = SnowflakeUtil.deconstruct(id);
 		return deconstructed.timestamp >= 1420070400000;
+	}
+
+	/**
+	 *
+	 * @param {Message | Message[]} messages The message(s) to delete.
+	 * @param {number} timeout How long to wait before deleting bot's response.
+	 */
+	public async deleteOnTimeout(messages: Message | Message[], timeout: number) {
+		setTimeout(async () => {
+			Array.isArray(messages)
+				? messages.forEach(async (m) => {
+						await m.delete();
+				  })
+				: await messages.delete();
+		}, timeout);
 	}
 
 	public async getMeme(
