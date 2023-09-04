@@ -3,10 +3,9 @@ import { commandModule, CommandType, Service } from '@sern/handler';
 import { TextChannel } from 'discord.js';
 
 export default commandModule({
-	type: CommandType.Both,
+	type: CommandType.Slash,
 	plugins: [publish()],
 	description: 'Gets a meme from reddit.',
-	options: [],
 	execute: async (ctx) => {
 		const { getMeme } = Service('@sern/utils');
 		await getMeme(
