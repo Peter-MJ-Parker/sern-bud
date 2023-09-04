@@ -21,7 +21,7 @@ import { CommandControlPlugin, controller, Context } from '@sern/handler';
 import { env } from '#utils';
 export function ownerOnly(owners?: string[]) {
 	return CommandControlPlugin<CommandType.Both>(async (ctx: Context) => {
-		const [config] = env.OWNERIDS;
+		const [config] = env.ownerIDs;
 		if (!owners) {
 			if (!config || config.length < 1) {
 				return controller.stop(); //! Important: It stops the execution of command!
