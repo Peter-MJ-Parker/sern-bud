@@ -6,33 +6,15 @@ export default eventModule({
 	type: EventType.Discord,
 	name: Events.GuildCreate,
 	async execute(guild: Guild) {
-		if (guild.id !== '678398938046267402') return;
-
-		const counts = {
-			users: guild.members.cache.filter((m) => !m.user.bot).size,
-			bots: guild.members.cache.filter((m) => m.user.bot).size,
-			total: guild.memberCount,
-		};
 		let Guild = await guildSchema.findOne({
 			gID: guild.id,
 		});
-		if (Guild && !(Guild.allCount && Guild.botCount && Guild.userCount)) {
-			await Guild.updateOne({
-				$set: {
-					allCount: counts.total,
-					botCount: counts.bots,
-					userCount: counts.users,
-				},
-			});
-		}
+
 		if (!Guild) {
 			await new guildSchema({
 				gID: guild.id,
 				gName: guild.name,
-				prefix: '?',
-				allCount: counts.total,
-				botCount: counts.bots,
-				userCount: counts.users,
+				// prefix: '?', //To change the default prefix of '?', uncomment this line and insert your desired prefix.
 			}).save();
 		}
 	},
