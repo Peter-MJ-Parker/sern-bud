@@ -18,7 +18,6 @@
 		"allowUnusedLabels": true,
 		"exactOptionalPropertyTypes": true,
 		"paths": {
-			"#utils": ["src/Structures/utils/index"],
 			"#plugins": ["src/Structures/plugins/index"],
 			"#BudBot": ["src/Structures/client/BudBot"],
 			"#schemas/*": ["src/Structures/schemas/*"]

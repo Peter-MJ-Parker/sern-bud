@@ -1,7 +1,5 @@
-import { welcomeCreate } from '#utils';
-import { EventType, eventModule } from '@sern/handler';
+import { EventType, Service, eventModule } from '@sern/handler';
 import {
-	BaseGuildVoiceChannel,
 	EmbedBuilder,
 	Events,
 	MessageReaction,
@@ -19,6 +17,9 @@ export default eventModule({
 		reaction: MessageReaction | PartialMessageReaction,
 		user: User
 	) => {
+		const { utils } = Service('@sern/client');
+		const { welcomeCreate, channelUpdater } = utils;
+
 		if (reaction.message.guild?.id !== '678398938046267402') return;
 
 		let message = reaction.message!;
@@ -103,20 +104,7 @@ export default eventModule({
 								await Verification?.deleteOne();
 							})
 							.finally(async () => {
-								const chan1 = message.guild?.channels.cache.get(
-									'825555222281060363'
-								) as BaseGuildVoiceChannel;
-								const chan2 = message.guild?.channels.cache.get(
-									'825555223321640970'
-								) as BaseGuildVoiceChannel;
-								const chan3 = message.guild?.channels.cache.get(
-									'825555224147263549'
-								) as BaseGuildVoiceChannel;
-								await chan1.setName(
-									`Total Members: ${counts.total.toLocaleString()}`
-								);
-								await chan2.setName(`Users: ${counts.users.toLocaleString()}`);
-								await chan3.setName(`Bots: ${counts.bots.toLocaleString()}`);
+								await channelUpdater(mmm.guild);
 							});
 					});
 			} else {

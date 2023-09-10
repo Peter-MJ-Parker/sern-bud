@@ -7,8 +7,9 @@ export default commandModule({
 	plugins: [publish()],
 	description: 'Gets a meme from reddit.',
 	execute: async (ctx) => {
-		const { getMeme } = Service('@sern/utils');
-		await getMeme(
+		const { utils } = Service('@sern/client');
+
+		await utils.getMeme(
 			ctx.channel as TextChannel,
 			ctx.interaction //required to get the interaction of context
 		);

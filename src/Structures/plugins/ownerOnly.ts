@@ -17,8 +17,14 @@
  * ```
  */
 
-import { CommandControlPlugin, controller, Context } from '@sern/handler';
-import { env } from '#utils';
+import {
+	CommandControlPlugin,
+	controller,
+	Context,
+	Service,
+} from '@sern/handler';
+
+const { env } = Service('@sern/client').utils;
 export function ownerOnly(owners?: string[]) {
 	return CommandControlPlugin<CommandType.Both>(async (ctx: Context) => {
 		const [config] = env.ownerIDs;

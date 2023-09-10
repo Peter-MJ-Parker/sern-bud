@@ -15,23 +15,20 @@ export default commandModule({
 	execute: async (button) => {
 		const memberId = button.message.embeds[0].footer?.text!;
 		const member = await button.guild?.members.fetch(memberId)!;
+		const { utils } = Service('@sern/client');
 
 		await button.showModal(
-			Service('@sern/utils').createModal(
-				'ban-modal',
-				`Ban ${member.user.username}`,
-				[
-					new TextInputBuilder({
-						custom_id: 'ban-modal-reason',
-						label: `Reason`,
-						placeholder: `What is your reason for banning ${member.displayName}?`,
-						style: TextInputStyle.Paragraph,
-						min_length: 4,
-						max_length: 100,
-						required: true,
-					}),
-				]
-			)
+			utils.createModal('ban-modal', `Ban ${member.user.username}`, [
+				new TextInputBuilder({
+					custom_id: 'ban-modal-reason',
+					label: `Reason`,
+					placeholder: `What is your reason for banning ${member.displayName}?`,
+					style: TextInputStyle.Paragraph,
+					min_length: 4,
+					max_length: 100,
+					required: true,
+				}),
+			])
 		);
 		await button
 			.awaitModalSubmit({

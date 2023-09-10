@@ -33,9 +33,6 @@
 		"typescript": "^5.2.2"
 	},
 	"imports": {
-		"#utils": [
-			"./dist/Structures/utils/index.js"
-		],
 		"#plugins": [
 			"./dist/Structures/plugins/index.js"
 		],

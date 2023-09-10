@@ -9,10 +9,12 @@ export default commandModule({
 	name: 'member-bypass-verify',
 	plugins: [buttonConfirmation()],
 	execute: async (button) => {
+		const { utils } = Service('@sern/client');
 		const guild = await guildSchema.findOne({ gID: button.guild?.id! });
 		const role = (await button.guild?.roles.fetch(guild?.verifiedRole!))!;
 		const memberId = button.message.embeds[0].footer?.text!;
 		const member = (await button.guild?.members.fetch())?.get(memberId)!;
+
 		if (!member.roles.cache.has(role.id)) await member.roles.add(role);
 		const newEmbed = new EmbedBuilder({
 			author: {
@@ -39,7 +41,7 @@ export default commandModule({
 			bots: member.guild?.members.cache.filter((m) => m.user.bot).size!,
 			total: member.guild?.memberCount!,
 		};
-		await Service('@sern/utils')
+		await utils
 			.welcomeCreate(member, member.guild.name, counts.users, welcome)
 			.then(async () => {
 				await guildSchema.findOneAndUpdate(
@@ -53,7 +55,7 @@ export default commandModule({
 						},
 					}
 				);
-				await Service('@sern/utils').channelUpdater(member.guild);
+				await utils.channelUpdater(member.guild);
 			});
 	},
 });

@@ -1,8 +1,8 @@
-import { EventType, eventModule } from '@sern/handler';
+import { EventType, Service, eventModule } from '@sern/handler';
 import {
+	Colors,
 	EmbedBuilder,
 	Events,
-	Guild,
 	GuildMember,
 	TextChannel,
 } from 'discord.js';
@@ -13,52 +13,41 @@ export default eventModule({
 	type: EventType.Discord,
 	name: Events.GuildMemberRemove,
 	execute: async (member: GuildMember) => {
-		if (member.guild.id !== '678398938046267402') return;
+		const { utils } = Service('@sern/client');
 		const Guild = await GuildSchema.findOne({
 			gID: member.guild.id,
 		});
-		const guild = (await member.client.guilds.fetch(member.guild.id)) as Guild;
-		const counts = {
-			users: guild.members.cache.filter((m) => !m.user.bot).size,
-			bots: guild.members.cache.filter((m) => m.user.bot).size,
-			total: guild.memberCount,
-		};
-		if (member.user.bot) {
-			await Guild?.updateOne({
-				$set: {
-					botCount: counts.bots,
-					allCount: counts.total,
-				},
-			});
-		} else {
-			await Guild?.updateOne({
-				$set: {
-					userCount: counts.users,
-					allCount: counts.total,
-				},
-			});
-		}
-		const msg = (
-			(await member.guild.channels.fetch(Guild?.leaveC!)) as TextChannel
-		).send({
-			embeds: [
-				new EmbedBuilder()
-					.setDescription(
-						`[${member.user.username}](https://discord.com/users/${
-							member.user.id
-						}) left the server.\n
+		if (!Guild) return;
+		const guild = await member.client.guilds.fetch(member.guild.id);
+		await utils
+			.channelUpdater(guild)
+			.then(async () => {
+				const msg = await (
+					(await member.guild.channels.fetch(Guild.leaveC!)) as TextChannel
+				).send({
+					embeds: [
+						new EmbedBuilder({
+							description: `[${
+								member.user.username
+							}](https://discord.com/users/${member.user.id}) left the server.\n
         ${
 					member.guild.name
-				} now has a total of **${Guild?.userCount!}** members!`
-					)
-					.setTimestamp()
-					.setColor('Red')
-					.setFooter({
-						text: `${member.client.user.username}`,
-						iconURL: `${member.client.user.avatarURL({ size: 1024 })}`,
-					}),
-			],
-		});
-		(await msg).react('👋');
+				} now has a total of **${Guild.userCount!}** members!`,
+							color: Colors.Red,
+							timestamp: Date.now(),
+							footer: {
+								text: `${member.client.user.username}`,
+								iconURL: `${member.client.user.avatarURL({ size: 1024 })}`,
+							},
+						}),
+					],
+				});
+				msg.react('👋');
+			})
+			.finally(async () => {
+				await moneySchema.findOneAndDelete({
+					userID: member.id,
+				});
+			});
 	},
 });

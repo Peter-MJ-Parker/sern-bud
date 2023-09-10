@@ -1,6 +1,5 @@
-import { ownerOnly, buttonConfirmation } from '#plugins';
+import { ownerOnly } from '#plugins';
 import { commandModule, CommandType } from '@sern/handler';
-import type { TextChannel } from 'discord.js';
 
 export default commandModule({
 	type: CommandType.StringSelect,

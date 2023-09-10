@@ -17,6 +17,7 @@ export default model(
 		userCountChan: { type: String, default: '' },
 		botCountChan: { type: String, default: '' },
 		allCountChan: { type: String, default: '' },
+		modMailChan: { type: String, default: '' },
 	}),
 	'Guild'
 );

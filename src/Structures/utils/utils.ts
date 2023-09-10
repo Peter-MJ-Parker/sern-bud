@@ -9,6 +9,7 @@ import {
 	ChatInputCommandInteraction,
 	EmbedBuilder,
 	Guild,
+	InteractionResponse,
 	Message,
 	ModalBuilder,
 	Snowflake,
@@ -17,8 +18,11 @@ import {
 	TextInputBuilder,
 } from 'discord.js';
 import axios from 'axios';
-import { webhookCreate, welcomeCreate, sticker } from '#utils';
+import { webhookCreate, welcomeCreate, sticker, env } from './index.js';
 
+/**
+ *
+ */
 export class Utils {
 	constructor() {}
 	get welcomeCreate() {
@@ -30,23 +34,47 @@ export class Utils {
 	get webhookCreate() {
 		return webhookCreate;
 	}
+	get env() {
+		return env;
+	}
 
-	public getId(mention: string) {
-		let reg: RegExp;
+	/**
+	 *
+	 * @param time Amount of time in seconds to wait before going to next line in code.
+	 * @description Waits a certain time before going to next function.
+	 */
+	public async delay(time: number) {
+		(await import('node:timers/promises')).setTimeout(time * 1000);
+	}
+	/**
+	 *
+	 * @param {string} mention The stringified mention to destructure.
+	 * @example ```ts
+	 * this.getId(<#1148024469210808341>);
+	 * > output: 1148024469210808341
+	 * ```
+	 * @returns {Snowflake}
+	 */
+	public getId(mention: string): Snowflake {
+		let id: string = '';
 		if (mention.includes('@') && !mention.includes('&')) {
-			reg = new RegExp(/([<@>])+/g);
-			return mention.replaceAll(reg, '');
+			id += mention.replaceAll(new RegExp(/([<@>])+/g), '');
 		}
 		if (mention.includes('#')) {
-			reg = new RegExp(/([<#>])+/g);
-			return mention.replaceAll(reg, '');
+			id += mention.replaceAll(new RegExp(/([<#>])+/g), '');
 		}
 		if (mention.includes('@&')) {
-			reg = new RegExp(/([<@&>])+/g);
-			return mention.replaceAll(reg, '');
+			id += mention.replaceAll(new RegExp(/([<@&>])+/g), '');
 		}
+		return this.isValidSnowflake(id) === true ? id : '';
 	}
-	public async mongoConnect(CONNECT: string) {
+
+	/**
+	 *
+	 * @param mongoURI Mongoose connection string - If no string is present, your process will exit.
+	 * @returns {Promise} Promise of Mongoose Connection
+	 */
+	public async mongoConnect(mongoURI: string): Promise<mongoose.Connection> {
 		const { connect, connection, set } = mongoose;
 		const dbOptions = {
 			autoIndex: true,
@@ -54,24 +82,34 @@ export class Utils {
 			family: 4,
 		};
 
-		if (!CONNECT)
-			return Service('@sern/logger').warning(
-				'No database connection string present!'
-			);
+		if (!mongoURI) {
+			Service('@sern/logger').warning('No database connection string present!');
+			return process.exit(1);
+		}
+
 		const HOSTS_REGEX =
 			/^(?<protocol>[^/]+):\/\/(?:(?<username>[^:@]*)(?::(?<password>[^@]*))?@)?(?<hosts>(?!:)[^/?@]*)(?<rest>.*)/;
-		const match = CONNECT.match(HOSTS_REGEX);
+		const match = mongoURI.match(HOSTS_REGEX);
 		if (!match) {
-			return Service('@sern/logger').error(
-				`[DATABASE]- Invalid connection string "${CONNECT}"`
+			Service('@sern/logger').error(
+				`[DATABASE]- Invalid connection string "${mongoURI}"`
 			);
+			return process.exit(1);
 		}
 
 		connection.on('connecting', () => {
 			Service('@sern/logger').info('[DATABASE]- Mongoose is connecting...');
 		});
 
-		connect(CONNECT, dbOptions);
+		try {
+			await connect(mongoURI, dbOptions);
+		} catch (error) {
+			Service('@sern/logger').error(
+				`[DATABASE]- Mongoose connection error: \n${error}`
+			);
+			return process.exit(1);
+		}
+
 		Promise = Promise;
 		set('strictQuery', true);
 
@@ -90,61 +128,136 @@ export class Utils {
 		connection.on('disconnected', () => {
 			Service('@sern/logger').warning('[DATABASE]- Mongoose connection lost');
 		});
+
+		return connection;
 	}
 
-	public capitalise(string: string) {
-		return string
-			.split(' ')
-			.map((str) => str.slice(0, 1).toUpperCase() + str.slice(1))
-			.join(' ');
+	/**
+	 *
+	 * @param string The text you wish to capitalise. This will only capitalise the first letter in the string.
+	 * @param boolean If true, each word in the string will be capitalized. Else only first word will be capitalized.
+	 * @example ```ts
+	 * this.capitalise("string");
+	 * > output: "String"
+	 * ```
+	 * @example ```ts
+	 * this.capitalise("i'm a string", true);
+	 * > output: "I'm A String"
+	 * ```
+	 * @returns Capitalized string
+	 */
+	public capitalise(text: string, boolean?: boolean) {
+		if (boolean === true) {
+			return text
+				.split(' ')
+				.map((str) => str.slice(0, 1).toUpperCase() + str.slice(1))
+				.join(' ');
+		}
+		return text.slice(0, 1).toUpperCase() + text.slice(1);
 	}
 
-	public async channelUpdater(guild: Guild) {
-		const chans = await (
+	/**
+	 *
+	 * @param guild Instance of Guild
+	 * @description Updates user counts in Database and sets name of channels in specified guild to the correct number of users.
+	 */
+	public async channelUpdater(guild: Guild): Promise<any> {
+		const client = Service('@sern/client');
+		const { error } = Service('@sern/logger');
+		const db = await (
 			await import('#schemas/guild')
-		).default.findOne({ gID: guild.id });
+		).default.findOne({
+			gID: guild.id,
+		});
+		if (!db)
+			return error(
+				'No database entry! Please re-add me to the specified guild to create the entry.'
+			);
+
+		if (!client) return error('No client provided!');
+		if (!client.guilds.cache.has(guild.id))
+			return error('Guild not found in my cache!');
+
+		const channelIds = [db.allCountChan, db.botCountChan, db.userCountChan];
+		for (const chanId of channelIds) {
+			if (chanId) {
+				const result = await guild.channels.fetch(chanId);
+				if (!result) {
+					return error(
+						`${chanId} does not exist in guild [${guild.name} - ${guild.id}]. Please check channel id's in database and try again!`
+					);
+				}
+			} else
+				return error(
+					`${chanId} does not exist in database. Please check channel id's in database and try again!`
+				);
+		}
+
 		const counts = {
 			total: Number(guild.memberCount),
 			users: Number(guild.members.cache.filter((m) => !m.user.bot).size),
 			bots: Number(guild.members.cache.filter((m) => m.user.bot).size),
 		};
+
 		const total = guild?.channels.cache.get(
-			chans?.allCountChan!
+			db.allCountChan!
 		) as BaseGuildVoiceChannel;
 		const users = guild?.channels.cache.get(
-			chans?.userCountChan!
+			db.userCountChan!
 		) as BaseGuildVoiceChannel;
 		const bots = guild?.channels.cache.get(
-			chans?.botCountChan!
+			db.botCountChan!
 		) as BaseGuildVoiceChannel;
+
 		const amounts = {
 			total: Number(total.name.split(': ')[1]),
 			users: Number(users.name.split(': ')[1]),
 			bots: Number(bots.name.split(': ')[1]),
 		};
-		if (Object.entries(counts)[1] !== Object.entries(amounts)[1]) {
-			await (
-				await import('#schemas/guild')
-			).default.findOneAndUpdate(
-				{ gID: guild.id },
-				{
-					$set: {
-						userCount: counts.users,
-						allCount: counts.total,
-						botCount: counts.bots,
-					},
+
+		try {
+			for (const key in counts) {
+				const countsValue = counts[key as keyof typeof counts];
+				const amountsValue = Number(amounts[key as keyof typeof amounts]);
+
+				if (countsValue !== amountsValue) {
+					await db
+						.updateOne({ $set: { [key]: countsValue } })
+						.then(async () => {
+							switch (key) {
+								case 'total':
+									await total.setName(
+										`Total Members: ${countsValue.toLocaleString()}`
+									);
+									break;
+								case 'users':
+									await users.setName(`Users: ${countsValue.toLocaleString()}`);
+									break;
+								case 'bots':
+									await bots.setName(`Bots: ${countsValue.toLocaleString()}`);
+									break;
+							}
+						});
 				}
-			);
-			await total.setName(`Total Members: ${counts.total.toLocaleString()}`);
-			await users.setName(`Users: ${counts.users.toLocaleString()}`);
-			await bots.setName(`Bots: ${counts.bots.toLocaleString()}`);
+			}
+		} catch (err) {
+			return error(err);
 		}
 	}
+
+	/**
+	 *
+	 * @param {string} custom_id Custom ID of the Modal
+	 * @param {string} title Title of the Modal
+	 * @param {TextInputBuilder[]} components Array of Text Inputs to attach to the Modal
+	 * @requires 1-5 components
+	 * @returns {ModalBuilder} ModalBuilder
+	 */
 	public createModal(
 		custom_id: string,
 		title: string,
 		components: TextInputBuilder[]
-	) {
+	): ModalBuilder {
 		if (components.length < 1) {
 			throw new Error('Please provide at least one TextInputBuilder!');
 		}
@@ -168,21 +281,25 @@ export class Utils {
 	/**
 	 * Check if a string is a valid Discord Snowflake.
 	 *
-	 * @param {Snowflake} id The ID to check.
-	 * @return {boolean} Is the ID a valid Discord Snowflake?
+	 * @param id The ID to check.
+	 * @return Is the ID a valid Discord Snowflake?
 	 */
 	public isValidSnowflake(id: Snowflake): boolean {
 		// Discord Epoch (January 1, 2015) 1420070400000
 		const deconstructed = SnowflakeUtil.deconstruct(id);
-		return deconstructed.timestamp >= 1420070400000;
+		return deconstructed.timestamp >= 1420070400000 ? true : false;
 	}
 
 	/**
 	 *
-	 * @param {Message | Message[]} messages The message(s) to delete.
-	 * @param {number} timeout How long to wait before deleting bot's response.
+	 * @param messages The message(s) to delete.
+	 * @param timeout How long to wait before deleting bot's response.
+	 * @returns Promise
 	 */
-	public async deleteOnTimeout(messages: Message | Message[], timeout: number) {
+	public async deleteOnTimeout(
+		messages: Message | Message[],
+		timeout: number
+	): Promise<void> {
 		setTimeout(async () => {
 			Array.isArray(messages)
 				? messages.forEach(async (m) => {
@@ -192,10 +309,16 @@ export class Utils {
 		}, timeout);
 	}
 
+	/**
+	 *
+	 * @param channel The text channel where the function is being used.
+	 * @param i The interaction being used.
+	 * @returns Interaction Response
+	 */
 	public async getMeme(
 		channel: TextChannel,
-		interact: ChatInputCommandInteraction | ButtonInteraction
-	) {
+		i: ChatInputCommandInteraction | ButtonInteraction
+	): Promise<InteractionResponse<boolean> | undefined> {
 		const response = await axios.get('https://reddit.com/r/memes/random/.json');
 		if (response.status === 200) {
 			try {
@@ -215,21 +338,21 @@ export class Utils {
 					meme = non_nsfw[Math.floor(Math.random() * non_nsfw.length)];
 				}
 				const { author, downs, permalink, subreddit, title, ups, url } = meme;
-				if (interact.isChatInputCommand()) {
+				if (i.isChatInputCommand()) {
 					if (meme.over_18 === true)
-						return await interact.reply({
+						return await i.reply({
 							content:
 								'I have found an nsfw meme. Please try again as I do not support showing these memes.',
 							embeds: [],
 							ephemeral: true,
 						});
 					if (meme.is_video === true)
-						return await interact.reply({
+						return await i.reply({
 							content: url,
 							embeds: [],
 							ephemeral: true,
 						});
-					await interact.reply({
+					await i.reply({
 						content: '',
 						embeds: [
 							new EmbedBuilder()
@@ -259,9 +382,9 @@ export class Utils {
 							}),
 						],
 					});
-				} else if (interact.isButton()) {
+				} else if (i.isButton()) {
 					meme.is_video === false
-						? await interact.update({
+						? await i.update({
 								content: '',
 								embeds: [
 									new EmbedBuilder()
@@ -275,14 +398,14 @@ export class Utils {
 										.setImage(url),
 								],
 						  })
-						: await interact.update({
+						: await i.update({
 								content: url,
 								embeds: [],
 						  });
 				}
 			} catch (error: any) {
 				console.log(error);
-				await interact.reply({
+				await i.reply({
 					embeds: [],
 					content: `Failed to fetch meme. Please try again.\nError Code: ${error.message}`,
 					ephemeral: true,
@@ -290,4 +413,55 @@ export class Utils {
 			}
 		}
 	}
+
+	public Paginate() {
+		const __embeds = [] as EmbedBuilder[];
+		let cur = 0;
+		let traverser: [ButtonBuilder, ButtonBuilder];
+		let message: Message;
+		return {
+			add(...embeds: EmbedBuilder[]) {
+				__embeds.push(...embeds);
+				return this;
+			},
+			setTraverser(tr: [ButtonBuilder, ButtonBuilder]) {
+				traverser = tr;
+			},
+			setMessage(_message: Message) {
+				message = _message;
+			},
+			async next() {
+				cur++;
+				if (cur >= __embeds.length) {
+					cur = 0;
+				}
+				await message.edit(this.components());
+			},
+			async back() {
+				cur--;
+				if (cur <= -__embeds.length) {
+					cur = 0;
+				}
+				await message.edit(this.components());
+			},
+			at(num: number) {
+				return __embeds.at(num);
+			},
+			components() {
+				return {
+					embeds: [__embeds.at(cur)!],
+					components: [
+						new ActionRowBuilder<ButtonBuilder>().addComponents(
+							traverser[0],
+							traverser[1]
+						),
+					],
+				};
+			},
+		};
+	}
+	/** Economy Functions */
+	public async getUser() {}
+
+	/** *MORE FUNCTIONS TO COME */
 }

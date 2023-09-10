@@ -6,8 +6,6 @@ export default eventModule({
 	type: EventType.Discord,
 	name: Events.GuildMemberUpdate,
 	async execute(oldMember: GuildMember, newMember: GuildMember) {
-		if (oldMember.guild.id !== '678398938046267402') return;
-
 		if (newMember.nickname !== oldMember.nickname) {
 			await MoneySchema.findOneAndUpdate(
 				{

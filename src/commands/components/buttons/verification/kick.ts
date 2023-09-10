@@ -14,23 +14,20 @@ export default commandModule({
 	execute: async (button) => {
 		const memberId = button.message.embeds[0].footer?.text!;
 		const member = (await button.guild?.members.fetch())?.get(memberId)!;
+		const { utils } = Service('@sern/client');
 
 		await button.showModal(
-			Service('@sern/utils').createModal(
-				'kick-modal',
-				`Kick ${member.user.username}`,
-				[
-					new TextInputBuilder({
-						custom_id: 'kick-modal-reason',
-						label: `Reason`,
-						placeholder: `What is your reason for kicking ${member.displayName}?`,
-						style: TextInputStyle.Short,
-						min_length: 4,
-						max_length: 100,
-						required: true,
-					}),
-				]
-			)
+			utils.createModal('kick-modal', `Kick ${member.user.username}`, [
+				new TextInputBuilder({
+					custom_id: 'kick-modal-reason',
+					label: `Reason`,
+					placeholder: `What is your reason for kicking ${member.displayName}?`,
+					style: TextInputStyle.Short,
+					min_length: 4,
+					max_length: 100,
+					required: true,
+				}),
+			])
 		);
 		await button
 			.awaitModalSubmit({

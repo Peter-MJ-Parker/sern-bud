@@ -16,14 +16,12 @@ export default eventModule({
 	type: EventType.Discord,
 	name: Events.GuildMemberAdd,
 	async execute(member: GuildMember) {
-		if (member.guild.id !== '678398938046267402') return;
-
 		const Guild = await guildSchema.findOne({
 			gID: member.guild.id,
 		});
 		const Verification = await memberSchema.findOne({ memberId: member.id });
 
-		let mod = member.guild?.channels.cache.get(Guild?.modC!) as TextChannel;
+		let mod = member.guild.channels.cache.get(Guild?.modC!) as TextChannel;
 		if (member.user.bot) {
 			let botAdd = (
 				await member.guild.fetchAuditLogs({
