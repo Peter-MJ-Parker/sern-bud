@@ -1,5 +1,5 @@
 import { ownerOnly, buttonConfirmation } from '#plugins';
-import { commandModule, CommandType } from '@sern/handler';
+import { commandModule, CommandType, Service } from '@sern/handler';
 import type { TextChannel } from 'discord.js';
 
 export default commandModule({
@@ -7,18 +7,17 @@ export default commandModule({
 	plugins: [ownerOnly()],
 	description: 'Deletes an Application Command.',
 	execute: async (interaction) => {
+		const { utils } = Service('@sern/client');
 		const [id] = interaction.values;
 		const command = await interaction.client.application?.commands.fetch(id);
-		await command.delete().then(() => {
-			interaction
+		await command.delete().then(async () => {
+			await interaction
 				.update({
 					content: `I have deleted command: **${command.name}**.`,
 					components: [],
 				})
-				.then((reply) => {
-					setTimeout(async () => {
-						await reply.delete();
-					}, 5000);
+				.then(async (reply) => {
+					await utils.deleteOnTimeout(reply, 5000);
 				});
 		});
 	},

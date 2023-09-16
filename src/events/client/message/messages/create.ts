@@ -1,12 +1,12 @@
-import { EventType, Service, eventModule } from '@sern/handler';
+import { EventType, eventModule, Service } from '@sern/handler';
 import { ChannelType, Events, Message } from 'discord.js';
 import Money from '#schemas/money';
-import { env } from '#utils';
 
 export default eventModule({
 	type: EventType.Discord,
 	name: Events.MessageCreate,
 	execute: async (message: Message) => {
+		const { utils } = Service('@sern/client');
 		let msg = message.content.toLowerCase();
 		const prefixRegex = new RegExp(`^(<@!?${message.client.user.id}>)\\s*`);
 		if (prefixRegex.test(message.content)) {
@@ -19,6 +19,7 @@ export default eventModule({
 				await msg.delete();
 			}, 10000);
 		}
+
 		if (
 			message.author.bot ||
 			message.system ||
@@ -44,7 +45,7 @@ export default eventModule({
 			}).save();
 		}
 		try {
-			if (!msg.startsWith(env.defaultPrefix)) {
+			if (!msg.startsWith(utils.env.defaultPrefix)) {
 				const coinsToAdd = Math.floor(Math.random() * 50) + 1;
 				await Money.findOneAndUpdate(
 					{

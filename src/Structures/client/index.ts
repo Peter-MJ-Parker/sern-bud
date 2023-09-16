@@ -1,6 +1,6 @@
 import { BudBot } from '#BudBot';
 import { makeDependencies, single, Sern, Service } from '@sern/handler';
-import { Sparky, Utils, env } from '#utils';
+import { Sparky, env } from '../utils/index.js';
 
 await makeDependencies({
 	build: (root) =>
@@ -9,9 +9,6 @@ await makeDependencies({
 				'@sern/client': single(() => {
 					return new BudBot();
 				}),
-			})
-			.add({
-				'@sern/utils': single(() => new Utils()),
 			})
 			.upsert({
 				'@sern/logger': single(() => new Sparky('debug', 'highlight')),

@@ -8,6 +8,14 @@ import {
 	TextChannel,
 } from 'discord.js';
 
+/**
+ *
+ * @param member The GuildMember in reference to welcome into the guild.
+ * @param guildName The name of the guild the member joined.
+ * @param memberCount The amount of members in the guild (not including bots).
+ * @param WelcomeChannel The channel to send the welcome canvas to.
+ * @description Creates a Welcome Canvas for new members that have been successfully verified.
+ */
 export async function welcomeCreate(
 	member: GuildMember,
 	guildName: string,

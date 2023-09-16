@@ -22,6 +22,7 @@ import {
 	CommandType,
 	controller,
 	SernOptionsData,
+	Service,
 	SlashCommand,
 } from '@sern/handler';
 import {
@@ -30,7 +31,6 @@ import {
 	ApplicationCommandOptionType,
 	PermissionResolvable,
 } from 'discord.js';
-import { Service } from '@sern/handler';
 
 export const CommandTypeRaw = {
 	[CommandType.Both]: ApplicationCommandType.ChatInput,

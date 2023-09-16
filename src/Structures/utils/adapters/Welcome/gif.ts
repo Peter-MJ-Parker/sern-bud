@@ -70,7 +70,7 @@ export async function sticker(interaction: ButtonInteraction) {
 	];
 	let option = Math.floor(Math.random() * contents.length);
 	let hello = contents[option];
-	const userId = Service('@sern/utils').getId(member);
+	const userId = Service('@sern/client').utils.getId(member);
 	if (interaction.user.id === userId) {
 		return await interaction.reply({
 			content: "You don't need to wave to yourself...",
