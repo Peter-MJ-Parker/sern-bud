@@ -19,6 +19,7 @@ import {
 } from 'discord.js';
 import axios from 'axios';
 import { webhookCreate, welcomeCreate, sticker, env } from './index.js';
+const { debug, error, info, success, warn } = Service('@sern/logger');
 
 /**
  *
@@ -83,7 +84,7 @@ export class Utils {
 		};
 
 		if (!mongoURI) {
-			Service('@sern/logger').warning('No database connection string present!');
+			warn('No database connection string present!');
 			return process.exit(1);
 		}
 
@@ -91,22 +92,18 @@ export class Utils {
 			/^(?<protocol>[^/]+):\/\/(?:(?<username>[^:@]*)(?::(?<password>[^@]*))?@)?(?<hosts>(?!:)[^/?@]*)(?<rest>.*)/;
 		const match = mongoURI.match(HOSTS_REGEX);
 		if (!match) {
-			Service('@sern/logger').error(
-				`[DATABASE]- Invalid connection string "${mongoURI}"`
-			);
+			error(`[DATABASE]- Invalid connection string "${mongoURI}"`);
 			return process.exit(1);
 		}
 
 		connection.on('connecting', () => {
-			Service('@sern/logger').info('[DATABASE]- Mongoose is connecting...');
+			info('[DATABASE]- Mongoose is connecting...');
 		});
 
 		try {
 			await connect(mongoURI, dbOptions);
-		} catch (error) {
-			Service('@sern/logger').error(
-				`[DATABASE]- Mongoose connection error: \n${error}`
-			);
+		} catch (err) {
+			error(`[DATABASE]- Mongoose connection error: \n${err}`);
 			return process.exit(1);
 		}
 
@@ -114,19 +111,15 @@ export class Utils {
 		set('strictQuery', true);
 
 		connection.on('connected', () => {
-			Service('@sern/logger').success(
-				'[DATABASE]- Mongoose has successfully connected!'
-			);
+			success('[DATABASE]- Mongoose has successfully connected!');
 		});
 
 		connection.on('err', (err) => {
-			Service('@sern/logger').error(
-				`[DATABASE]- Mongoose connection error: \n${err.stack}`
-			);
+			error(`[DATABASE]- Mongoose connection error: \n${err.stack}`);
 		});
 
 		connection.on('disconnected', () => {
-			Service('@sern/logger').warning('[DATABASE]- Mongoose connection lost');
+			warn('[DATABASE]- Mongoose connection lost');
 		});
 
 		return connection;
@@ -163,7 +156,6 @@ export class Utils {
 	 */
 	public async channelUpdater(guild: Guild): Promise<any> {
 		const client = Service('@sern/client');
-		const { error } = Service('@sern/logger');
 		const db = await (
 			await import('#schemas/guild')
 		).default.findOne({
@@ -403,11 +395,11 @@ export class Utils {
 								embeds: [],
 						  });
 				}
-			} catch (error: any) {
-				console.log(error);
+			} catch (err: any) {
+				error(err);
 				await i.reply({
 					embeds: [],
-					content: `Failed to fetch meme. Please try again.\nError Code: ${error.message}`,
+					content: `Failed to fetch meme. Please try again.\nError Code: ${err.message}`,
 					ephemeral: true,
 				});
 			}

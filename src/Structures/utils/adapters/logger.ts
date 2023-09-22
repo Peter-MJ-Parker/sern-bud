@@ -11,6 +11,7 @@ export class Sparky implements Logging {
 		this._date = new Date();
 	}
 
+	public warn = this.warning;
 	success(payload: LogPayload<unknown> | any): void {
 		payload = payload.message || { payload }.payload;
 		this._spark.success(
