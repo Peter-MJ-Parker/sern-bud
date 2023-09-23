@@ -19,7 +19,6 @@ import {
 } from 'discord.js';
 import axios from 'axios';
 import { webhookCreate, welcomeCreate, sticker, env } from './index.js';
-const { debug, error, info, success, warn } = Service('@sern/logger');
 
 /**
  *
@@ -35,6 +34,7 @@ export class Utils {
 	get webhookCreate() {
 		return webhookCreate;
 	}
+
 	get env() {
 		return env;
 	}
@@ -76,15 +76,11 @@ export class Utils {
 	 * @returns {Promise} Promise of Mongoose Connection
 	 */
 	public async mongoConnect(mongoURI: string): Promise<mongoose.Connection> {
-		const { connect, connection, set } = mongoose;
-		const dbOptions = {
-			autoIndex: true,
-			connectTimeoutMS: 10000,
-			family: 4,
-		};
+		const logger = Service('@sern/logger');
+		const { connect, connection, set, ConnectionStates } = mongoose;
 
 		if (!mongoURI) {
-			warn('No database connection string present!');
+			logger.warn('No database connection string present!');
 			return process.exit(1);
 		}
 
@@ -92,34 +88,15 @@ export class Utils {
 			/^(?<protocol>[^/]+):\/\/(?:(?<username>[^:@]*)(?::(?<password>[^@]*))?@)?(?<hosts>(?!:)[^/?@]*)(?<rest>.*)/;
 		const match = mongoURI.match(HOSTS_REGEX);
 		if (!match) {
-			error(`[DATABASE]- Invalid connection string "${mongoURI}"`);
+			logger.error(`[DATABASE]- Invalid connection string "${mongoURI}"`);
 			return process.exit(1);
 		}
 
-		connection.on('connecting', () => {
-			info('[DATABASE]- Mongoose is connecting...');
-		});
-
-		try {
-			await connect(mongoURI, dbOptions);
-		} catch (err) {
-			error(`[DATABASE]- Mongoose connection error: \n${err}`);
-			return process.exit(1);
-		}
-
-		Promise = Promise;
 		set('strictQuery', true);
-
-		connection.on('connected', () => {
-			success('[DATABASE]- Mongoose has successfully connected!');
-		});
-
-		connection.on('err', (err) => {
-			error(`[DATABASE]- Mongoose connection error: \n${err.stack}`);
-		});
-
-		connection.on('disconnected', () => {
-			warn('[DATABASE]- Mongoose connection lost');
+		await connect(mongoURI, {
+			autoIndex: true,
+			connectTimeoutMS: 10000,
+			family: 4,
 		});
 
 		return connection;
@@ -156,31 +133,32 @@ export class Utils {
 	 */
 	public async channelUpdater(guild: Guild): Promise<any> {
 		const client = Service('@sern/client');
+		const logger = Service('@sern/logger');
 		const db = await (
 			await import('#schemas/guild')
 		).default.findOne({
 			gID: guild.id,
 		});
 		if (!db)
-			return error(
+			return logger.error(
 				'No database entry! Please re-add me to the specified guild to create the entry.'
 			);
 
-		if (!client) return error('No client provided!');
+		if (!client) return logger.error('No client provided!');
 		if (!client.guilds.cache.has(guild.id))
-			return error('Guild not found in my cache!');
+			return logger.error('Guild not found in my cache!');
 
 		const channelIds = [db.allCountChan, db.botCountChan, db.userCountChan];
 		for (const chanId of channelIds) {
 			if (chanId) {
 				const result = await guild.channels.fetch(chanId);
 				if (!result) {
-					return error(
+					return logger.error(
 						`${chanId} does not exist in guild [${guild.name} - ${guild.id}]. Please check channel id's in database and try again!`
 					);
 				}
 			} else
-				return error(
+				return logger.error(
 					`${chanId} does not exist in database. Please check channel id's in database and try again!`
 				);
 		}
@@ -233,7 +211,7 @@ export class Utils {
 				}
 			}
 		} catch (err) {
-			return error(err);
+			return logger.error(err);
 		}
 	}
 
@@ -396,7 +374,8 @@ export class Utils {
 						  });
 				}
 			} catch (err: any) {
-				error(err);
+				const logger = Service('@sern/logger');
+				logger.error(err);
 				await i.reply({
 					embeds: [],
 					content: `Failed to fetch meme. Please try again.\nError Code: ${err.message}`,
