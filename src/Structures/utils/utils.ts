@@ -77,7 +77,7 @@ export class Utils {
 	 */
 	public async mongoConnect(mongoURI: string): Promise<mongoose.Connection> {
 		const logger = Service('@sern/logger');
-		const { connect, connection, set, ConnectionStates } = mongoose;
+		const { connect, connection, set } = mongoose;
 
 		if (!mongoURI) {
 			logger.warn('No database connection string present!');
