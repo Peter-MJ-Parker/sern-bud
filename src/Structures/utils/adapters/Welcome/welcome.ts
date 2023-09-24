@@ -22,11 +22,14 @@ export async function welcomeCreate(
 	memberCount: number,
 	WelcomeChannel: TextChannel
 ) {
-	registerFont(`./src/Structures/utils/Welcome/fonts/AlfaSlabOne-Regular.ttf`, {
-		family: 'Alfa',
-	});
 	registerFont(
-		`./src/Structures/utils/Welcome/fonts/LobsterTwo-BoldItalic.ttf`,
+		`./src/Structures/utils/adapters/Welcome/fonts/AlfaSlabOne-Regular.ttf`,
+		{
+			family: 'Alfa',
+		}
+	);
+	registerFont(
+		`./src/Structures/utils/adapters/Welcome/fonts/LobsterTwo-BoldItalic.ttf`,
 		{
 			family: 'Lobster',
 		}

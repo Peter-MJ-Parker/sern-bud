@@ -17,16 +17,17 @@ export default eventModule({
 		reaction: MessageReaction | PartialMessageReaction,
 		user: User
 	) => {
+		if (!reaction.message.inGuild()) return;
 		const { utils } = Service('@sern/client');
 		const { welcomeCreate, channelUpdater } = utils;
 
-		if (reaction.message.guild?.id !== '678398938046267402') return;
+		if (reaction.message.guild.id !== '678398938046267402') return;
 
 		let message = reaction.message!;
 		const counts = {
-			users: message.guild?.members.cache.filter((m) => !m.user.bot).size!,
-			bots: message.guild?.members.cache.filter((m) => m.user.bot).size!,
-			total: message.guild?.memberCount!,
+			users: message.guild.members.cache.filter((m) => !m.user.bot).size!,
+			bots: message.guild.members.cache.filter((m) => m.user.bot).size!,
+			total: message.guild.memberCount!,
 		};
 		if (message.partial) await message.fetch();
 		if (reaction.partial) await reaction.fetch();
@@ -69,44 +70,36 @@ export default eventModule({
 					mmm.guild.name,
 					counts.users,
 					mmm.guild.systemChannel!
-				)
-					.then(async () => {
-						await Guild?.updateOne({
-							$set: {
-								allCount: counts.total,
-								userCount: counts.users,
-							},
-						});
-					})
-					.finally(async () => {
-						const Verification = await memberSchema.findOne({
-							memberId: mmm.id,
-						});
-						const channel = (await message.guild?.channels.fetch(
-							Guild?.modC!
-						)) as TextChannel;
-						const msg = await channel.messages.fetch(Verification?.messageId!);
-						await msg
-							.edit({
-								components: [],
-								embeds: [
-									EmbedBuilder.from(msg.embeds[0])
-										.setFields([
-											{
-												name: 'Verification: ',
-												value: `✅ - ${mmm} successfully verified!`,
-											},
-										])
-										.setFooter(null),
-								],
-							})
-							.then(async () => {
-								await Verification?.deleteOne();
-							})
-							.finally(async () => {
-								await channelUpdater(mmm.guild);
-							});
+				).then(async () => {
+					const Verification = await memberSchema.findOne({
+						memberId: mmm.id,
 					});
+					if (!Verification) return;
+					const channel = (await message.guild?.channels.fetch(
+						Guild?.modC!
+					)) as TextChannel;
+					const msg = await channel.messages.fetch(Verification.messageId!);
+					await msg
+						.edit({
+							components: [],
+							embeds: [
+								EmbedBuilder.from(msg.embeds[0])
+									.setFields([
+										{
+											name: 'Verification: ',
+											value: `✅ - ${mmm} successfully verified!`,
+										},
+									])
+									.setFooter(null),
+							],
+						})
+						.then(async () => {
+							await Verification?.deleteOne();
+						})
+						.finally(async () => {
+							await channelUpdater(mmm.guild);
+						});
+				});
 			} else {
 				console.log(user.username + ' reacted with ' + reaction.emoji.name);
 			}

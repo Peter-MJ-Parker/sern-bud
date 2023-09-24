@@ -94,7 +94,7 @@ export async function webhookCreate(
 ) {
 	channel
 		.createWebhook({
-			name: user.username,
+			name: user.displayName,
 			avatar: user.displayAvatarURL(),
 		})
 		.then(async (s) => {

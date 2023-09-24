@@ -88,6 +88,11 @@ export default eventModule({
 				memberId: member.id,
 				messageId: msg.id,
 			});
+		} else {
+			const oldMessage = await mod.messages.fetch(Verification.messageId!);
+			await oldMessage.delete().then(async () => {
+				await Verification.updateOne({ $set: { messageId: msg.id } });
+			});
 		}
 	},
 });

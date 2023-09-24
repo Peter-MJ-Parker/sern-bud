@@ -3,7 +3,7 @@ import { Schema, model } from 'mongoose';
 export default model(
 	'Guild',
 	new Schema({
-		gID: { type: String },
+		gID: { type: String, required: true },
 		gName: { type: String },
 		prefix: { type: String, default: '?' },
 		modC: { type: String, default: '' },
