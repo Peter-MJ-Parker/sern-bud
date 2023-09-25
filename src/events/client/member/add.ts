@@ -72,7 +72,7 @@ export default eventModule({
 					const [emoji, name] = button.split('|');
 					return new ButtonBuilder({
 						custom_id: `member-${name.toLowerCase().toString()}`,
-						style: ButtonStyle.Danger,
+						style: emoji === '✅' ? ButtonStyle.Success : ButtonStyle.Danger,
 						label: name.toString(),
 						emoji: emoji.toString(),
 					});
@@ -89,10 +89,14 @@ export default eventModule({
 				messageId: msg.id,
 			});
 		} else {
-			const oldMessage = await mod.messages.fetch(Verification.messageId!);
-			await oldMessage.delete().then(async () => {
-				await Verification.updateOne({ $set: { messageId: msg.id } });
-			});
+			if (Verification && Verification.messageId !== msg.id) {
+				const oldMessage = await mod.messages.fetch(Verification.messageId!);
+				if (oldMessage) {
+					await oldMessage.delete().then(async () => {
+						await Verification.updateOne({ $set: { messageId: msg.id } });
+					});
+				}
+			}
 		}
 	},
 });
