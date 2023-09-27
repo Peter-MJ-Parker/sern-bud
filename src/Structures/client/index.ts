@@ -1,6 +1,6 @@
 import { BudBot } from '#BudBot';
 import { makeDependencies, single, Sern, Service } from '@sern/handler';
-import { Sparky, env } from '../utils/index.js';
+import { env, logger } from '../utils/index.js';
 import pkg from 'mongoose';
 
 await makeDependencies({
@@ -15,7 +15,7 @@ await makeDependencies({
 				mongoose: single(() => pkg.connection),
 			})
 			.upsert({
-				'@sern/logger': single(() => new Sparky('debug', 'highlight')),
+				'@sern/logger': single(() => logger),
 			}),
 });
 //View docs for all options

@@ -21,7 +21,7 @@ import axios from 'axios';
 import { webhookCreate, welcomeCreate, sticker, env, logger } from './index.js';
 
 /**
- *
+ * Class that holds most functions used in different files by the client.
  */
 export class Utils {
 	constructor() {}
