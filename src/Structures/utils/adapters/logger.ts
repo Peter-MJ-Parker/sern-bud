@@ -39,3 +39,5 @@ export class Sparky implements Logging {
 		);
 	}
 }
+
+export const logger = new Sparky('debug', 'highlight');
