@@ -32,6 +32,10 @@
 		"nodemon": "^3.0.1",
 		"typescript": "^5.2.2"
 	},
+	"repository": {
+		"type": "git",
+		"url": ""
+	},
 	"imports": {
 		"#plugins": [
 			"./dist/Structures/plugins/index.js"

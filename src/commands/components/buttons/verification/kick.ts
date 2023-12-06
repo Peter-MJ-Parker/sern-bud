@@ -5,13 +5,13 @@ import {
 	TextInputBuilder,
 	TextInputStyle,
 } from 'discord.js';
-import { buttonConfirmation } from '#plugins';
 
 export default commandModule({
 	type: CommandType.Button,
 	name: 'member-kick',
-	plugins: [buttonConfirmation()],
+	plugins: [],
 	execute: async (button) => {
+		await button.deferUpdate();
 		const memberId = button.message.embeds[0].footer?.text!;
 		const member = (await button.guild?.members.fetch())?.get(memberId)!;
 		const { utils } = Service('@sern/client');

@@ -1,17 +1,7 @@
-import { Service } from '@sern/handler';
-import {
-	ActionRowBuilder,
-	ButtonBuilder,
-	ButtonInteraction,
-	ButtonStyle,
-	ChatInputCommandInteraction,
-	ComponentType,
-	EmbedBuilder,
-	TextChannel,
-	User,
-} from 'discord.js';
+import { ButtonInteraction, TextChannel, User } from 'discord.js';
+import custom from '#schemas/customMessages';
 
-const gifs = [
+export const gifs = [
 	'https://i.imgur.com/f5DOAFz.gif',
 	'https://i.imgur.com/mdFUdn4.gif',
 	'https://i.imgur.com/CnQfH1w.gif',
@@ -55,29 +45,35 @@ const gifs = [
 	'https://i.imgur.com/hyABHxi.gif',
 	'https://i.imgur.com/q1eBTCD.gif',
 ];
+export const welcomeEmojis = [
+	'💕',
+	'👌',
+	'🙌',
+	'<a:loading:1177281558563016806>',
+];
 export async function sticker(interaction: ButtonInteraction) {
+	
 	let img = gifs[Math.floor(Math.random() * gifs.length) + 1];
-	let member = `<@${interaction.message.attachments
+	let memberId = `${interaction.message.attachments
 		.first()
 		?.name?.split('-')[1]
-		.slice(0, -4)}>`;
+		.slice(0, -4)}`;
 
+	let member = interaction.guild?.members.cache.get(memberId);
 	const contents = [
 		`:wave: Welcome to ${interaction.guild?.name}, ${member}`,
-		`${member}, Welcome to ${interaction.guild?.name}. Please leave your negativity at the door.`,
 		`Hi ${member}! Welcome to our community! Please make yourself at home!`,
 		`👋 Hello ${member}`,
+		`I'm glad you're here, ${member}! Please pass the joint!`,
 	];
 	let option = Math.floor(Math.random() * contents.length);
 	let hello = contents[option];
-	const userId = Service('@sern/client').utils.getId(member);
-	if (interaction.user.id === userId) {
+	if (interaction.user.id === memberId) {
 		return await interaction.reply({
 			content: "You don't need to wave to yourself...",
 			ephemeral: true,
 		});
 	}
-	await interaction.deferUpdate();
 	await webhookCreate(
 		interaction.channel as TextChannel,
 		interaction.user,
@@ -113,66 +109,4 @@ export async function webhookCreate(
 				await s.delete();
 			}, 5000);
 		});
-}
-
-export async function findEmoji(interaction: ChatInputCommandInteraction) {
-	let emos: object[] = [];
-	let math: number;
-	let newEmo: any;
-	await fetch('https://emoji.gg/api/', {
-		method: 'GET',
-	}).then(async (res) => {
-		await res
-			.json()
-			.then(async (data) => {
-				data.forEach((e: any) => {
-					emos.push({ name: e.title, url: e.image });
-					math = Math.floor(Math.random() * emos.length + 1);
-					newEmo = emos[math];
-				});
-				if (interaction.user.id === interaction.guild?.ownerId) {
-					const embed1 = new EmbedBuilder({
-						title: `${newEmo.name}`,
-						image: { url: `${newEmo.url}`, height: 512, width: 512 },
-					});
-					const embed2 = new EmbedBuilder({
-						description: `Would you like to add this emoji to your server?`,
-					});
-
-					let row1 = ['✅|Yes', '❌|No'].map((choice) => {
-						const [emoji, name] = choice.split('|');
-						return new ButtonBuilder({
-							type: ComponentType.Button,
-							custom_id: `emojiCreate-${name}`,
-							label: name.toString(),
-							emoji: emoji.toString(),
-							style: ButtonStyle.Secondary,
-						});
-					});
-					await interaction.reply({
-						embeds: [embed1],
-					});
-					return await interaction.followUp({
-						embeds: [embed2],
-						components: [
-							new ActionRowBuilder<ButtonBuilder>({
-								type: 1,
-								components: row1,
-							}),
-						],
-						ephemeral: true,
-					});
-				} else {
-					return await interaction.reply({
-						content: newEmo.url,
-					});
-				}
-			})
-			.catch(async (error) => {
-				await interaction.reply({
-					content: `Sorry I couldn't fetch an emoji. Please try again.\n${error.message}`,
-					ephemeral: true,
-				});
-			});
-	});
 }

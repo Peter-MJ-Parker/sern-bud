@@ -2,13 +2,13 @@ import { commandModule, CommandType, Service } from '@sern/handler';
 import guildSchema from '#schemas/guild';
 import memberSchema from '#schemas/member';
 import { EmbedBuilder, TextChannel } from 'discord.js';
-import { buttonConfirmation } from '#plugins';
 
 export default commandModule({
 	type: CommandType.Button,
 	name: 'member-bypass-verify',
-	plugins: [buttonConfirmation()],
+	plugins: [],
 	execute: async (button) => {
+		await button.deferUpdate();
 		const { utils } = Service('@sern/client');
 		const guild = await guildSchema.findOne({ gID: button.guild?.id! });
 		const role = (await button.guild?.roles.fetch(guild?.verifiedRole!))!;

@@ -7,6 +7,12 @@ import {
 	GuildMember,
 	TextChannel,
 } from 'discord.js';
+import { welcomeEmojis } from './gif.js';
+
+const option = (array: Array<string>): string => {
+	const randomIndex = Math.floor(Math.random() * array.length);
+	return array[randomIndex];
+};
 
 /**
  *
@@ -77,7 +83,7 @@ export async function welcomeCreate(
 			components: [
 				new ButtonBuilder({
 					label: ` Wave to say hi!`,
-					emoji: `🙌`,
+					emoji: option(welcomeEmojis),
 					custom_id: 'welcome-wave',
 					style: ButtonStyle.Secondary,
 				}),
@@ -85,12 +91,11 @@ export async function welcomeCreate(
 		}),
 	];
 
-	const contents = [
+	const content = option([
 		`:wave: Welcome to ${guildName}, ${member}`,
 		`We hope you find what you're looking for and that you enjoy your stay, ${member}.`,
 		`${member} is here to kick ass and chew gum, but ${member} has run out of gum.`,
 		`${member} has just joined. Save your bananas.`,
-		`Welcome ${member}. Please leave your negativity at the door.`,
 		`It's a bird! It's a plane! Nevermind it's just ${member}.`,
 		`${member} has joined the server. Can I get a heal?`,
 		`${member} has arrived. The party is over.`,
@@ -98,12 +103,10 @@ export async function welcomeCreate(
 		`Welcome ${member}! We were waiting for you (͡ ° ͜ʖ ͡ °)`,
 		`${member} never gonna let you down, ${member} never gonna give you up.`,
 		`Hi ${member}! Welcome to our community! Please make yourself at home!`,
-	];
-	let option = Math.floor(Math.random() * contents.length);
-	const content = contents[option];
+	]);
 
 	try {
-		WelcomeChannel.send({
+		await WelcomeChannel.send({
 			content,
 			files: Attachment,
 			components: button,

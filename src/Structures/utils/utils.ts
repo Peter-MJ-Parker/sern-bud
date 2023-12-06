@@ -56,18 +56,20 @@ export class Utils {
 	 * ```
 	 * @returns {Snowflake}
 	 */
-	public getId(mention: string): Snowflake {
-		let id: string = '';
+	public getId(mention: string): Snowflake | void {
+		let id = '';
 		if (mention.includes('@') && !mention.includes('&')) {
-			id += mention.replaceAll(new RegExp(/([<@>])+/g), '');
+			id += mention.replaceAll(/[<@>]/g, '');
 		}
 		if (mention.includes('#')) {
-			id += mention.replaceAll(new RegExp(/([<#>])+/g), '');
+			id += mention.replaceAll(/[<#>]/g, '');
 		}
 		if (mention.includes('@&')) {
-			id += mention.replaceAll(new RegExp(/([<@&>])+/g), '');
+			id += mention.replaceAll(/[<@&>]/g, '');
 		}
-		return this.isValidSnowflake(id) === true ? id : '';
+		return this.isValidSnowflake(id)
+			? id
+			: logger.error(`**${id}** is not a valid snowflake.`);
 	}
 
 	/**

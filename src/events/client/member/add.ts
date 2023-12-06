@@ -69,24 +69,13 @@ export default eventModule({
 		const components = [
 			new ActionRowBuilder<ButtonBuilder>({
 				components: ['✅|Bypass-Verify', '👢|Kick', '💥|Ban'].map((button) => {
-					const [emoji, name] = button.split('|');let style: ButtonStyle;
-								switch (emoji) {
-									case '✅':
-										style = ButtonStyle.Success;
-										break;
-									case '👢':
-										style = ButtonStyle.Secondary;
-										break;
-									default:
-										style = ButtonStyle.Danger;
-										break;
-								}
-								return new ButtonBuilder({
-									custom_id: `member-${name.toLowerCase().toString()}`,
-									style,
-									label: name.toString(),
-									emoji: emoji.toString(),
-								});
+					const [emoji, name] = button.split('|');
+					return new ButtonBuilder({
+						custom_id: `member-${name.toLowerCase().toString()}`,
+						style: emoji === '✅' ? ButtonStyle.Success : ButtonStyle.Danger,
+						label: name.toString(),
+						emoji: emoji.toString(),
+					});
 				}),
 			}),
 		];
