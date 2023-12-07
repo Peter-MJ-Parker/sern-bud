@@ -1,6 +1,7 @@
 import { publish } from '#plugins';
 import { commandModule, CommandType } from '@sern/handler';
 import { ApplicationCommandOptionType } from 'discord.js';
+import moneySchema from '#schemas/money';
 
 export default commandModule({
 	type: CommandType.Slash,
@@ -98,7 +99,19 @@ export default commandModule({
 				let basic = options.getString('basic-features');
 				console.log(basic);
 				switch (basic) {
-					case '':
+					case 'balance':
+						const user =
+							interaction.options.getUser('user') ?? interaction.user;
+						let money = await moneySchema.findOne({
+							userID: user.id,
+							serverID: interaction.guild?.id,
+						});
+						const wallet = money?.wallet;
+						const bank = money?.bank;
+						await interaction.reply({
+							content: `${user} holds ${wallet} coins on them and ${bank} in their bank.`,
+							ephemeral: true,
+						});
 						break;
 
 					default:

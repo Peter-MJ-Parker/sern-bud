@@ -1,0 +1,24 @@
+name: Docker Runner
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  run:
+    runs-on: self-hosted
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run Container
+        run: docker compose up -d --build
+        env:
+          TOKEN: ${{ secrets.DISCORD_PROD_TOKEN }}
+          CONNECT: ${{ secrets.CONNECT }}
+          defaultPrefix: ${{ secrets.defaultPrefix }}
+          GIPHY: ${{ secrets.GIPHY }}
+
+      - name: Cleanup Unused Images
+        run: docker image prune -f

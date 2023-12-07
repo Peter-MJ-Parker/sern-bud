@@ -1,0 +1,9 @@
+version: "3.3"
+services:
+  budbot:
+    build: .
+    container_name: budbot
+    volumes:
+      - /home/george/Discord/bots/sern-bud:/app/data
+    restart: unless-stopped
+networks: {}

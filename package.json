@@ -18,13 +18,13 @@
 	],
 	"license": "UNLICENSED",
 	"dependencies": {
+		"@napi-rs/canvas": "^0.1.44",
 		"@sern/handler": "^3.1.0",
 		"@spark.ts/logger": "^1.4.0",
-		"axios": "^1.4.0",
-		"canvas": "^2.11.2",
+		"axios": "^1.6.2",
 		"chalk": "^5.3.0",
 		"colorette": "^2.0.20",
-		"discord.js": "^14.13.0",
+		"discord.js": "^14.14.1",
 		"mongoose": "^7.5.2"
 	},
 	"devDependencies": {
@@ -46,5 +46,6 @@
 		"#schemas/*": [
 			"./dist/Structures/schemas/*.js"
 		]
-	}
+	},
+	"packageManager": "yarn@4.0.2"
 }

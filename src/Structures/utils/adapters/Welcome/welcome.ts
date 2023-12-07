@@ -1,4 +1,4 @@
-import { createCanvas, loadImage, registerFont } from 'canvas';
+import { createCanvas, loadImage, GlobalFonts } from '@napi-rs/canvas';
 import {
 	ActionRowBuilder,
 	AttachmentBuilder,
@@ -28,18 +28,20 @@ export async function welcomeCreate(
 	memberCount: number,
 	WelcomeChannel: TextChannel
 ) {
-	registerFont(
-		`./src/Structures/utils/adapters/Welcome/fonts/AlfaSlabOne-Regular.ttf`,
-		{
-			family: 'Alfa',
-		}
-	);
-	registerFont(
-		`./src/Structures/utils/adapters/Welcome/fonts/LobsterTwo-BoldItalic.ttf`,
-		{
-			family: 'Lobster',
-		}
-	);
+	GlobalFonts.registerFromPath('./src/Structures/utils/adapters/Welcome/fonts/AlfaSlabOne-Regular.ttf', 'alfa-regular');
+	GlobalFonts.registerFromPath(`./src/Structures/utils/adapters/Welcome/fonts/LobsterTwo-BoldItalic.ttf`, 'lobster-bolditalic')
+	// registerFont(
+	// 	``,
+	// 	{
+	// 		family: 'Alfa',
+	// 	}
+	// );
+	// registerFont(
+	// 	,
+	// 	{
+	// 		family: 'Lobster',
+	// 	}
+	// );
 	const welcomeCanvas = createCanvas(1024, 500);
 	const ctx = welcomeCanvas.getContext('2d');
 	ctx.font = '68px "Alfa"';
@@ -73,7 +75,7 @@ export async function welcomeCreate(
 		ctx.drawImage(img2, 150, 75, 252, 252);
 	});
 	let Attachment = [
-		new AttachmentBuilder(canvas.toBuffer(), {
+		new AttachmentBuilder(canvas.toBuffer("image/png"), {
 			name: `welcome-${member.id}.png`,
 			description: `${member.user.username}'s welcome image`,
 		}),
