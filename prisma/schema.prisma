@@ -8,6 +8,7 @@ generator client {
 }
 
 model Money {
-    id       String @id @map("_id")
+    id       String  @id @map("_id")
     username String
+    nickname String?
 }
