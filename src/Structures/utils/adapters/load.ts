@@ -1,9 +1,5 @@
-import { existsSync, readFileSync } from "fs";
-export function load<T extends object>(
-  struct: Struct<T>,
-  path: string = ".env",
-  inject: boolean = true
-): T {
+import { existsSync, readFileSync } from 'fs';
+export function load<T extends object>(struct: Struct<T>, path: string = '.env', inject: boolean = true): T {
   const out: T = {} as never;
 
   if (!existsSync(path)) {
@@ -11,15 +7,12 @@ export function load<T extends object>(
   }
 
   const file = readFileSync(path);
-  const lines = file.toString().split("\n");
+  const lines = file.toString().split('\n');
 
   const raw: Record<string, string> = {};
 
   for (const line of lines) {
-    const [key, value] = [
-      line.split("=")[0],
-      line.split("=").slice(1).join("=")
-    ] as [string, string];
+    const [key, value] = [line.split('=')[0], line.split('=').slice(1).join('=')] as [string, string];
 
     let real_value = value;
 
@@ -52,11 +45,10 @@ export type Struct<T extends object> = {
 };
 
 export const env = load({
-  DISCORD_DEV_TOKEN: String,
-  DISCORD_PROD_TOKEN: String,
+  DISCORD_TOKEN: String,
   CONNECT: String,
   defaultPrefix: String,
   GIPHY: String,
   ownerIDs: Array,
-  MODE: String
+  NODE_ENV: String
 });

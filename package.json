@@ -1,6 +1,6 @@
 {
   "name": "budbot",
-  "version": "3.1.1",
+  "version": "4.0.0",
   "description": "Discord bot for the Joint Streaming Community.",
   "type": "module",
   "main": "dist/Structures/client/index.js",
@@ -19,7 +19,7 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@napi-rs/canvas": "^0.1.53",
-    "@sern/handler": "^3.3.2",
+    "@sern/handler": "^4.0.1",
     "@spark.ts/logger": "^1.4.0",
     "axios": "^1.7.2",
     "chalk": "^5.3.0",
@@ -28,7 +28,7 @@
     "mongoose": "^8.5.1"
   },
   "devDependencies": {
-    "@types/node": "^20.14.11",
+    "@types/node": "^20.14.12",
     "nodemon": "^3.1.4",
     "typescript": "^5.5.4"
   },

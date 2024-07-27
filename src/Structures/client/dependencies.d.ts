@@ -1,23 +1,14 @@
-import { CoreDependencies, Singleton } from "@sern/handler";
-import { IntegrationContextType, Sparky } from "../utils/index";
-import { BudBot } from "#BudBot";
-import pkg from "mongoose";
+import type { CoreDependencies } from '@sern/handler';
+import { Sparky } from '../utils/index.js';
+import { BudBot } from '#BudBot';
+import pkg from 'mongoose';
 
 declare global {
   interface Dependencies extends CoreDependencies {
-    "@sern/client": Singleton<BudBot>;
-    "@sern/logger": Singleton<Sparky>;
-    mongoose: Singleton<pkg.Connection>;
-    process: Singleton<NodeJS.Process>;
+    '@sern/client': BudBot;
+    '@sern/logger': Sparky;
+    'mongoose': pkg.Connection;
   }
-  interface ValidPublishOptions {
-    guildIds?: NonEmptyArray<`${number}`> | undefined;
-    dmPermission?: boolean | undefined;
-    defaultMemberPermissions?: NonEmptyArray<bigint> | null;
-    integrationTypes?: NonEmptyArray<"User" | "Guild">;
-    contexts?: NonEmptyArray<IntegrationContextType>;
-  }
-  type NonEmptyArray<T> = [T, ...T[]];
 }
 
 export {};
