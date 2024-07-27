@@ -1,0 +1,12 @@
+datasource db {
+    provider = "mongodb"
+    url      = env("CONNECT")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model Money {
+    id String @id @map("_id")
+}
