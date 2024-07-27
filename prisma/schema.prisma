@@ -11,4 +11,5 @@ model Money {
     id       String  @id @map("_id")
     username String
     nickname String?
+    userID   String
 }
