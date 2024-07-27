@@ -1,0 +1,28 @@
+{
+	"compilerOptions": {
+		"resolveJsonModule": true,
+		"moduleResolution": "node",
+		"target": "esnext",
+		"module": "esnext",
+		"outDir": "dist",
+		"rootDir": "src",
+		"strict": true,
+		"baseUrl": ".",
+		"esModuleInterop": true,
+		"noImplicitAny": false,
+		"strictNullChecks": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"allowJs": true,
+		"allowUnreachableCode": true,
+		"allowUnusedLabels": true,
+		"exactOptionalPropertyTypes": true,
+		"paths": {
+			"#plugins": ["src/Structures/plugins/index"],
+			"#BudBot": ["src/Structures/client/BudBot"],
+			"#schemas/*": ["src/Structures/schemas/*"]
+		}
+	},
+	"include": ["src/**/*.ts", "src/**/*.ttf"],
+	"exclude": ["node_modules", "dist"]
+}
