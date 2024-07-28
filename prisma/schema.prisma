@@ -11,7 +11,7 @@ model Money {
     id       String  @id @default(auto()) @map("_id") @db.ObjectId
     username String
     nickname String?
-    userID   String
+    userID   String  @unique
     serverID String
     bank     Int     @default(0)
     wallet   Int     @default(0)
@@ -20,7 +20,7 @@ model Money {
 model Member {
     id        String @id @default(auto()) @map("_id") @db.ObjectId
     messageId String
-    memberId  String
+    memberId  String @unique
 }
 
 model Guild {
