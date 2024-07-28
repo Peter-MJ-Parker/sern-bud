@@ -20,6 +20,7 @@
   "dependencies": {
     "@napi-rs/canvas": "^0.1.53",
     "@sern/handler": "^4.0.1",
+    "@sern/publisher": "^1.1.2",
     "@spark.ts/logger": "^1.4.0",
     "colorette": "^2.0.20",
     "discord.js": "^14.15.3",

@@ -49,6 +49,6 @@ export const env = load({
   CONNECT: String,
   defaultPrefix: String,
   GIPHY: String,
-  ownerIDs: Array,
+  ownerIDs: Array<string>,
   NODE_ENV: String
 });

@@ -30,7 +30,7 @@ export class Utils {
   get env() {
     return env;
   }
-
+  public owners = env.ownerIDs[0].replaceAll(/[\[\]"]/g, '').split(', ');
   /**
    *
    * @param time Amount of time in seconds to wait before going to next line in code.
