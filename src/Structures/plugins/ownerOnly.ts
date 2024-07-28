@@ -21,8 +21,8 @@
 import { CommandType, CommandControlPlugin, controller } from '@sern/handler';
 export function ownerOnly(override?: string[]) {
   return CommandControlPlugin<CommandType.Both>((ctx, { deps }) => {
-    const { owners } = deps['@sern/client'].utils;
-    if ((override ?? owners).includes(ctx.user.id)) return controller.next();
+    const utils = deps['@sern/client'].utils;
+    if ((override ?? utils.owners).includes(ctx.user.id)) return controller.next();
     return controller.stop();
   });
 }
