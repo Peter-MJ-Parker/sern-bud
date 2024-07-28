@@ -8,10 +8,52 @@ generator client {
 }
 
 model Money {
-    id       String  @id @map("_id")
+    id       String  @id @default(auto()) @map("_id") @db.ObjectId
     username String
     nickname String?
     userID   String
+    serverID String
     bank     Int     @default(0)
     wallet   Int     @default(0)
 }
+
+model Member {
+    id        String @id @default(auto()) @map("_id") @db.ObjectId
+    messageId String
+    memberId  String
+}
+
+model Guild {
+    id                String @id @default(auto()) @map("_id") @db.ObjectId
+    gID               String @unique
+    gName             String @unique
+    prefix            String @default("?")
+    modC              String @default("")
+    verifiedRole      String @default("")
+    reactionMessageID String @unique @default("")
+    welcomeC          String @default("")
+    leaveC            String @default("")
+    introC            String @default("")
+    userCount         Int    @default(0)
+    botCount          Int    @default(0)
+    allCount          Int    @default(0)
+    userCountChan     String @default("")
+    botCountChan      String @default("")
+    allCountChan      String @default("")
+}
+
+model Birthday {
+    id       String   @id @default(auto()) @map("_id") @db.ObjectId
+    data     DateTime
+    username String
+    nickname String
+}
+
+// type WelcomeMessage {
+// }
+
+// model CustomWelcomeMessages {
+//     id              String           @id @default(auto()) @map("_id") @db.ObjectId
+//     memberId        String
+//     welcomeMessages WelcomeMessage[]
+// }

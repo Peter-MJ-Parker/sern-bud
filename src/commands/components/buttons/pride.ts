@@ -1,4 +1,4 @@
-import { CommandType, commandModule } from "@sern/handler";
+import { CommandType, commandModule } from '@sern/handler';
 
 export default commandModule({
   type: CommandType.Button,
@@ -7,8 +7,7 @@ export default commandModule({
     await ctx.deferUpdate();
     await member?.setNickname(`🌈 ${member.displayName}`).catch(() => {
       ctx.followUp({
-        content:
-          "Sorry, your highest role above mine! I cannot set your nickname!",
+        content: 'Sorry, your highest role above mine! I cannot set your nickname!',
         ephemeral: true
       });
     });

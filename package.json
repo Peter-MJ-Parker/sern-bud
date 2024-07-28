@@ -21,15 +21,13 @@
     "@napi-rs/canvas": "^0.1.53",
     "@sern/handler": "^4.0.1",
     "@spark.ts/logger": "^1.4.0",
-    "axios": "^1.7.2",
-    "chalk": "^5.3.0",
     "colorette": "^2.0.20",
     "discord.js": "^14.15.3",
-    "mongoose": "^8.5.1"
+    "prisma": "^5.17.0"
   },
   "devDependencies": {
-    "@types/node": "^20.14.12",
-    "nodemon": "^3.1.4",
+    "@prisma/client": "^5.17.0",
+    "@types/node": "^22.0.0",
     "typescript": "^5.5.4"
   },
   "repository": {
@@ -43,8 +41,8 @@
     "#BudBot": [
       "./dist/Structures/client/BudBot.js"
     ],
-    "#schemas/*": [
-      "./dist/Structures/schemas/*.js"
+    "#utils": [
+      "./dist/Structures/utils/index.js"
     ]
   }
 }
