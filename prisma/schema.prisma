@@ -12,4 +12,6 @@ model Money {
     username String
     nickname String?
     userID   String
+    bank     Int     @default(0)
+    wallet   Int     @default(0)
 }
