@@ -7,8 +7,8 @@ export default commandModule({
   execute: async (button, { deps, params }) => {
     const memberId = button.message.embeds[0].footer?.text!;
     const member = (await button.guild?.members.fetch())?.get(memberId)!;
-    const [c, prisma] = [deps['@sern/client'], deps['prisma']];
-    const guild = await prisma.guild.findFirst({
+    const [c, p] = [deps['@sern/client'], deps['prisma']];
+    const guild = await p.guild.findFirst({
       where: {
         gID: button.guildId!
       }
@@ -19,7 +19,7 @@ export default commandModule({
         content: 'I could not find any info for this guild in my database!'
       });
     }
-    const memberData = await prisma.member.findFirst({
+    const memberData = await p.member.findFirst({
       where: {
         memberId: member.id
       }
@@ -82,7 +82,7 @@ export default commandModule({
                 components: []
               });
               await newMsg.react('👋');
-              await prisma.member.delete({ where: { id: memberData.id } });
+              await p.member.delete({ where: { id: memberData.id } });
               return await member.ban({ reason });
             }
           });
@@ -136,7 +136,7 @@ export default commandModule({
                 components: []
               });
               await newMsg.react('👋');
-              await prisma.member.delete({ where: { id: memberData.id } });
+              await p.member.delete({ where: { id: memberData.id } });
               return await member.kick(reason);
             }
           });
@@ -162,14 +162,14 @@ export default commandModule({
         });
         await button.message.edit({ embeds: [newEmbed], components: [] });
         const welcome = (await button.guild?.channels.fetch(guild.welcomeC)) as TextChannel;
-        await prisma.member.delete({ where: { id: memberData.id } });
+        await p.member.delete({ where: { id: memberData.id } });
         const counts = {
           users: member.guild?.members.cache.filter(m => !m.user.bot).size!,
           bots: member.guild?.members.cache.filter(m => m.user.bot).size!,
           total: member.guild?.memberCount!
         };
         await c.utils.welcomeCreate(member, member.guild.name, counts.users, welcome).then(async () => {
-          await prisma.guild.update({
+          await p.guild.update({
             where: {
               gID: member.guild.id
             },
