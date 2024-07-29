@@ -24,4 +24,21 @@ export class TaskLogger {
       });
     });
   }
+
+  public isValidDate(dateString: string): boolean {
+    const dateRegex = /^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
+    if (!dateRegex.test(dateString)) {
+      return false;
+    }
+
+    const [month, day] = dateString.split('-').map(Number);
+
+    if (month === 2) {
+      return day <= 29;
+    } else if ([4, 6, 9, 11].includes(month)) {
+      return day <= 30;
+    } else {
+      return true;
+    }
+  }
 }
