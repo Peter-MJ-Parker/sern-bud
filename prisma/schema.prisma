@@ -26,11 +26,11 @@ model Member {
 model Guild {
     id                String @id @default(auto()) @map("_id") @db.ObjectId
     gID               String @unique
-    gName             String @unique
+    gName             String
     prefix            String @default("?")
     modC              String @default("")
     verifiedRole      String @default("")
-    reactionMessageID String @unique @default("")
+    reactionMessageID String @default("")
     welcomeC          String @default("")
     leaveC            String @default("")
     introC            String @default("")
@@ -43,10 +43,12 @@ model Guild {
 }
 
 model Birthday {
-    id       String   @id @default(auto()) @map("_id") @db.ObjectId
-    data     DateTime
+    id       String @id @default(auto()) @map("_id") @db.ObjectId
+    gID      String
+    date     String
     username String
     nickname String
+    userID   String @unique
 }
 
 // type WelcomeMessage {
