@@ -1,7 +1,7 @@
 import { buttonConfirmation, ownerOnly } from '#plugins';
 import { commandModule, CommandType } from '@sern/handler';
 import { publishConfig } from '@sern/publisher';
-import { ApplicationCommandOptionType, PermissionFlagsBits } from 'discord.js';
+import { ApplicationCommandOptionType, PermissionsBitField } from 'discord.js';
 
 export default commandModule({
   type: CommandType.Slash,
@@ -9,7 +9,7 @@ export default commandModule({
   plugins: [
     publishConfig({
       guildIds: ['678398938046267402'],
-      defaultMemberPermissions: [PermissionFlagsBits.Administrator]
+      defaultMemberPermissions: PermissionsBitField.Flags.Administrator
     }),
     ownerOnly(),
     buttonConfirmation()
