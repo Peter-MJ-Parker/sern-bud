@@ -20,7 +20,7 @@ export default commandModule({
     {
       type: ApplicationCommandOptionType.User,
       name: 'user-to-add',
-      description: 'Select the user to add manually.'
+      description: 'Select the user to add manually. (Only for Admins)'
     },
     {
       type: ApplicationCommandOptionType.String,
