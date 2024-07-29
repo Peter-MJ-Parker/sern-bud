@@ -24,11 +24,13 @@ export default scheduledTask({
             const birthdayNames = todaysBirthdays.map(b => `<@${b.id}>`);
             const message = getRandomMessage(birthdayNames);
 
-            birthdayChannel.send(message);
+            await birthdayChannel.send(message);
+            await i.channelSend('833761882212663317', `Task: \`birthday\` finished.`);
           }
         }
       }
     });
+    await i.channelSend('833761882212663317', `Task: \`birthday\` had 0 people to congradulate..`);
   }
 });
 
