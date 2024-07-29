@@ -29,6 +29,7 @@ model Guild {
     gName             String
     prefix            String @default("?")
     modC              String @default("")
+    birthdayChan      String @default("")
     verifiedRole      String @default("")
     reactionMessageID String @default("")
     welcomeC          String @default("")

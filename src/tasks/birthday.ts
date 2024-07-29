@@ -10,20 +10,18 @@ export default scheduledTask({
     const guilds = await p.guild.findMany({});
 
     const today = convertToSIO(new Date().toLocaleDateString()).split('2024-')[1];
-    console.log(today);
     const todaysBirthdays = birthdays.filter(b => b.date === today);
-    console.log('Birthdays today:', todaysBirthdays);
 
     c.guilds.cache.forEach(async guild => {
       const guildData = guilds.find(g => g.gID === guild.id);
       if (guildData) {
         const birthdayChannel = guild.channels.cache.find(
-          channel => channel.id === '833761882212663317' && channel.isTextBased()
+          channel => channel.id === guildData.birthdayChan && channel.isTextBased()
         );
 
         if (birthdayChannel && birthdayChannel.isTextBased()) {
           if (todaysBirthdays.length > 0) {
-            const birthdayNames = todaysBirthdays.map(b => b.nickname || b.username);
+            const birthdayNames = todaysBirthdays.map(b => `<@${b.id}>`);
             const message = getRandomMessage(birthdayNames);
 
             birthdayChannel.send(message);
