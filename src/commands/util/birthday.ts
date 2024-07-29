@@ -102,6 +102,7 @@ export default commandModule({
               date
             }
           });
+          content = `You have set ${userToAdd}'s birthday to: ${date}.`;
           break;
 
         case 'set':
@@ -114,6 +115,7 @@ export default commandModule({
               userID: ctx.userId
             }
           });
+          content = `I have set your birthday as ${date}.`;
           break;
       }
       await ctx.reply({ ephemeral: true, content });
