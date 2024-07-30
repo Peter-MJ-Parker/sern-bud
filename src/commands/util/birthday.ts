@@ -141,13 +141,3 @@ export default commandModule({
     await ctx.reply({ ephemeral: true, content });
   }
 });
-
-/**
-Pamcakes: 08-06
-Indescribable Marv: 08-08
-glitchy: 08-08
-Elvishkitten811: 08-11
-Le Gouteux: 08-13
-Smash2bs: 08-20
-lita: 08-24
- */
