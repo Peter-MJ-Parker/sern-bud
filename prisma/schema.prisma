@@ -32,6 +32,7 @@ model Guild {
     birthdayAnnounceChan String @default("")
     birthdayMessageId    String @default("")
     birthdayLogChannelId String @default("")
+    taskLogsChannelId    String @default("")
     verifiedRole         String @default("")
     reactionMessageID    String @default("")
     welcomeC             String @default("")
