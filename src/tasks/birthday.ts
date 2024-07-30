@@ -3,34 +3,46 @@ import { scheduledTask } from '@sern/handler';
 export default scheduledTask({
   timezone: 'America/Chicago',
   trigger: '0 8 * * *',
-  async execute(tasks, sdt) {
+  async execute(_, sdt) {
     console.log('starting bday task');
     const [c, i, p] = [sdt.deps['@sern/client'], sdt.deps['task-logger'], sdt.deps.prisma];
-    const birthdays = await p.birthday.findMany({});
+    const guildBirthdays = await p.birthday.findMany({
+      include: { birthdays: true }
+    });
     const guilds = await p.guild.findMany({});
 
     const today = convertToSIO(new Date().toLocaleDateString()).split('2024-')[1];
-    const todaysBirthdays = birthdays.filter(b => b.date === today);
 
-    c.guilds.cache.forEach(async guild => {
-      const guildData = guilds.find(g => g.gID === guild.id);
-      if (guildData) {
-        const birthdayChannel = guild.channels.cache.find(
-          channel => channel.id === guildData.birthdayChan && channel.isTextBased()
-        );
+    let totalCongratulations = 0;
 
-        if (birthdayChannel && birthdayChannel.isTextBased()) {
-          if (todaysBirthdays.length > 0) {
-            const birthdayNames = todaysBirthdays.map(b => `<@${b.id}>`);
-            const message = getRandomMessage(birthdayNames);
+    for (const guildBirthday of guildBirthdays) {
+      const guildData = guilds.find(g => g.gID === guildBirthday.gID);
+      if (!guildData) return;
 
-            await birthdayChannel.send(message);
-            await i.channelSend('833761882212663317', `Task: \`birthday\` finished.`);
-          }
-        }
+      const guild = c.guilds.cache.get(guildBirthday.gID);
+      if (!guild) return;
+
+      const birthdayChannel = guild.channels.cache.get(guildData.birthdayAnnounceChan);
+      const birthdayLogChannel = guild.channels.cache.get(guildData.birthdayLogChannelId);
+      if (!birthdayChannel || !birthdayChannel.isTextBased()) return;
+      if (!birthdayLogChannel || !birthdayLogChannel.isTextBased()) return;
+
+      const todaysBirthdays = guildBirthday.birthdays.filter(b => b.date === today);
+
+      if (todaysBirthdays.length > 0) {
+        const birthdayNames = todaysBirthdays.map(b => `<@${b.userID}>`);
+        const message = getRandomMessage(birthdayNames);
+
+        await birthdayChannel.send(message);
+        totalCongratulations += todaysBirthdays.length;
       }
-    });
-    await i.channelSend('833761882212663317', `Task: \`birthday\` had 0 people to congradulate..`);
+    }
+
+    if (totalCongratulations > 0) {
+      await i.channelSend('833761882212663317', `Task: \`birthday\` congratulated ${totalCongratulations} people.`);
+    } else {
+      await i.channelSend('833761882212663317', `Task: \`birthday\` had 0 people to congratulate.`);
+    }
   }
 });
 

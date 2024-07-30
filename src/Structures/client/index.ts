@@ -8,7 +8,7 @@ await makeDependencies(({ add, swap }) => {
   swap('@sern/logger', logger);
   add('prisma', new Prisma(logger));
   add('publisher', deps => new Publisher(deps['@sern/modules'], deps['@sern/emitter'], deps['@sern/logger']));
-  add('task-logger', deps => new TaskLogger(deps['@sern/client']));
+  add('task-logger', deps => new TaskLogger(deps['@sern/client'], deps.prisma));
 });
 
 Sern.init({ commands: 'dist/commands', events: 'dist/events', defaultPrefix: '?', tasks: 'dist/tasks' });

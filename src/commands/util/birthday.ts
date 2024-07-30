@@ -29,91 +29,125 @@ export default commandModule({
     }
   ],
   async execute(ctx, { deps }) {
-    const { birthday: birthdays } = deps.prisma;
+    const { birthday: birthdayModel } = deps.prisma;
     const i = deps['task-logger'];
-    const str = ctx.options.getString('action', true);
-    let date = ctx.options.getString('date');
-    if ((str !== 'delete' && !date) || (str !== 'delete' && date && !i.isValidDate(date))) {
+    const action = ctx.options.getString('action', true);
+    const dateOption = ctx.options.getString('date');
+
+    if (!dateOption || !i.isValidDate(dateOption)) {
       return await ctx.reply({
         ephemeral: true,
-        content: 'Please provide a date in format: `MM-DD`'
+        content: 'Please provide a valid date in format: `MM-DD`'
       });
-    } else {
-      date = ctx.options.getString('date', true);
-      let userToAdd = ctx.options.getUser('user-to-add');
-      if (!(ctx.member as GuildMember).permissions.has(PermissionFlagsBits.Administrator) && userToAdd) {
-        return await ctx.reply({
-          ephemeral: true,
-          content: "You are missing permission: `Administrator`. You cannot manage other users' birthdays."
-        });
-      }
-      let content = '';
-      let u = userToAdd ?? ctx.user;
-      let birthday = await birthdays.findFirst({
-        where: {
+    }
+
+    const date = dateOption;
+
+    const userToAdd = ctx.options.getUser('user-to-add');
+    if (!(ctx.member as GuildMember).permissions.has(PermissionFlagsBits.Administrator) && userToAdd) {
+      return await ctx.reply({
+        ephemeral: true,
+        content: "You are missing permission: `Administrator`. You cannot manage other users' birthdays."
+      });
+    }
+
+    const u = userToAdd ?? ctx.user;
+
+    let guildBirthday = await birthdayModel.findFirst({
+      where: {
+        gID: ctx.guildId!
+      },
+      include: { birthdays: true }
+    });
+
+    if (!guildBirthday) {
+      guildBirthday = await birthdayModel.create({
+        data: {
           gID: ctx.guildId!,
-          userID: u.id
+          birthdays: []
         }
       });
-      switch (str) {
-        case 'edit':
-          if (birthday) {
-            if (birthday.date === date) {
-              content = `That is the current date. Please use a different date.`;
-              break;
-            }
-            await birthdays.update({
-              where: {
-                id: birthday.id
-              },
-              data: {
-                nickname: u.displayName,
-                date
-              }
-            });
-            content = `I have updated ${u.id === ctx.user.id ? 'your' : `${userToAdd}'s`} birthday to \`${date}\`.`;
-            break;
-          }
+    }
+    const userBirthday = guildBirthday.birthdays.find(b => b.userID === u.id);
+
+    let content = '';
+
+    switch (action) {
+      case 'edit':
+        if (!userBirthday) {
           content = `I do not have ${
             u.id === ctx.user.id ? 'your' : `${userToAdd}'s`
           } birthday saved in my memory. Please set it first.`;
-          break;
-
-        case 'delete':
-          if (birthday) {
-            await birthdays.delete({
-              where: {
-                id: birthday.id
-              }
-            });
-            content = `I have deleted ${u.id === ctx.user.id ? 'your' : `${userToAdd}'s`} birthday from my memory.`;
-            break;
-          }
-          content = `I do not have ${
-            u.id === ctx.user.id ? 'your' : `${userToAdd}'s`
-          } birthday saved in my memory. Please set it first.`;
-          break;
-
-        case 'set':
-          if (birthday) {
-            content = `I already have ${
-              u.id === ctx.user.id ? 'your' : `${userToAdd}'s`
-            } birthday saved in my memory as \`${birthday.date}\`.`;
-            break;
-          }
-          await birthdays.create({
+        } else if (userBirthday.date === date) {
+          content = `That is the current date. Please use a different date.`;
+        } else {
+          await birthdayModel.update({
+            where: { id: guildBirthday.id },
             data: {
-              gID: ctx.guildId!,
-              nickname: u.displayName,
-              username: u.username,
-              date,
-              userID: u.id
+              birthdays: {
+                updateMany: {
+                  where: { userID: u.id },
+                  data: { nickname: u.displayName, date }
+                }
+              }
+            }
+          });
+          content = `I have updated ${u.id === ctx.user.id ? 'your' : `${userToAdd}'s`} birthday to \`${date}\`.`;
+        }
+        break;
+
+      case 'set':
+        if (userBirthday) {
+          content = `I already have ${
+            u.id === ctx.user.id ? 'your' : `${userToAdd}'s`
+          } birthday saved in my memory as \`${userBirthday.date}\`.`;
+        } else {
+          await birthdayModel.update({
+            where: { id: guildBirthday.id },
+            data: {
+              birthdays: {
+                push: {
+                  nickname: u.displayName,
+                  username: u.username,
+                  date,
+                  userID: u.id
+                }
+              }
             }
           });
           content = `I have set ${u.id === ctx.user.id ? 'your' : `${userToAdd}'s`} birthday as ${date}.`;
+        }
+        break;
+      case 'delete':
+        if (userBirthday) {
+          await birthdayModel.update({
+            where: { id: guildBirthday.id },
+            data: {
+              birthdays: {
+                deleteMany: { where: { userID: u.id } }
+              }
+            }
+          });
+          content = `I have deleted ${u.id === ctx.user.id ? 'your' : `${userToAdd}'s`} birthday from my memory.`;
+        } else {
+          content = `I do not have ${
+            u.id === ctx.user.id ? 'your' : `${userToAdd}'s`
+          } birthday saved in my memory. Have you set it already?`;
           break;
-      }
-      await ctx.reply({ ephemeral: true, content });
+        }
     }
+
+    await i.logBirthdays(ctx.guild!);
+    await ctx.reply({ ephemeral: true, content });
   }
 });
+
+/**
+Pamcakes: 08-06
+Indescribable Marv: 08-08
+glitchy: 08-08
+Elvishkitten811: 08-11
+Le Gouteux: 08-13
+Smash2bs: 08-20
+lita: 08-24
+ */
