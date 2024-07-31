@@ -2,7 +2,7 @@ import { scheduledTask } from '@sern/handler';
 
 export default scheduledTask({
   timezone: 'America/Chicago',
-  trigger: '0 8 * * *',
+  trigger: '0 7 * * *',
   async execute(_, sdt) {
     console.log('starting bday task');
     const [c, i, p] = [sdt.deps['@sern/client'], sdt.deps['task-logger'], sdt.deps.prisma];
