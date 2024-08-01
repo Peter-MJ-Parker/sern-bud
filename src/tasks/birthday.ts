@@ -4,34 +4,34 @@ export default scheduledTask({
   timezone: 'America/Chicago',
   trigger: '0 7 * * *',
   async execute(_, sdt) {
-    console.log('starting bday task');
     const [c, i, p] = [sdt.deps['@sern/client'], sdt.deps['task-logger'], sdt.deps.prisma];
     const guildBirthdays = await p.birthday.findMany({
       include: { birthdays: true }
     });
     const guilds = await p.guild.findMany({});
 
-    const today = convertToSIO(new Date().toLocaleDateString()).split('2024-')[1];
+    const today = convertToSIO(new Date().toLocaleDateString()).split('2024-')[1].replace('-', '/');
 
     let totalCongratulations = 0;
-
+    let _guild;
     for (const guildBirthday of guildBirthdays) {
       const guildData = guilds.find(g => g.gID === guildBirthday.gID);
       if (!guildData) return;
 
       const guild = c.guilds.cache.get(guildBirthday.gID);
       if (!guild) return;
+      _guild = guild;
 
       const birthdayChannel = guild.channels.cache.get(guildData.birthdayAnnounceChan);
-      const birthdayLogChannel = guild.channels.cache.get(guildData.birthdayLogChannelId);
       if (!birthdayChannel || !birthdayChannel.isTextBased()) return;
-      if (!birthdayLogChannel || !birthdayLogChannel.isTextBased()) return;
 
       const todaysBirthdays = guildBirthday.birthdays.filter(b => b.date === today);
 
       if (todaysBirthdays.length > 0) {
         const birthdayNames = todaysBirthdays.map(b => `<@${b.userID}>`);
-        const message = getRandomMessage(birthdayNames);
+        const message = `@&${guild.id}, we have ${
+          birthdayNames.length > 1 ? `birthdays` : `a birthday`
+        } today!\n${getRandomMessage(birthdayNames)}`;
 
         await birthdayChannel.send(message);
         totalCongratulations += todaysBirthdays.length;
@@ -39,9 +39,9 @@ export default scheduledTask({
     }
 
     if (totalCongratulations > 0) {
-      await i.channelSend('833761882212663317', `Task: \`birthday\` congratulated ${totalCongratulations} people.`);
+      await i.channelSend(_guild, `Task: \`birthday\` congratulated ${totalCongratulations} people.`);
     } else {
-      await i.channelSend('833761882212663317', `Task: \`birthday\` had 0 people to congratulate.`);
+      await i.channelSend(_guild, `Task: \`birthday\` had 0 people to congratulate.`);
     }
   }
 });
@@ -60,7 +60,7 @@ function getRandomMessage(names: string[]): string {
     '🌈 Happy Birthday to the one and only {names}! Your awesomeness deserves a celebration!'
   ];
   const randomIndex = Math.floor(Math.random() * birthdayMessages.length);
-  let message = birthdayMessages[randomIndex];
+  let message = `@everyone` + birthdayMessages[randomIndex];
 
   if (names.length === 1) {
     message = message.replace('{names}', names[0]);

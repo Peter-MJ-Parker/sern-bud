@@ -24,26 +24,27 @@ model Member {
 }
 
 model Guild {
-    id                   String @id @default(auto()) @map("_id") @db.ObjectId
-    gID                  String @unique
-    gName                String
-    prefix               String @default("?")
-    modC                 String @default("")
-    birthdayAnnounceChan String @default("")
-    birthdayMessageId    String @default("")
-    birthdayLogChannelId String @default("")
-    taskLogsChannelId    String @default("")
-    verifiedRole         String @default("")
-    reactionMessageID    String @default("")
-    welcomeC             String @default("")
-    leaveC               String @default("")
-    introC               String @default("")
-    userCount            Int    @default(0)
-    botCount             Int    @default(0)
-    allCount             Int    @default(0)
-    userCountChan        String @default("")
-    botCountChan         String @default("")
-    allCountChan         String @default("")
+    id                        String @id @default(auto()) @map("_id") @db.ObjectId
+    gID                       String @unique
+    gName                     String
+    prefix                    String @default("?")
+    modC                      String @default("")
+    birthdayAnnounceChan      String @default("")
+    birthdayLogMessageId      String @default("")
+    birthdayMonthLogMessageId String @default("")
+    birthdayLogChannelId      String @default("")
+    taskLogsChannelId         String @default("")
+    verifiedRole              String @default("")
+    reactionMessageID         String @default("")
+    welcomeC                  String @default("")
+    leaveC                    String @default("")
+    introC                    String @default("")
+    userCount                 Int    @default(0)
+    botCount                  Int    @default(0)
+    allCount                  Int    @default(0)
+    userCountChan             String @default("")
+    botCountChan              String @default("")
+    allCountChan              String @default("")
 }
 
 type BirthdayEntry {

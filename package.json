@@ -5,10 +5,10 @@
   "type": "module",
   "main": "dist/Structures/client/index.js",
   "scripts": {
-    "build": "tsc",
-    "tsc:watch": "tsc -w",
-    "start/dev": "tsc && nodemon ./dist/Structures/client/index.js",
-    "start/node": "tsc && node ./dist/Structures/client/index.js"
+    "build": "rm -rf ./dist && tsc",
+    "tsc:watch": "rm -rf ./dist && tsc -w",
+    "start/dev": "nodemon ./dist/Structures/client/index.js",
+    "start/node": "node ./dist/Structures/client/index.js"
   },
   "keywords": [
     "typescript",

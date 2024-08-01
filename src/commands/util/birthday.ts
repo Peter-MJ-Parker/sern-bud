@@ -25,19 +25,23 @@ export default commandModule({
     {
       type: ApplicationCommandOptionType.String,
       name: 'date',
-      description: 'Bday in (MM-DD) format.'
+      description: 'Bday in (MM/DD) format.'
     }
   ],
   async execute(ctx, { deps }) {
-    const { birthday: birthdayModel } = deps.prisma;
-    const i = deps['task-logger'];
+    const [i, [birthdayModel, guildModel]] = [deps['task-logger'], [deps.prisma.birthday, deps.prisma.guild]];
+    const guild = await guildModel.findFirst({
+      where: {
+        gID: ctx.guildId!
+      }
+    });
     const action = ctx.options.getString('action', true);
     const dateOption = ctx.options.getString('date');
 
-    if (!dateOption || !i.isValidDate(dateOption)) {
+    if (!dateOption || !i.bdays.isValidDate(dateOption)) {
       return await ctx.reply({
         ephemeral: true,
-        content: 'Please provide a valid date in format: `MM-DD`'
+        content: 'Please provide a valid date in format: `MM/DD`'
       });
     }
 
@@ -137,7 +141,8 @@ export default commandModule({
         }
     }
 
-    await i.logBirthdays(ctx.guild!);
     await ctx.reply({ ephemeral: true, content });
+    //integrate multiguild separation
+    await i.bdays.logBirthdays(ctx.guild!);
   }
 });
