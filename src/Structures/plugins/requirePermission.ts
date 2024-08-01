@@ -19,7 +19,7 @@
  * ```
  */
 
-import type { GuildMember, PermissionResolvable } from 'discord.js';
+import { PermissionsBitField, type GuildMember, type PermissionResolvable } from 'discord.js';
 import { CommandType, CommandControlPlugin, controller } from '@sern/handler';
 
 function payload(resp: string) {
@@ -45,7 +45,7 @@ export function requirePermission(target: 'user' | 'bot' | 'both', perm: Permiss
       //*********************************************************************************************************************//
       case 'bot':
         if (!bot.permissions.has(perm)) {
-          if (!response) response = `I cannot use this command, please give me \`${perm.join(', ')}\` permission(s).`;
+          if (!response) response = `I cannot use this command, please give me ${permsToString(perm)} permission(s).`;
           await ctx.reply(payload(response));
           return controller.stop();
         }
@@ -54,7 +54,7 @@ export function requirePermission(target: 'user' | 'bot' | 'both', perm: Permiss
       case 'user':
         if (!memm.permissions.has(perm)) {
           if (!response)
-            response = `You cannot use this command because you are missing \`${perm.join(', ')}\` permission(s).`;
+            response = `You cannot use this command because you are missing ${permsToString(perm)} permission(s).`;
           await ctx.reply(payload(response));
           return controller.stop();
         }
@@ -63,9 +63,9 @@ export function requirePermission(target: 'user' | 'bot' | 'both', perm: Permiss
       case 'both':
         if (!bot.permissions.has(perm) || !memm.permissions.has(perm)) {
           if (!response)
-            response = `Please ensure <@${bot.user.id}> and <@${memm.user.id}> both have \`${perm.join(
-              ', '
-            )}\` permission(s).`;
+            response = `Please ensure <@${bot.user.id}> and <@${memm.user.id}> both have ${permsToString(
+              perm
+            )} permission(s).`;
           await ctx.reply(payload(response));
           return controller.stop();
         }
@@ -73,3 +73,10 @@ export function requirePermission(target: 'user' | 'bot' | 'both', perm: Permiss
     }
   });
 }
+
+export const permsToString = (...perms: PermissionResolvable[]) => {
+  return new PermissionsBitField(perms)
+    .toArray()
+    .map(perm => `\`${perm}\``)
+    .join(', ');
+};
