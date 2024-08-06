@@ -28,7 +28,7 @@ export class BudBot extends Client {
       ],
       allowedMentions: {
         repliedUser: false,
-        users: []
+        parse: ['everyone', 'roles', 'users']
       }
     });
     this.utils = new Utils();

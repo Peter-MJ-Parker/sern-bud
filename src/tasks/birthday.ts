@@ -29,7 +29,7 @@ export default scheduledTask({
 
       if (todaysBirthdays.length > 0) {
         const birthdayNames = todaysBirthdays.map(b => `<@${b.userID}>`);
-        const message = `@&${guild.id}, we have ${
+        const message = `@everyone, We have ${
           birthdayNames.length > 1 ? `birthdays` : `a birthday`
         } today!\n${getRandomMessage(birthdayNames)}`;
 
@@ -60,7 +60,7 @@ function getRandomMessage(names: string[]): string {
     '🌈 Happy Birthday to the one and only {names}! Your awesomeness deserves a celebration!'
   ];
   const randomIndex = Math.floor(Math.random() * birthdayMessages.length);
-  let message = `@everyone` + birthdayMessages[randomIndex];
+  let message = birthdayMessages[randomIndex];
 
   if (names.length === 1) {
     message = message.replace('{names}', names[0]);
