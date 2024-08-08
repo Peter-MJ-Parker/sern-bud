@@ -2,7 +2,7 @@ import { scheduledTask } from '@sern/handler';
 
 export default scheduledTask({
   timezone: 'America/Chicago',
-  trigger: '0 7 * * *',
+  trigger: '38 09 * * *',
   async execute(_, sdt) {
     const [c, i, p] = [sdt.deps['@sern/client'], sdt.deps['task-logger'], sdt.deps.prisma];
     const guildBirthdays = await p.birthday.findMany({
@@ -29,7 +29,7 @@ export default scheduledTask({
 
       if (todaysBirthdays.length > 0) {
         const birthdayNames = todaysBirthdays.map(b => `<@${b.userID}>`);
-        const message = `@everyone, We have ${
+        const message = `**This is a test**\n@everyone, We have ${
           birthdayNames.length > 1 ? `birthdays` : `a birthday`
         } today!\n${getRandomMessage(birthdayNames)}`;
 
