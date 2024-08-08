@@ -25,11 +25,7 @@ export class BudBot extends Client {
         Partials.Reaction,
         Partials.ThreadMember,
         Partials.User
-      ],
-      allowedMentions: {
-        repliedUser: false,
-        parse: ['everyone', 'roles', 'users']
-      }
+      ]
     });
     this.utils = new Utils();
     this.login(env.DISCORD_TOKEN);
