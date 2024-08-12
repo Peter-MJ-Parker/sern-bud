@@ -9,8 +9,8 @@ export default scheduledTask({
     const guild = client.guilds.cache.get('678398938046267402') as Guild;
     const channel = guild.channels.cache.get('780435610611089418') as TextChannel;
     const role = (await guild.roles.fetch()).get('1272284689826054264') as Role;
-    await channel.send({
-      content: `${role}, Server will be restarted in 10 minutes! Please return to title screen soon to prevent loss of progress!`
-    });
+    // await channel.send({
+    //   content: `${role}, Server will be restarted in 10 minutes! Please return to title screen soon to prevent loss of progress!`
+    // });
   }
 });
