@@ -1,6 +1,5 @@
-import { buttonConfirmation, ownerOnly } from '#plugins';
+import { buttonConfirmation, ownerOnly, publishConfig } from '#plugins';
 import { commandModule, CommandType } from '@sern/handler';
-import { publishConfig } from '@sern/publisher';
 import { ApplicationCommandOptionType, PermissionsBitField } from 'discord.js';
 
 export default commandModule({
