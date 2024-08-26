@@ -24,10 +24,11 @@
     "@spark.ts/logger": "^1.4.0",
     "colorette": "^2.0.20",
     "discord.js": "^14.15.3",
-    "prisma": "^5.17.0"
+    "nanoid": "^5.0.7",
+    "prisma": "^5.18.0"
   },
   "devDependencies": {
-    "@prisma/client": "^5.17.0",
+    "@prisma/client": "^5.18.0",
     "@types/node": "^22.0.0",
     "typescript": "^5.5.4"
   },

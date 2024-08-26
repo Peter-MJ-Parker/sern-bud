@@ -33,6 +33,7 @@ model Guild {
     birthdayLogMessageId      String @default("")
     birthdayMonthLogMessageId String @default("")
     birthdayLogChannelId      String @default("")
+    gamingChannelId           String @default("")
     taskLogsChannelId         String @default("")
     verifiedRole              String @default("")
     reactionMessageID         String @default("")
@@ -60,11 +61,39 @@ model Birthday {
     birthdays BirthdayEntry[]
 }
 
-// type WelcomeMessage {
-// }
+model CustomWelcomeMessages {
+    id            String   @id @default(auto()) @map("_id") @db.ObjectId
+    memberId      String   @unique
+    random        Boolean
+    singleMessage String?
+    messagesArray String[]
+}
 
-// model CustomWelcomeMessages {
-//     id              String           @id @default(auto()) @map("_id") @db.ObjectId
-//     memberId        String
-//     welcomeMessages WelcomeMessage[]
-// }
+type Role {
+    id   String
+    name String
+}
+
+type Menu {
+    channelId String
+    uniqueId  String
+    title     String
+    roles     Role[]
+}
+
+model SelectRoles {
+    id      String @id @default(auto()) @map("_id") @db.ObjectId
+    guildId String @unique
+    menus   Menu[]
+}
+
+model Tempo {
+    id     String   @id @default(auto()) @map("_id") @db.ObjectId
+    userId String   @unique
+    roles  String[]
+}
+
+model UserRoles {
+    userId String   @id @map("_id")
+    roles  String[]
+}
