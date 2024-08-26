@@ -49,7 +49,8 @@ export default commandModule({
         > ${roles.split('\n').join('\n> ')}`,
         allowedMentions: {
           roles: []
-        }
+        },
+        ephemeral: true
       });
 
       let validChannelSelected = false;
@@ -67,7 +68,7 @@ export default commandModule({
 
         const m = collected.first();
         if (!m) {
-          await ctx.followUp('No response received. Please try again.');
+          await ctx.followUp({ content: 'No response received. Please try again.', ephemeral: true });
           attempts++;
           continue;
         }
@@ -89,10 +90,11 @@ export default commandModule({
             validChannelSelected = true;
             selectedChannel = channel as TextChannel;
           } else {
-            await m.reply('Invalid channel. Please mention a valid text channel.');
+            await m.react('👎');
+            await ctx.followUp({ content: `${channel} is an invalid channel. Please mention a valid text channel.`, ephemeral: true });
           }
         } else {
-          await m.reply('Please mention a valid channel using #channel-name.');
+          await ctx.followUp({ content: 'Please mention a valid channel using #channel-name.', ephemeral: true });
         }
 
         attempts++;
@@ -159,7 +161,7 @@ export default commandModule({
             });
           });
       } else {
-        await ctx.followUp('Maximum attempts reached or operation cancelled.');
+        await ctx.followUp({ content: 'Maximum attempts reached or operation cancelled.', ephemeral: true });
       }
     }
   }
