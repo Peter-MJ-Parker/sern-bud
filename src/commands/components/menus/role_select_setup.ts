@@ -12,6 +12,18 @@ export default commandModule({
     const db = deps.prisma;
     const selected = ctx.values;
 
+    await db.tempo.upsert({
+      where: {
+        userId: params
+      },
+      create: {
+        userId: params,
+        roles: selected
+      },
+      update: {
+        roles: selected
+      }
+    });
     await ctx.showModal(
       new ModalBuilder({
         custom_id: `role_modal/${params}`,
@@ -43,11 +55,5 @@ export default commandModule({
         ]
       })
     );
-    await db.tempo.create({
-      data: {
-        userId: params,
-        roles: selected
-      }
-    });
   }
 });

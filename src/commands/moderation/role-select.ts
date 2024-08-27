@@ -22,7 +22,7 @@ export default commandModule({
       type: ApplicationCommandOptionType.Subcommand,
       name: 'create',
       description: 'Create a selectable menu for different roles.'
-    },
+    }
     // {
     //   type: ApplicationCommandOptionType.Subcommand,
     //   name: 'manage',
@@ -153,6 +153,6 @@ export default commandModule({
     type ActionKey = keyof typeof actions;
 
     const result = await actions[sub as ActionKey]();
-    return ctx.interaction.deferred ? ctx.interaction.editReply(result) : ctx.reply(result);
+    return ctx.interaction.deferred ? await ctx.interaction.editReply(result) : await ctx.reply(result);
   }
 });
