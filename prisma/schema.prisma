@@ -28,6 +28,7 @@ model Guild {
     gID                       String @unique
     gName                     String
     prefix                    String @default("?")
+    rolesChannelId            String @default("")
     modC                      String @default("")
     birthdayAnnounceChan      String @default("")
     birthdayLogMessageId      String @default("")

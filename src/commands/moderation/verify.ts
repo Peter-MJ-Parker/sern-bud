@@ -70,7 +70,10 @@ export default commandModule({
                 await prisma.member.delete({ where: { memberId: memberId } });
                 const userCount = member.guild?.members.cache.filter(m => !m.user.bot).size!;
 
-                await welcomeCreate(member, member.guild.name, userCount, welcome).then(async () => {
+                await welcomeCreate(member, member.guild.name, userCount, welcome, {
+                  intro: guild.introC,
+                  roles: guild.rolesChannelId
+                }).then(async () => {
                   await channelUpdater(member.guild);
                 });
               }

@@ -5,7 +5,7 @@ export default commandModule({
   type: CommandType.Button,
   plugins: [],
   execute: async (button, { deps, params }) => {
-    const memberId = button.message.embeds[0].footer?.text!;
+    const memberId = button.message.embeds[0].footer!.text;
     const member = (await button.guild?.members.fetch())?.get(memberId)!;
     const [c, p] = [deps['@sern/client'], deps['prisma']];
     const guild = await p.guild.findFirst({
@@ -168,19 +168,24 @@ export default commandModule({
           bots: member.guild?.members.cache.filter(m => m.user.bot).size!,
           total: member.guild?.memberCount!
         };
-        await c.utils.welcomeCreate(member, member.guild.name, counts.users, welcome).then(async () => {
-          await p.guild.update({
-            where: {
-              gID: member.guild.id
-            },
-            data: {
-              allCount: counts.total,
-              userCount: counts.users
-            }
-          });
+        await c.utils
+          .welcomeCreate(member, member.guild.name, counts.users, welcome, {
+            intro: guild.introC,
+            roles: guild.rolesChannelId
+          })
+          .then(async () => {
+            await p.guild.update({
+              where: {
+                gID: member.guild.id
+              },
+              data: {
+                allCount: counts.total,
+                userCount: counts.users
+              }
+            });
 
-          await c.utils.channelUpdater(member.guild);
-        });
+            await c.utils.channelUpdater(member.guild);
+          });
         break;
     }
   }

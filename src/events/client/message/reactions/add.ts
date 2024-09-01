@@ -7,7 +7,6 @@ export default eventModule({
   execute: async (reaction: MessageReaction | PartialMessageReaction, user: User) => {
     if (!reaction.message.inGuild()) return;
     const [{ utils }, prisma] = Services('@sern/client', 'prisma');
-    const { welcomeCreate, channelUpdater } = utils;
 
     let message = reaction.message!;
     const counts = {
@@ -38,7 +37,9 @@ export default eventModule({
           .catch(err => console.log(err));
         console.log(`${user.username} reacted with ${reaction.emoji.name} and gained role: ${vRole.name}.`);
         await message.channel
-          .send(`${mmm}, You may now go to <#${Guild.introC}> and introduce yourself!`)
+          .send(
+            `${mmm}, You may now go to <#${Guild.introC}> to introduce yourself and get your roles in <#${Guild.rolesChannelId}>.`
+          )
           .then(async m => {
             setTimeout(() => {
               m.delete().catch(err => {
@@ -47,8 +48,12 @@ export default eventModule({
             }, 5 * 1000);
           });
         const WelcomeChannel = mmm.guild.channels.cache.get(Guild.welcomeC) as TextChannel;
-        await welcomeCreate(mmm, mmm.guild.name, counts.users, mmm.guild.systemChannel ?? WelcomeChannel).then(
-          async () => {
+        await utils
+          .welcomeCreate(mmm, mmm.guild.name, counts.users, mmm.guild.systemChannel ?? WelcomeChannel, {
+            intro: Guild.introC,
+            roles: Guild.rolesChannelId
+          })
+          .then(async () => {
             const Verification = await prisma.member.findFirst({
               where: { memberId: mmm.id }
             });
@@ -73,10 +78,9 @@ export default eventModule({
                 await prisma.member.delete({ where: { id: Verification.id } });
               })
               .finally(async () => {
-                await channelUpdater(mmm.guild);
+                await utils.channelUpdater(mmm.guild);
               });
-          }
-        );
+          });
       }
     }
   }
