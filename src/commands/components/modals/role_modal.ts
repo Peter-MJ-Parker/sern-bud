@@ -1,26 +1,18 @@
 import { commandModule, CommandType } from '@sern/handler';
 import { ActionRowBuilder, EmbedBuilder, StringSelectMenuBuilder, TextChannel } from 'discord.js';
-import { customRandom, random } from 'nanoid';
-
-const nanoid = customRandom('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 8, random);
 
 export default commandModule({
   type: CommandType.Modal,
   async execute(ctx, { deps, params }) {
-    if (ctx.user.id !== params) {
-      return await ctx.reply({
-        content: 'Go away ignoramus, this is not for you!',
-        ephemeral: true
-      });
-    }
-    const [title, description] = [
+    const [uniqueId, title, description] = [
+      ctx.fields.getTextInputValue('menu_id'),
       ctx.fields.getTextInputValue('menu_title'),
       ctx.fields.getTextInputValue('menu_description')
     ];
     const db = deps.prisma;
     let tempRoles = await db.tempo.findUnique({
       where: {
-        userId: params
+        userId: params!
       }
     });
 
@@ -91,7 +83,10 @@ export default commandModule({
             selectedChannel = channel as TextChannel;
           } else {
             await m.react('👎');
-            await ctx.followUp({ content: `${channel} is an invalid channel. Please mention a valid text channel.`, ephemeral: true });
+            await ctx.followUp({
+              content: `${channel} is an invalid channel. Please mention a valid text channel.`,
+              ephemeral: true
+            });
           }
         } else {
           await ctx.followUp({ content: 'Please mention a valid channel using #channel-name.', ephemeral: true });
@@ -122,44 +117,44 @@ export default commandModule({
           title,
           description
         });
-        await selectedChannel.send({
+        let msg = await selectedChannel.send({
           embeds: [userSelectEmbed],
           components: [userSelectMenu]
         });
-        await db.selectRoles
-          .upsert({
-            where: {
-              guildId: ctx.guildId!
-            },
-            create: {
-              guildId: ctx.guildId!,
-              menus: {
-                set: {
-                  channelId: selectedChannel.id,
-                  title,
-                  uniqueId: nanoid(),
-                  roles: selected
-                }
-              }
-            },
-            update: {
-              menus: {
-                push: {
-                  channelId: selectedChannel.id,
-                  title,
-                  uniqueId: nanoid(),
-                  roles: selected
-                }
+        await db.selectRoles.upsert({
+          where: {
+            guildId: msg.guildId
+          },
+          create: {
+            guildId: msg.guildId,
+            menus: {
+              set: {
+                messageId: msg.id,
+                channelId: msg.channelId,
+                title,
+                uniqueId,
+                roles: selected
               }
             }
-          })
-          .then(async () => {
-            await db.tempo.delete({
-              where: {
-                id: tempRoles.id
+          },
+          update: {
+            menus: {
+              push: {
+                messageId: msg.id,
+                channelId: msg.channelId,
+                title,
+                uniqueId,
+                roles: selected
               }
-            });
-          });
+            }
+          }
+        });
+
+        await db.tempo.delete({
+          where: {
+            id: tempRoles.id
+          }
+        });
       } else {
         await ctx.followUp({ content: 'Maximum attempts reached or operation cancelled.', ephemeral: true });
       }

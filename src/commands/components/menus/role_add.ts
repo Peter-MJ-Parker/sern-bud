@@ -15,7 +15,7 @@ export default commandModule({
     const userId = interaction.user.id;
 
     let userRoles = await prisma.userRoles.findUnique({
-      where: { userId: userId }
+      where: { userId }
     });
 
     const previouslySelectedRoles = userRoles?.roles || [];
@@ -76,9 +76,9 @@ export default commandModule({
             removedRoles.push(roleId);
           }
           await prisma.userRoles.upsert({
-            where: { userId: userId },
+            where: { userId },
             update: { roles: selectedRoles },
-            create: { userId: userId, roles: selectedRoles }
+            create: { userId, roles: selectedRoles }
           });
           await buttonInteraction.update({
             content: `Roles updated. Removed: ${removedRoles.map(id => `<@&${id}>`).join(', ')}`,
@@ -87,9 +87,9 @@ export default commandModule({
         } else {
           const keptRoles = [...selectedRoles, ...deselectedRoles];
           await prisma.userRoles.upsert({
-            where: { userId: userId },
+            where: { userId },
             update: { roles: keptRoles },
-            create: { userId: userId, roles: keptRoles }
+            create: { userId, roles: keptRoles }
           });
           await buttonInteraction.update({
             content: 'Deselected roles have been kept.',
@@ -99,9 +99,9 @@ export default commandModule({
       } catch (error) {
         const keptRoles = [...selectedRoles, ...deselectedRoles];
         await prisma.userRoles.upsert({
-          where: { userId: userId },
+          where: { userId },
           update: { roles: keptRoles },
-          create: { userId: userId, roles: keptRoles }
+          create: { userId, roles: keptRoles }
         });
         await interaction.followUp({
           content: 'You did not respond in time. Deselected roles have been kept.',
@@ -110,9 +110,9 @@ export default commandModule({
       }
     } else {
       await prisma.userRoles.upsert({
-        where: { userId: userId },
+        where: { userId },
         update: { roles: selectedRoles },
-        create: { userId: userId, roles: selectedRoles }
+        create: { userId, roles: selectedRoles }
       });
       await interaction.reply({
         content: content,

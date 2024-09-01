@@ -75,6 +75,7 @@ type Role {
 }
 
 type Menu {
+    messageId String
     channelId String
     uniqueId  String
     title     String

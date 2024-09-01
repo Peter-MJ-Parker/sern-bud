@@ -2,7 +2,7 @@ import { commandModule, CommandType } from '@sern/handler';
 import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from 'discord.js';
 
 export default commandModule({
-  type: CommandType.RoleSelect,
+  type: CommandType.StringSelect,
   async execute(ctx, { deps, params }) {
     if (ctx.user.id !== params)
       return await ctx.reply({
@@ -32,9 +32,21 @@ export default commandModule({
           new ActionRowBuilder<TextInputBuilder>({
             components: [
               new TextInputBuilder({
+                custom_id: 'menu_id',
+                label: 'Unique ID',
+                placeholder: 'Please provide a unique ID for the menu.',
+                required: true,
+                style: TextInputStyle.Short,
+                max_length: 20
+              })
+            ]
+          }),
+          new ActionRowBuilder<TextInputBuilder>({
+            components: [
+              new TextInputBuilder({
                 custom_id: 'menu_title',
                 label: 'Title',
-                placeholder: 'Please provide short title for the menu.',
+                placeholder: 'Please provide a short title for the menu.',
                 required: true,
                 style: TextInputStyle.Short,
                 max_length: 50
@@ -46,7 +58,7 @@ export default commandModule({
               new TextInputBuilder({
                 custom_id: 'menu_description',
                 label: 'Description',
-                placeholder: 'Please provide detailed description for the menu.',
+                placeholder: 'Please provide a detailed description for the menu.',
                 required: true,
                 style: TextInputStyle.Paragraph
               })
