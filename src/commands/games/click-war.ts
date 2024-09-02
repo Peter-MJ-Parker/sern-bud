@@ -113,7 +113,6 @@ export default commandModule({
 
             game.inProgress = true;
             game.round = 0;
-            console.log('Game started for guild:', guildId);
 
             const disabledRow = clickWar.createButtonRow(true);
             await i.update({ content: 'Chaotic Click War game is starting!', embeds: [], components: [disabledRow] });
@@ -137,7 +136,6 @@ export default commandModule({
             const disabledRow = clickWar.createButtonRow(true);
             await i.update({ content: 'The game has been cancelled.', embeds: [], components: [disabledRow] });
             collector.stop();
-            console.log('Game cancelled for guild:', guildId);
           } else if (i.customId === 'players') {
             const playersEmbed = new EmbedBuilder()
               .setTitle('Current Players')
@@ -152,7 +150,6 @@ export default commandModule({
             }
           }
         } catch (error) {
-          console.error(`Error processing interaction: ${error}`);
           if (!i.replied && !i.deferred) {
             await i.reply({ content: 'An error occurred while processing your request.', ephemeral: true });
           }
@@ -163,13 +160,10 @@ export default commandModule({
         if (!game.inProgress) {
           clickWar.resetGame();
           await channel.send('Lobby was canceled.');
-          console.log('Lobby collector ended for guild:', guildId);
         }
       });
     } catch (error) {
-      console.error(`Error executing command: ${error}`);
       await interaction.reply({
-        content: 'An error occurred while setting up the Chaotic Click War lobby.',
         ephemeral: true
       });
     }
