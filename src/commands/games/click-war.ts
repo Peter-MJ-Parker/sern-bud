@@ -1,4 +1,4 @@
-import { publishConfig } from '#plugins';
+import { permsToString, publishConfig } from '#plugins';
 import { CommandControlPlugin, commandModule, CommandType, controller } from '@sern/handler';
 import { Colors, ComponentType, EmbedBuilder, PermissionFlagsBits, TextChannel } from 'discord.js';
 
@@ -46,6 +46,15 @@ export default commandModule({
       game = clickWar.createNewGame();
       games.set(guildId!, game);
     }
+    const p = tbd.deps.prisma.userRoles;
+    const usersRoles = await p.findFirst({
+      where: {
+        userId: ctx.userId
+      },
+      select: {
+        roles: true
+      }
+    });
     try {
       await interaction.reply({ content: 'Setting up the Chaotic Click War lobby...', ephemeral: true });
 
@@ -63,6 +72,14 @@ export default commandModule({
       });
 
       collector.on('collect', async i => {
+        const perm = permsToString(PermissionFlagsBits.ManageMessages);
+
+        if (!usersRoles?.roles.some(r => r === '1280173420574802062')) {
+          return await i.reply({
+            ephemeral: true,
+            content: 'Please get the Click War Role before playing this game!'
+          });
+        }
         try {
           if (i.customId === 'join') {
             if (!game.players.has(i.user.id)) {
@@ -92,7 +109,7 @@ export default commandModule({
             if (!i.member.permissions.has(PermissionFlagsBits.ManageMessages)) {
               if (!i.replied && !i.deferred) {
                 await i.reply({
-                  content: 'You do not have permission to start the game. You need "MANAGE_MESSAGES" permissions.',
+                  content: `You do not have permission to start the game. You need "${perm}" permissions.`,
                   ephemeral: true
                 });
               }
@@ -126,16 +143,15 @@ export default commandModule({
             if (!i.member.permissions.has(PermissionFlagsBits.ManageMessages)) {
               if (!i.replied && !i.deferred) {
                 await i.reply({
-                  content: 'You do not have permission to cancel the game. You need "MANAGE_MESSAGES" permissions.',
+                  content: `You do not have permission to cancel the game. You need "${perm}" permissions.`,
                   ephemeral: true
                 });
               }
               return;
             }
             clickWar.resetGame();
-            const disabledRow = clickWar.createButtonRow(true);
-            await i.update({ content: 'The game has been cancelled.', embeds: [], components: [disabledRow] });
-            collector.stop();
+            await i.update({ content: 'The game has been cancelled.', embeds: [], components: [] });
+            collector.stop('cancelled');
           } else if (i.customId === 'players') {
             const playersEmbed = new EmbedBuilder()
               .setTitle('Current Players')
@@ -157,6 +173,7 @@ export default commandModule({
       });
 
       collector.on('end', async collected => {
+        if (collected[0] === 'cancelled') return;
         if (!game.inProgress) {
           clickWar.resetGame();
           await channel.send('Lobby was canceled.');

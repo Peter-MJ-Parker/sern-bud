@@ -454,7 +454,7 @@ export class ClickWar {
         `Click "Join" to join the game. Click "Start" to begin the game when ready.
 
 **How to Play Chaotic Click War:**
-1. Click a button and pray you don't get eliminated. Simple. Now CLICK JOIN and get ready to play.
+Click a button and pray you don't get eliminated. Simple. Now CLICK JOIN and get ready to play.
 If you get eliminated, stick around for round 20 for a chance to JUMP BACK IN! You have to JUMP BACK IN FIRST and also PLAY ROUND 21. You HAVE TO DO BOTH to successfully jump back in! Good luck! 
 `
       )
@@ -486,7 +486,7 @@ If you get eliminated, stick around for round 20 for a chance to JUMP BACK IN! Y
     };
   }
 
-  public async sendPlayerMentions(channel: TextChannel, mentions) {
+  public async sendPlayerMentions(channel: TextChannel, mentions: string[]) {
     const maxChunkSize = 2000;
     let baseMessage = 'Starting. ';
     let currentMessage = baseMessage;
@@ -529,7 +529,7 @@ If you get eliminated, stick around for round 20 for a chance to JUMP BACK IN! Y
       const embed = new EmbedBuilder()
         .setTitle('Sudden Death Round')
         .setDescription('First player to click the button wins!')
-        .setColor('Random');
+        .setColor('Red');
 
       const message = await channel.send({ embeds: [embed], components: [row] });
 
