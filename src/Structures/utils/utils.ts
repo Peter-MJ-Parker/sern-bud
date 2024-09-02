@@ -126,9 +126,9 @@ export class Utils {
     const bots = guild?.channels.cache.get(db.botCountChan!) as BaseGuildVoiceChannel;
 
     const amounts = {
-      total: Number(total.name.split(': ')[1]),
-      users: Number(users.name.split(': ')[1]),
-      bots: Number(bots.name.split(': ')[1])
+      allCount: Number(total.name.split(': ')[1]),
+      userCount: Number(users.name.split(': ')[1]),
+      botCount: Number(bots.name.split(': ')[1])
     };
 
     try {
