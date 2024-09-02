@@ -65,21 +65,21 @@ export default commandModule({
 
       const message = await clickWar.sendLobbyMessage(channel, game);
 
-      const collector = message.createMessageComponentCollector({
+      const collector = message.createMessageComponentCollector<ComponentType.Button>({
         filter: i => ['join', 'leave', 'start', 'cancel', 'players'].includes(i.customId),
-        time: 86400000,
-        componentType: ComponentType.Button
+        time: 86400000
       });
 
-      collector.on('collect', async i => {
-        const perm = permsToString(PermissionFlagsBits.ManageMessages);
-
+      collector.on('ignore', async int => {
         if (!usersRoles?.roles.some(r => r === '1280173420574802062')) {
-          return await i.reply({
+          return await int.reply({
             ephemeral: true,
             content: 'Please get the Click War Role before playing this game!'
           });
         }
+      });
+      collector.on('collect', async i => {
+        const perm = permsToString(PermissionFlagsBits.ManageMessages);
         try {
           if (i.customId === 'join') {
             if (!game.players.has(i.user.id)) {

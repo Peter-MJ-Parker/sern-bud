@@ -127,11 +127,10 @@ export class ClickWar {
               components: [specialRow]
             });
 
-            const specialCollector = specialMessage.createMessageComponentCollector({
+            const specialCollector = specialMessage.createMessageComponentCollector<ComponentType.Button>({
               filter: i => i.customId === 'special_button' && game.players.has(i.user.id),
               time: 5000,
-              max: 1,
-              componentType: ComponentType.Button
+              max: 1
             });
 
             specialCollector.on('collect', async i => {
@@ -184,10 +183,9 @@ export class ClickWar {
 
         const message = await channel.send({ embeds: [embed], components: [row] });
 
-        const collector = message.createMessageComponentCollector({
+        const collector = message.createMessageComponentCollector<ComponentType.Button>({
           filter: i => i.customId.startsWith('button_') && game.players.has(i.user.id),
-          time: game.timeWindow,
-          componentType: ComponentType.Button
+          time: game.timeWindow
         });
 
         let playersToEliminate: string[] = [];
@@ -401,7 +399,7 @@ export class ClickWar {
       components: [specialRow]
     });
 
-    const specialCollector = specialMessage.createMessageComponentCollector({
+    const specialCollector = specialMessage.createMessageComponentCollector<ComponentType.Button>({
       filter: i => game.playerLives.has(i.user.id) || game.lastEliminated.includes(i.user.id),
       time: 10000
     });
@@ -423,7 +421,7 @@ export class ClickWar {
           game.playerLives.set(i.user.id, 5);
           this.displayLives.set(i.user.id, 5);
           await i.followUp({
-            content: `Welcome back! You’ve jumped back in with 5 lives. Quick, get ready for round 21!`,
+            content: `Welcome back! You've jumped back in with 5 lives. Quick, get ready for round 21!`,
             ephemeral: true
           });
         } else {
@@ -533,7 +531,7 @@ If you get eliminated, stick around for round 20 for a chance to JUMP BACK IN! Y
 
       const message = await channel.send({ embeds: [embed], components: [row] });
 
-      const collector = message.createMessageComponentCollector({
+      const collector = message.createMessageComponentCollector<ComponentType.Button>({
         filter: i => i.customId === 'sudden_death' && playersToEliminate.includes(i.user.id),
         max: 1,
         time: 10000
