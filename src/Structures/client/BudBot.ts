@@ -1,8 +1,9 @@
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
-import { env, Utils } from '#utils';
+import { ClickWar, env, Utils } from '#utils';
 
 export class BudBot extends Client {
   utils: Utils;
+  clickWar: ClickWar;
   constructor() {
     super({
       intents: [
@@ -32,6 +33,7 @@ export class BudBot extends Client {
       }
     });
     this.utils = new Utils();
+    this.clickWar = new ClickWar();
     this.login(env.DISCORD_TOKEN);
   }
 }
