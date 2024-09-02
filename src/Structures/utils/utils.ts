@@ -116,9 +116,9 @@ export class Utils {
     }
 
     const counts = {
-      total: Number(guild.memberCount),
-      users: Number(guild.members.cache.filter(m => !m.user.bot).size),
-      bots: Number(guild.members.cache.filter(m => m.user.bot).size)
+      allCount: Number(guild.memberCount),
+      userCount: Number(guild.members.cache.filter(m => !m.user.bot).size),
+      botCount: Number(guild.members.cache.filter(m => m.user.bot).size)
     };
 
     const total = guild?.channels.cache.get(db.allCountChan!) as BaseGuildVoiceChannel;
@@ -144,13 +144,13 @@ export class Utils {
             })
             .then(async () => {
               switch (key) {
-                case 'total':
+                case 'allCount':
                   await total.setName(`Total Members: ${countsValue.toLocaleString()}`);
                   break;
-                case 'users':
+                case 'userCount':
                   await users.setName(`Users: ${countsValue.toLocaleString()}`);
                   break;
-                case 'bots':
+                case 'botCount':
                   await bots.setName(`Bots: ${countsValue.toLocaleString()}`);
                   break;
               }
