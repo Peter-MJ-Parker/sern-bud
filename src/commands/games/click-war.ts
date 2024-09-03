@@ -1,6 +1,6 @@
 import { permsToString, publishConfig } from '#plugins';
 import { CommandControlPlugin, commandModule, CommandType, controller } from '@sern/handler';
-import { Colors, ComponentType, EmbedBuilder, PermissionFlagsBits, TextChannel } from 'discord.js';
+import { Colors, ComponentType, EmbedBuilder, GuildMember, PermissionFlagsBits, TextChannel } from 'discord.js';
 
 function noPlay() {
   return CommandControlPlugin<CommandType.Slash>(async (ctx, { deps }) => {
@@ -40,6 +40,7 @@ export default commandModule({
     const { clickWar } = tbd.deps['@sern/client'];
     const { interaction, guildId: guildId } = ctx;
     const channel = interaction.channel as TextChannel;
+    const member = interaction.member as GuildMember;
     const games = clickWar.games;
     let game = games.get(guildId!);
     if (!game) {
@@ -66,18 +67,20 @@ export default commandModule({
       const message = await clickWar.sendLobbyMessage(channel, game);
 
       const collector = message.createMessageComponentCollector<ComponentType.Button>({
-        filter: i => ['join', 'leave', 'start', 'cancel', 'players'].includes(i.customId),
+        filter: i =>
+          ['join', 'leave', 'start', 'cancel', 'players'].includes(i.customId) &&
+          (usersRoles!.roles.some(r => r === '1280173420574802062') ||
+            member.roles.cache.some(r => r.id === '1280173420574802062')),
         time: 86400000
       });
 
       collector.on('ignore', async int => {
-        if (!usersRoles?.roles.some(r => r === '1280173420574802062')) {
-          return await int.reply({
-            ephemeral: true,
-            content: 'Please get the Click War Role before playing this game!'
-          });
-        }
+        return await int.reply({
+          ephemeral: true,
+          content: 'Please get the Click War Role before playing this game!'
+        });
       });
+
       collector.on('collect', async i => {
         const perm = permsToString(PermissionFlagsBits.ManageMessages);
         try {

@@ -35,6 +35,7 @@ export class ClickWar {
   private colors = [ButtonStyle.Primary, ButtonStyle.Secondary, ButtonStyle.Success, ButtonStyle.Danger];
   public displayLives = new Map();
 
+  private notInGameMessage = 'Wait until the next game, you ignorant fool!';
   private funnyMessages = {
     gain: [
       "You so lucky. You've gained {lives} lives! You now have {currentLives} lives.",
@@ -133,6 +134,14 @@ export class ClickWar {
               max: 1
             });
 
+            specialCollector.on('ignore', async i => {
+              if (!game.players.has(i.user.id))
+                return await i.reply({
+                  content: this.notInGameMessage,
+                  ephemeral: true
+                });
+            });
+
             specialCollector.on('collect', async i => {
               if (i.customId === 'special_button') {
                 if (i.component.label!.includes('LOSE')) {
@@ -191,6 +200,13 @@ export class ClickWar {
         let playersToEliminate: string[] = [];
         let playersWhoClicked: Set<string> = new Set();
 
+        collector.on('ignore', async i => {
+          if (!game.players.has(i.user.id))
+            return await i.reply({
+              content: this.notInGameMessage,
+              ephemeral: true
+            });
+        });
         collector.on('collect', async i => {
           try {
             if (game.clickedInRound.has(i.user.id)) {
@@ -336,7 +352,7 @@ export class ClickWar {
             if (playersToEliminate.length === 0) {
               await channel.send('No one was eliminated this round.');
             } else {
-              const eliminatedMentions = playersToEliminate.map(player => `<@${player}>`).join(' ');
+              const eliminatedMentions = playersToEliminate.map(player => `<@${player}>`).join(', ');
               await channel.send(`${eliminatedMentions} gtfo. Everyone else, get ready to keep playing!`);
             }
 
@@ -402,6 +418,14 @@ export class ClickWar {
     const specialCollector = specialMessage.createMessageComponentCollector<ComponentType.Button>({
       filter: i => game.playerLives.has(i.user.id) || game.lastEliminated.includes(i.user.id),
       time: 10000
+    });
+
+    specialCollector.on('ignore', async i => {
+      if (!game.players.has(i.user.id) || !game.lastEliminated.includes(i.user.id))
+        return await i.reply({
+          content: this.notInGameMessage,
+          ephemeral: true
+        });
     });
 
     specialCollector.on('collect', async i => {
@@ -535,6 +559,14 @@ If you get eliminated, stick around for round 20 for a chance to JUMP BACK IN! Y
         filter: i => i.customId === 'sudden_death' && playersToEliminate.includes(i.user.id),
         max: 1,
         time: 10000
+      });
+
+      collector.on('ignore', async i => {
+        if (!playersToEliminate.includes(i.user.id))
+          return await i.reply({
+            content: 'You, my ignorant friend, are not in the elimination list!',
+            ephemeral: true
+          });
       });
 
       collector.on('collect', async i => {
