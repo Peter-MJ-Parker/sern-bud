@@ -176,8 +176,7 @@ export default commandModule({
       });
 
       collector.on('end', async collected => {
-        if (collected[0] === 'cancelled') return;
-        if (!game.inProgress) {
+        if (!game.inProgress && collected[0] !== 'cancelled') {
           clickWar.resetGame();
           await channel.send('Lobby was canceled.');
         }
