@@ -53,9 +53,11 @@ export default commandModule({
       const plural = deselectedRoles.length === 1 ? 'this role' : 'these roles';
       const abb = deselectedRoles.length === 1 ? 'it' : 'them';
 
-      content += `You have ${plural}: ${deselectedRoles
+      const des = `You have ${plural}: ${deselectedRoles
         .map(id => `<@&${id}>`)
         .join(', ')}. Do you want to remove ${abb}?`;
+
+      content.includes('Added') ? (content += `\n${des}`) : (content = des);
 
       await interaction.reply({
         content,
@@ -68,8 +70,7 @@ export default commandModule({
 
       try {
         const buttonInteraction = await channel.awaitMessageComponent({
-          filter: i =>
-            i.user.id === interaction.user.id && (i.customId === 'remove_roles' || i.customId === 'keep_roles'),
+          filter: i => ['remove_roles', 'keep_roles'].includes(i.customId),
           time: 60000
         });
 
