@@ -58,9 +58,12 @@ export default commandModule({
         .join(', ')}. Do you want to remove ${abb}?`;
 
       await interaction.reply({
-        content: content,
+        content,
         components: [row],
-        ephemeral: true
+        ephemeral: true,
+        allowedMentions: {
+          roles: []
+        }
       });
 
       try {

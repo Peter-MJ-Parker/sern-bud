@@ -56,6 +56,18 @@ export default commandModule({
           new ActionRowBuilder<TextInputBuilder>({
             components: [
               new TextInputBuilder({
+                custom_id: 'menu_placeholder',
+                label: 'Placeholder',
+                placeholder: 'Please provide a placeholder for the menu.',
+                required: true,
+                style: TextInputStyle.Short,
+                max_length: 50
+              })
+            ]
+          }),
+          new ActionRowBuilder<TextInputBuilder>({
+            components: [
+              new TextInputBuilder({
                 custom_id: 'menu_description',
                 label: 'Description',
                 placeholder: 'Please provide a detailed description for the menu.',

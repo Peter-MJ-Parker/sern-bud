@@ -62,7 +62,6 @@ export default commandModule({
     const iRow = ActionRowBuilder.from(msg.components[0]) as ActionRowBuilder;
     const iMenu = StringSelectMenuBuilder.from(iRow.components[0] as StringSelectMenuBuilder);
     iMenu.setOptions(options);
-    iMenu.setMinValues(1);
     iMenu.setMaxValues(options.length);
 
     const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(iMenu);
