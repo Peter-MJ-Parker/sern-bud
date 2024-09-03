@@ -1,5 +1,5 @@
 import { commandModule, CommandType } from '@sern/handler';
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildMember } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildMember, TextChannel } from 'discord.js';
 
 const userSelectedRoles = new Map<string, string[]>();
 
@@ -9,7 +9,7 @@ export default commandModule({
     const prisma = tbd.deps.prisma;
     const selectedRoles = interaction.values;
     const member = interaction.member as GuildMember;
-
+    const channel = interaction.channel as TextChannel;
     if (!member || !('roles' in member)) return;
 
     const userId = interaction.user.id;
@@ -39,9 +39,9 @@ export default commandModule({
 
     userSelectedRoles.set(userId, selectedRoles);
 
-    let content = 'Your roles have been updated!\n';
+    let content = 'No changes have been made to your roles.';
     if (addedRoles.length > 0) {
-      content += `Added roles: ${addedRoles.map(id => `<@&${id}>`).join(', ')}\n`;
+      content = `Added roles: ${addedRoles.map(id => `<@&${id}>`).join(', ')}\n`;
     }
 
     if (deselectedRoles.length > 0) {
@@ -64,7 +64,7 @@ export default commandModule({
       });
 
       try {
-        const buttonInteraction = await interaction.channel!.awaitMessageComponent({
+        const buttonInteraction = await channel.awaitMessageComponent({
           filter: i =>
             i.user.id === interaction.user.id && (i.customId === 'remove_roles' || i.customId === 'keep_roles'),
           time: 60000
@@ -115,7 +115,7 @@ export default commandModule({
         create: { userId, roles: selectedRoles }
       });
       await interaction.reply({
-        content: content,
+        content,
         ephemeral: true
       });
     }
