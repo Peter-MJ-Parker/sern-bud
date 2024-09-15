@@ -12,21 +12,27 @@ export default commandModule({
       required: true
     }
   ],
-  async execute(ctx, tbd) {
+  async execute(ctx) {
     const { interaction } = ctx;
     let emoji = interaction.options.getString('emoji', true).trim();
-
     function getEmojiUrl(emoji: string): string | null {
       const customEmojiMatch = emoji.match(/<a?:\w+:(\d+)>/);
       if (customEmojiMatch) {
         const id = customEmojiMatch[1];
         const guildEmoji = interaction.guild?.emojis.cache.get(id);
-        const clientEmoji = tbd.deps['@sern/client'].emojis.cache.get(id);
+        const clientEmoji = interaction.client.emojis.cache.get(id);
+
         const emojiUrl = guildEmoji?.url || clientEmoji?.url;
         if (emojiUrl) {
           return emojiUrl.replace(/\.\w+$/, '.png?size=256');
         }
-        return null;
+      }
+
+      if (/^\d+$/.test(emoji)) {
+        const clientEmoji = interaction.client.emojis.cache.get(emoji);
+        if (clientEmoji?.url) {
+          return clientEmoji.url.replace(/\.\w+$/, '.png?size=256');
+        }
       }
 
       if (emoji.length === 1 || emoji.length === 2) {
@@ -34,6 +40,10 @@ export default commandModule({
         if (codePoint) {
           return `https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/256/${codePoint.padStart(4, '0')}.png`;
         }
+      }
+
+      if (emoji.startsWith('http://') || emoji.startsWith('https://')) {
+        return emoji;
       }
 
       return null;
@@ -48,7 +58,7 @@ export default commandModule({
       });
     }
 
-    if (emojiUrl.startsWith('https://cdn.discordapp.com/emojis/')) {
+    if (emojiUrl.includes('cdn.discordapp.com/emojis/')) {
       const id = emojiUrl.split('/').pop()?.split('.')[0];
       const type = await fetch(`https://cdn.discordapp.com/emojis/${id}.gif?size=256`)
         .then(response => (response.ok ? 'gif' : 'png'))
