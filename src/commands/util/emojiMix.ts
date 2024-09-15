@@ -13,6 +13,7 @@ export default commandModule({
       type: ApplicationCommandOptionType.String,
       name: 'emojis',
       description: 'The emojis to combine',
+      max_length: 2,
       required: true
     }
   ],
@@ -26,6 +27,13 @@ export default commandModule({
     const { options } = ctx;
     const emote = options.getString('emojis', true);
     const input = extractEmoji(emote);
+
+    if (input.length > 2) {
+      return await ctx.reply({
+        content: `You can only mix TWO emojis!`,
+        ephemeral: true
+      });
+    }
 
     const output = await su
       .get('https://tenor.googleapis.com/v2/featured')
