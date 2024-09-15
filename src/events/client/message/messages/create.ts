@@ -1,20 +1,23 @@
-import { EventType, eventModule, Services } from '@sern/handler';
-import { ChannelType, Events, Message } from 'discord.js';
+import { Services, discordEvent } from '@sern/handler';
+import { ChannelType, Events, TextChannel } from 'discord.js';
 
-export default eventModule({
-  type: EventType.Discord,
+export default discordEvent({
   name: Events.MessageCreate,
-  execute: async (message: Message) => {
+  execute: async message => {
     const [{ utils }, prisma] = Services('@sern/client', 'prisma');
     const msg = message.content.toLowerCase();
     const prefixRegex = new RegExp(`^(<@!?${message.client.user.id}>)\\s*`);
     if (prefixRegex.test(message.content)) {
       await message.delete();
       const stamp = `${message.client.readyTimestamp! / 1000}`;
-      const sent = await message.channel.send(`${message.member}, I have been online since <t:${parseInt(stamp)}:R>`);
-      setTimeout(async () => {
-        await sent.delete();
-      }, 10000);
+      if (message.channel.isTextBased()) {
+        const sent = await (message.channel as TextChannel).send(
+          `${message.member}, I have been online since <t:${parseInt(stamp)}:R>`
+        );
+        setTimeout(async () => {
+          await sent.delete();
+        }, 10000);
+      }
     }
 
     if (
