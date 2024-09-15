@@ -1,5 +1,5 @@
 import { EventType, Services, eventModule } from '@sern/handler';
-import { Events } from 'discord.js';
+import { Events, TextChannel } from 'discord.js';
 
 export default eventModule({
   type: EventType.Discord,
@@ -9,5 +9,6 @@ export default eventModule({
     logger.success('Logged into Discord as ' + user?.username);
     const guild = guilds.cache.get('678398938046267402')!;
     await utils.channelUpdater(guild);
+    await (guild.channels.cache.get('833761882212663317') as TextChannel).send('<:batty:1284983393175470100>');
   }
 });
