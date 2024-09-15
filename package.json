@@ -1,6 +1,6 @@
 {
   "name": "budbot",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Discord bot for the Joint Streaming Community.",
   "type": "module",
   "main": "dist/Structures/client/index.js",
