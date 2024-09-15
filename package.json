@@ -25,11 +25,13 @@
     "colorette": "^2.0.20",
     "discord.js": "^14.16.2",
     "nanoid": "^5.0.7",
-    "prisma": "^5.18.0"
+    "prisma": "^5.18.0",
+    "superagent": "^10.1.0"
   },
   "devDependencies": {
     "@prisma/client": "^5.18.0",
     "@types/node": "^22.0.0",
+    "@types/superagent": "^8.1.9",
     "typescript": "^5.5.4"
   },
   "repository": {
