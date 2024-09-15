@@ -1,6 +1,7 @@
+import { publishConfig } from '#plugins';
 import { env, extractEmoji } from '#utils';
 import { commandModule, CommandType } from '@sern/handler';
-import { ApplicationCommandOptionType, TextChannel } from 'discord.js';
+import { ApplicationCommandOptionType } from 'discord.js';
 import su from 'superagent';
 
 export default commandModule({
@@ -15,8 +16,13 @@ export default commandModule({
       required: true
     }
   ],
+  plugins: [
+    publishConfig({
+      contexts: [0, 1, 2],
+      integrationTypes: ['User', 'Guild']
+    })
+  ],
   async execute(ctx) {
-    await ctx.interaction.deferReply({ ephemeral: true });
     const { options } = ctx;
     const emote = options.getString('emojis', true);
     const input = extractEmoji(emote);
@@ -34,16 +40,13 @@ export default commandModule({
       .catch(() => {});
 
     if (!output || !output.body.results[0] || emote.startsWith('<') || emote.endsWith('>')) {
-      return await ctx.interaction.editReply({
-        content: `One or both emojis are not supported in this command. (ie: Custom server emojis and default gestures.)`
+      return await ctx.reply({
+        content: `One or both emojis are not supported by this command. (ie: Custom server emojis and default gestures.)`,
+        ephemeral: true
       });
     }
 
-    await ctx.interaction.editReply({
-      content: 'Custom emoji created...'
-    });
-
-    return await (ctx.channel as TextChannel).send({
+    return await ctx.reply({
       content: output.body.results[0].url
     });
   }
