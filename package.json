@@ -23,7 +23,7 @@
     "@sern/publisher": "^1.1.2",
     "@spark.ts/logger": "^1.4.0",
     "colorette": "^2.0.20",
-    "discord.js": "^14.16.1",
+    "discord.js": "^14.16.2",
     "nanoid": "^5.0.7",
     "prisma": "^5.18.0"
   },
