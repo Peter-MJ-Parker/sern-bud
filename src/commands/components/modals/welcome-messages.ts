@@ -9,19 +9,23 @@ export default commandModule({
   async execute(ctx, { deps, params }) {
     if (!params) return;
     const db = deps.prisma;
+    const memberId = ctx.user.id;
+    const random = params === 'random';
 
-    const baseData: Pick<CustomWelcomeMessagesCreateInput, 'memberId' | 'random'> = {
-      memberId: ctx.user.id,
-      random: params === 'random'
-    };
-
-    let data: CustomWelcomeMessagesCreateInput & CustomWelcomeMessagesUpdateInput;
+    let updateData: CustomWelcomeMessagesUpdateInput;
+    let createData: CustomWelcomeMessagesCreateInput;
     let responseMessage: string;
 
     if (params === 'one') {
       const m = ctx.fields.getTextInputValue('custom_message');
-      data = {
-        ...baseData,
+      updateData = {
+        random,
+        singleMessage: m,
+        messagesArray: []
+      };
+      createData = {
+        memberId,
+        random,
         singleMessage: m,
         messagesArray: []
       };
@@ -36,8 +40,14 @@ export default commandModule({
         ctx.fields.getTextInputValue('custom_message_five')
       ];
       const messagesArray = [m1, m2, m3, m4, m5].filter(m => m !== '');
-      data = {
-        ...baseData,
+      updateData = {
+        random,
+        messagesArray,
+        singleMessage: null
+      };
+      createData = {
+        memberId,
+        random,
         messagesArray,
         singleMessage: null
       };
@@ -45,9 +55,9 @@ export default commandModule({
     }
 
     await db.customWelcomeMessages.upsert({
-      where: { memberId: ctx.user.id },
-      update: data,
-      create: data
+      where: { memberId },
+      update: updateData,
+      create: createData
     });
 
     return await ctx.reply({
