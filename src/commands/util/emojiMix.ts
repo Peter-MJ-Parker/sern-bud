@@ -13,7 +13,6 @@ export default commandModule({
       type: ApplicationCommandOptionType.String,
       name: 'emojis',
       description: 'The emojis to combine',
-      max_length: 2,
       required: true
     }
   ],
