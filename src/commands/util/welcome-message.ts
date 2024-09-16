@@ -21,11 +21,20 @@ export default commandModule({
     }
   ],
   async execute(ctx, tbd) {
+    const db = tbd.deps.prisma.customWelcomeMessages;
+    let _current = await db.findUnique({
+      where: {
+        memberId: ctx.user.id
+      }
+    });
+
     const utils = tbd.deps['@sern/client'].utils,
       m = utils.createModal;
     const _random = ctx.options.getString('randomized-messages', true);
-    const placeholder = (bool: boolean) =>
-      `Welcome to Joint Streaming, {member}! ${bool ? ' (optional)' : '\n({member} will be mentioning the new user)'}`;
+    const placeholder = (bool = true) =>
+      `Welcome to Joint Streaming, {member}! ${
+        bool === false ? '\n({member} will be mentioning the new user)' : ' (optional)'
+      }`;
     const inputs: TextInputBuilder[] =
       _random === 'one'
         ? [
@@ -35,6 +44,7 @@ export default commandModule({
               placeholder: placeholder(false),
               style: TextInputStyle.Paragraph,
               max_length: 100,
+              value: _current?.singleMessage || '',
               required: true
             })
           ]
@@ -45,44 +55,51 @@ export default commandModule({
               placeholder: placeholder(false),
               style: TextInputStyle.Paragraph,
               max_length: 100,
+              value: _current?.messagesArray[0] ?? '',
               required: true
             }),
             new TextInputBuilder({
               custom_id: 'custom_message_two',
               label: 'Your second custom message.',
-              placeholder: placeholder(true),
+              placeholder: placeholder(),
               style: TextInputStyle.Short,
               max_length: 100,
+              value: _current?.messagesArray[1] ?? '',
               required: true
             }),
             new TextInputBuilder({
               custom_id: 'custom_message_three',
               label: 'Your third custom message.',
-              placeholder: placeholder(true),
+              placeholder: placeholder(),
               style: TextInputStyle.Short,
               max_length: 100,
+              value: _current?.messagesArray[2] ?? '',
               required: false
             }),
             new TextInputBuilder({
               custom_id: 'custom_message_four',
               label: 'Your fourth custom message.',
-              placeholder: placeholder(true),
+              placeholder: placeholder(),
               style: TextInputStyle.Short,
               max_length: 100,
+              value: _current?.messagesArray[3] ?? '',
               required: false
             }),
             new TextInputBuilder({
               custom_id: 'custom_message_five',
               label: 'Your fifth custom message.',
-              placeholder: placeholder(true),
+              placeholder: placeholder(),
               style: TextInputStyle.Short,
               max_length: 100,
+              value: _current?.messagesArray[4] ?? '',
               required: false
             })
           ];
     const modal = m(
       `welcome-messages/${_random}`,
-      _random === 'one' ? 'Message to greet new users.' : 'Messages to randomly greet new users.',
+      _random === 'one'
+        ? `Message to greet new users. ${_current?.singleMessage ? 'Any changes?' : ''}`
+        : `Messages to randomly greet new users${_current?.messagesArray?.length! > 0 ? 'changes?' : '.'}`,
       inputs
     );
 
