@@ -25,7 +25,7 @@ export default commandModule({
       m = utils.createModal;
     const _random = ctx.options.getString('randomized-messages', true);
     const placeholder = (bool: boolean) =>
-      `Welcome to Joint Streaming, {member}! ${bool ? '(optional)' : '\n({member} will be mentioning the new user)'}`;
+      `Welcome to Joint Streaming, {member}! ${bool ? ' (optional)' : '\n({member} will be mentioning the new user)'}`;
     const inputs: TextInputBuilder[] =
       _random === 'one'
         ? [
