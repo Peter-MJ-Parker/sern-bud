@@ -29,8 +29,10 @@ export default commandModule({
       color: Colors.Aqua
     });
     await channelToSendTo.sendTyping();
-    await channelToSendTo.send({
-      embeds: [embed]
-    });
+    await channelToSendTo
+      .send({
+        embeds: [embed]
+      })
+      .then(async m => await m.react('<:flame_party:1285284996264886352>'));
   }
 });
