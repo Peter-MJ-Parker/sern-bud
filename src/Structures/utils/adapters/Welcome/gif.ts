@@ -66,10 +66,10 @@ export async function sticker(interaction: ButtonInteraction) {
   let option = (arr: string[]) => Math.floor(Math.random() * arr.length);
   let hello = '';
   if (memberQuestion) {
-    if (memberQuestion.random) {
+    if (memberQuestion.random && memberQuestion.messagesArray.length >= 2) {
       hello = memberQuestion.messagesArray[option(memberQuestion.messagesArray)];
     } else {
-      hello = memberQuestion.singleMessage!;
+      hello = memberQuestion.singleMessage ?? `:wave: Welcome to ${interaction.guild?.name}, {member}`;
     }
   }
   let img = gifs[Math.floor(Math.random() * gifs.length)];
