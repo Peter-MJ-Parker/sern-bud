@@ -8,7 +8,7 @@ export default discordEvent({
     const [{ utils }, prisma] = Services('@sern/client', 'prisma');
 
     let message = reaction.message!;
-    if (reaction.emoji.name === 'tada') {
+    if (reaction.emoji.name === '🎉') {
       await message.react('<:flame_party:1285284996264886352>');
     }
     const counts = {
