@@ -184,8 +184,8 @@ export class Utils {
       });
     });
     return new ModalBuilder({
-      custom_id: custom_id.toString(),
-      title: this.capitalise(title).toString(),
+      custom_id,
+      title,
       components: rows
     });
   }

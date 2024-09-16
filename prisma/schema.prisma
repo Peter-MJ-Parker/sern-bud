@@ -99,3 +99,7 @@ model UserRoles {
     userId String   @id @map("_id")
     roles  String[]
 }
+
+model LeaderBoards {
+    id String @id @map("_id")
+}

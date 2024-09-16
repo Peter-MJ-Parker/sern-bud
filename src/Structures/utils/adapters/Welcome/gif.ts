@@ -1,4 +1,5 @@
 import { ButtonInteraction, GuildMember, TextChannel } from 'discord.js';
+import { Service } from '@sern/handler';
 
 export const gifs = [
   'https://i.imgur.com/f5DOAFz.gif',
@@ -36,7 +37,6 @@ export const gifs = [
   'https://i.imgur.com/ppC3R0B.gif',
   'https://i.imgur.com/wsyK0Yy.gif',
   'https://i.imgur.com/cr6KL8b.gif',
-  'https://astra.ifunny.lol/8dT4ODrgQs.gif',
   'https://i.imgur.com/IWL4w0g.gif',
   'https://i.imgur.com/ONtZNzW.gif',
   'https://i.imgur.com/4GcJFpT.gif',
@@ -45,26 +45,45 @@ export const gifs = [
   'https://i.imgur.com/q1eBTCD.gif'
 ];
 export const welcomeEmojis = ['💕', '👌', '🙌', '<a:SHROOOOM:1179060921260322886>'];
-export async function sticker(interaction: ButtonInteraction) {
-  let img = gifs[Math.floor(Math.random() * gifs.length) + 1];
-  let memberId = `${interaction.message.attachments.first()?.name?.split('-')[1].slice(0, -4)}`;
 
-  let member = interaction.guild?.members.cache.get(memberId);
-  const contents = [
-    `:wave: Welcome to ${interaction.guild?.name}, ${member}`,
-    `Hi ${member}! Welcome to our community! Please make yourself at home!`,
-    `👋 Hello ${member}`,
-    `I'm glad you're here, ${member}! Please pass the joint!`
-  ];
-  let option = Math.floor(Math.random() * contents.length);
-  let hello = contents[option];
+export async function sticker(interaction: ButtonInteraction) {
+  const db = Service('prisma').customWelcomeMessages;
+  const buttonMember = interaction.member as GuildMember;
+
+  const memberId = `${interaction.message.attachments.first()?.name?.split('-')[1].slice(0, -4)}`;
   if (interaction.user.id === memberId) {
     return await interaction.reply({
       content: "You don't need to wave to yourself...",
       ephemeral: true
     });
   }
-  await webhookCreate(interaction.channel as TextChannel, interaction.member as GuildMember, hello, img);
+  await interaction.guild?.members.fetch();
+  let memberQuestion = await db.findUnique({
+    where: {
+      memberId: buttonMember.id
+    }
+  });
+  let option = (arr: string[]) => Math.floor(Math.random() * arr.length);
+  let hello = '';
+  if (memberQuestion) {
+    if (memberQuestion.random) {
+      hello = memberQuestion.messagesArray[option(memberQuestion.messagesArray)];
+    } else {
+      hello = memberQuestion.singleMessage!;
+    }
+  }
+  let img = gifs[Math.floor(Math.random() * gifs.length)];
+
+  const contents = [
+    `:wave: Welcome to ${interaction.guild?.name}, {member}`,
+    `Hi {member}! Welcome to our community! Please make yourself at home!`,
+    `👋 Hello {member}`,
+    `I'm glad you're here, {member}! Please pass the joint!`
+  ];
+  hello = contents[option(contents)];
+  hello.replace('{member}', `<@${memberId}>`);
+
+  await webhookCreate(interaction.channel as TextChannel, buttonMember, hello, img);
 }
 
 export async function webhookCreate(channel: TextChannel, user: GuildMember, msg: string, file?: string) {
