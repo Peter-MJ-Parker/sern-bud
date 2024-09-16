@@ -8,6 +8,9 @@ export default discordEvent({
     const [{ utils }, prisma] = Services('@sern/client', 'prisma');
 
     let message = reaction.message!;
+    if (reaction.emoji.name === 'tada') {
+      await message.react('<:flame_party:1285284996264886352>');
+    }
     const counts = {
       users: message.guild.members.cache.filter(m => !m.user.bot).size!,
       bots: message.guild.members.cache.filter(m => m.user.bot).size!,
