@@ -18,21 +18,21 @@
   ],
   "license": "UNLICENSED",
   "dependencies": {
-    "@napi-rs/canvas": "^0.1.53",
-    "@sern/handler": "^4.0.1",
+    "@napi-rs/canvas": "^0.1.56",
+    "@sern/handler": "^4.0.2",
     "@sern/publisher": "^1.1.2",
     "@spark.ts/logger": "^1.4.0",
     "colorette": "^2.0.20",
     "discord.js": "^14.16.2",
     "nanoid": "^5.0.7",
-    "prisma": "^5.18.0",
+    "prisma": "^5.19.1",
     "superagent": "^10.1.0"
   },
   "devDependencies": {
-    "@prisma/client": "^5.18.0",
-    "@types/node": "^22.0.0",
+    "@prisma/client": "^5.19.1",
+    "@types/node": "^22.5.5",
     "@types/superagent": "^8.1.9",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.2"
   },
   "repository": {
     "type": "git",

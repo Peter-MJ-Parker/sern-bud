@@ -20,7 +20,6 @@
     "paths": {
       "#plugins": ["src/Structures/plugins/index"],
       "#BudBot": ["src/Structures/client/BudBot"],
-      "#schemas/*": ["src/Structures/schemas/*"],
       "#utils": ["src/Structures/utils/index"]
     }
   },
