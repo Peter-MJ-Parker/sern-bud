@@ -23,6 +23,6 @@
       "#utils": ["src/Structures/utils/index"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.ttf"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
