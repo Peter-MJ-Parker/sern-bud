@@ -10,7 +10,8 @@ export default scheduledTask({
     });
     const guilds = await p.guild.findMany({});
 
-    const today = convertToSIO(new Date().toLocaleDateString()).split('2024-')[1].replace('-', '/');
+    const currentYear = new Date().getFullYear();
+    const today = convertToSIO(new Date().toLocaleDateString()).split(`${currentYear}-`)[1].replace('-', '/');
 
     let totalCongratulations = 0;
     let _guild;
@@ -30,9 +31,8 @@ export default scheduledTask({
 
       if (todaysBirthdays.length > 0) {
         const birthdayNames = todaysBirthdays.map(b => `<@${b.userID}>`);
-        const message = `@everyone, We have ${
-          birthdayNames.length > 1 ? `birthdays` : `a birthday`
-        } today!\n${getRandomMessage(birthdayNames)}`;
+        const message = `@everyone, We have ${birthdayNames.length > 1 ? `birthdays` : `a birthday`
+          } today!\n${getRandomMessage(birthdayNames)}`;
 
         await birthdayChannel.send(message);
         totalCongratulations += todaysBirthdays.length;
