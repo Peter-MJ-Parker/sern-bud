@@ -62,7 +62,7 @@ export default commandModule({
       await interaction.reply({
         content,
         components: [row],
-        ephemeral: true,
+        flags: 64,
         allowedMentions: {
           roles: []
         }
@@ -109,7 +109,7 @@ export default commandModule({
         });
         await interaction.followUp({
           content: 'You did not respond in time. Deselected roles have been kept.',
-          ephemeral: true
+          flags: 64,
         });
       }
     } else {
@@ -120,7 +120,7 @@ export default commandModule({
       });
       await interaction.reply({
         content,
-        ephemeral: true
+        flags: 64,
       });
     }
   }

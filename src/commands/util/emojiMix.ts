@@ -60,7 +60,7 @@ export default commandModule({
     if (error1 || error2) {
       return await ctx.reply({
         content: `${error1 ? error1 + '\n' : ''}${error2 ? error2 : ''}`,
-        ephemeral: true
+        flags: 64
       });
     }
 
@@ -69,7 +69,7 @@ export default commandModule({
     if (input.length !== 2) {
       return await ctx.reply({
         content: `You must provide exactly TWO valid emojis.`,
-        ephemeral: true
+        flags: 64
       });
     }
     async function checkEmojiValidity(emoji: string): Promise<boolean> {
@@ -95,7 +95,7 @@ export default commandModule({
         content: `Unable to mix these emojis. Invalid emoji: ${
           !isValid1 && !isValid2 ? `both '${emote1}' and '${emote2}'` : !isValid1 ? `'${emote1}'` : `'${emote2}'`
         }. Please try different emojis.`,
-        ephemeral: true
+        flags: 64
       });
     }
 
@@ -111,7 +111,7 @@ export default commandModule({
     if (!output || output.body.results.length === 0) {
       return await ctx.reply({
         content: `These emojis cannot be mixed together. Try a different combination.`,
-        ephemeral: true
+        flags: 64
       });
     }
 
@@ -120,7 +120,7 @@ export default commandModule({
 
     if (!imageResponse.body) {
       return await ctx.reply({
-        ephemeral: true,
+        flags: 64,
         content: `An error occurred while fetching the mixed emoji. Please try again later.`
       });
     }
@@ -132,7 +132,7 @@ export default commandModule({
     });
 
     await ctx.interaction.followUp({
-      ephemeral: true,
+      flags: 64,
       content:
         'Emojis made with this command can be uploaded to the bot application to be used (only by the bot) later. Would you like to submit this emoji?',
       components: [

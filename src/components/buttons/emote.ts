@@ -19,7 +19,7 @@ export default commandModule({
 
       if (!message) {
         return await button.reply({
-          ephemeral: true,
+          flags: 64,
           content: `Message with id: \`${messageId}\` is invalid.`
         });
       }
@@ -43,7 +43,7 @@ export default commandModule({
     }
 
     return await button.reply({
-      ephemeral: true,
+      flags: 64,
       content: `Channel with id: \`${channelId}\` is invalid.`
     });
   }

@@ -8,7 +8,7 @@ export default commandModule({
     await member?.setNickname(`🌈 ${member.displayName}`).catch(() => {
       ctx.followUp({
         content: 'Sorry, your highest role above mine! I cannot set your nickname!',
-        ephemeral: true
+        flags: 64,
       });
     });
   }

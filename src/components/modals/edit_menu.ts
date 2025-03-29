@@ -79,12 +79,12 @@ export default commandModule({
 
     try {
       const result = await actions[act1 as keyof typeof actions]();
-      await ctx.reply({ content: result, ephemeral: true });
+      await ctx.reply({ content: result, flags: 64, });
     } catch (error) {
       console.error('Error updating menu:', error);
       await ctx.reply({
         content: 'An error occurred while updating the menu.' + (error as Error).message,
-        ephemeral: true
+        flags: 64,
       });
     }
   }

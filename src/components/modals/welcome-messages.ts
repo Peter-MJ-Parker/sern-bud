@@ -68,7 +68,7 @@ export default commandModule({
 
     return await ctx.reply({
       content: responseMessage,
-      ephemeral: true
+      flags: 64,
     });
   }
 });

@@ -20,7 +20,7 @@ export default commandModule({
     const roles = selectedRoles.map(roleId => interaction.guild!.roles.cache.get(roleId));
 
     if (!roles || roles.some(role => !role)) {
-      return interaction.reply({ content: 'One or more roles not found.', ephemeral: true });
+      return interaction.reply({ content: 'One or more roles not found.', flags: 64, });
     }
 
     let options = _menu.roles.map(role => ({
@@ -94,6 +94,6 @@ export default commandModule({
         }
       }
     });
-    return interaction.reply({ content: 'Select menu updated successfully!', ephemeral: true });
+    return interaction.reply({ content: 'Select menu updated successfully!', flags: 64, });
   }
 });

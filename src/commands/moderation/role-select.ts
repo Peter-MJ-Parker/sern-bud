@@ -143,7 +143,7 @@ export default commandModule({
         );
 
         if (!availableRoles || availableRoles.size === 0) {
-          return { content: 'No suitable roles found to add to the menu.', ephemeral: true };
+          return { content: 'No suitable roles found to add to the menu.', flags: 64, };
         }
 
         const roleSelectMenu = new StringSelectMenuBuilder({
@@ -174,7 +174,7 @@ export default commandModule({
       manage: async () => {
         let reply: InteractionReplyOptions = {};
         const menu = ctx.options.getString('menu', true);
-        if (menu === 'unavailable') return (reply = { content: 'Unable to manage any role selects!', ephemeral: true });
+        if (menu === 'unavailable') return (reply = { content: 'Unable to manage any role selects!', flags: 64, });
         const db = tbd.deps.prisma.selectRoles;
         const guildMenus = await db.findFirst({
           where: {
@@ -183,13 +183,13 @@ export default commandModule({
         });
         const action = ctx.options.getString('action', true) as Action;
         const _menu = guildMenus!.menus.find(f => f.uniqueId === menu);
-        if (!_menu) return (reply = { content: 'Menu not found.', ephemeral: true });
+        if (!_menu) return (reply = { content: 'Menu not found.', flags: 64, });
         const channel = (await ctx.guild!.channels.fetch(_menu.channelId)) as TextChannel;
         const msg = (await channel.messages.fetch({ cache: false })).get(_menu.messageId);
-        if (!msg) return (reply = { content: 'Message not found.', ephemeral: true });
+        if (!msg) return (reply = { content: 'Message not found.', flags: 64, });
 
         if (action === 'invalid') {
-          return (reply = { content: 'An unknown error has occured!', ephemeral: true });
+          return (reply = { content: 'An unknown error has occured!', flags: 64, });
         } else {
           const [act1, act2] = action.split('-');
           if (act2 == 'role') {
@@ -232,10 +232,10 @@ export default commandModule({
               const menuRow = getMenu(act1 as 'add' | 'edit' | 'remove', availableRoles);
               return (reply = {
                 components: [menuRow],
-                ephemeral: true
+                flags: 64,
               });
             } catch (error) {
-              return (reply = { content: (error as Error).message, ephemeral: true });
+              return (reply = { content: (error as Error).message, flags: 64, });
             }
           } else if (action === 'menu-delete') {
             return (reply = {
@@ -252,7 +252,7 @@ export default commandModule({
                   )
                 })
               ],
-              ephemeral: true
+              flags: 64,
             });
           } else {
             let currentValue: string = '';

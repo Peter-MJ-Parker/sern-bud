@@ -19,7 +19,7 @@ export default commandModule({
     if (!tempRoles) {
       return await ctx.reply({
         content: 'Did you already choose roles to add?',
-        ephemeral: true
+        flags: 64,
       });
     } else {
       const selected = tempRoles.roles.map(roleId => {
@@ -42,7 +42,7 @@ export default commandModule({
         allowedMentions: {
           roles: []
         },
-        ephemeral: true
+        flags: 64,
       });
 
       let validChannelSelected = false;
@@ -60,7 +60,7 @@ export default commandModule({
 
         const m = collected.first();
         if (!m) {
-          await ctx.followUp({ content: 'No response received. Please try again.', ephemeral: true });
+          await ctx.followUp({ content: 'No response received. Please try again.', flags: 64, });
           attempts++;
           continue;
         }
@@ -85,11 +85,11 @@ export default commandModule({
             await m.react('👎');
             await ctx.followUp({
               content: `${channel} is an invalid channel. Please mention a valid text channel.`,
-              ephemeral: true
+              flags: 64,
             });
           }
         } else {
-          await ctx.followUp({ content: 'Please mention a valid channel using #channel-name.', ephemeral: true });
+          await ctx.followUp({ content: 'Please mention a valid channel using #channel-name.', flags: 64, });
         }
 
         attempts++;
@@ -156,7 +156,7 @@ export default commandModule({
           }
         });
       } else {
-        await ctx.followUp({ content: 'Maximum attempts reached or operation cancelled.', ephemeral: true });
+        await ctx.followUp({ content: 'Maximum attempts reached or operation cancelled.', flags: 64, });
       }
     }
   }

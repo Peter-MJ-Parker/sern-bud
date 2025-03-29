@@ -7,7 +7,7 @@ export default commandModule({
     if (ctx.user.id !== params)
       return await ctx.reply({
         content: 'Go away ignoramus, this is not for you!',
-        ephemeral: true
+        flags: 64,
       });
     const db = deps.prisma;
     const selected = ctx.values;

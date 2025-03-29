@@ -67,7 +67,7 @@ export default commandModule({
     if (!emojiUrl) {
       return ctx.reply({
         content: "I cannot enlarge this emoji. It might not be a valid emoji or one I don't have access to.",
-        ephemeral: true
+        flags: 64,
       });
     }
 

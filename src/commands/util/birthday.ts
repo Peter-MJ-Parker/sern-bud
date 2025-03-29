@@ -40,7 +40,7 @@ export default commandModule({
 
     if (!dateOption || !i.bdays.isValidDate(dateOption)) {
       return await ctx.reply({
-        ephemeral: true,
+        flags: 64,
         content: 'Please provide a valid date in format: `MM/DD`'
       });
     }
@@ -50,7 +50,7 @@ export default commandModule({
     const userToAdd = ctx.options.getUser('user-to-add');
     if (!(ctx.member as GuildMember).permissions.has(PermissionFlagsBits.Administrator) && userToAdd) {
       return await ctx.reply({
-        ephemeral: true,
+        flags: 64,
         content: "You are missing permission: `Administrator`. You cannot manage other users' birthdays."
       });
     }
@@ -141,7 +141,7 @@ export default commandModule({
         }
     }
 
-    await ctx.reply({ ephemeral: true, content });
+    await ctx.reply({ flags: 64, content });
     //integrate multiguild separation
     await i.bdays.logBirthdays(ctx.guild!);
   }

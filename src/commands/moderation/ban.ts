@@ -42,7 +42,7 @@ export default commandModule({
     });
     if (!guild) {
       return await ctx.reply({
-        ephemeral: true,
+        flags: 64,
         content: 'I could not find any info for this guild in my database!'
       });
     }
@@ -53,7 +53,7 @@ export default commandModule({
     });
     if (!memberData) {
       return await ctx.reply({
-        ephemeral: true,
+        flags: 64,
         content: 'I could not find data for the specified member in my database!'
       });
     }
