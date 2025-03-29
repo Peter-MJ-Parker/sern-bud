@@ -34,6 +34,7 @@ model Guild {
     birthdayLogMessageId      String @default("")
     birthdayMonthLogMessageId String @default("")
     birthdayLogChannelId      String @default("")
+    countingChan              String @default("")
     gamingChannelId           String @default("")
     taskLogsChannelId         String @default("")
     verifiedRole              String @default("")
@@ -107,4 +108,21 @@ model UserRoles {
 
 model LeaderBoards {
     id String @id @map("_id")
+}
+
+type User {
+    id      String
+    numbers String[]
+}
+
+model Counter {
+    id      String @id @map("_id")
+    channel String
+    users   User[]
+    count   Int
+}
+
+model CountingRoles {
+    id   String @id @map("_id")
+    name String @unique
 }
