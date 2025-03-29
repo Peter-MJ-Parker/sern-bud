@@ -1,0 +1,6 @@
+version: 2
+updates:
+  - package-ecosystem: "pnpm" # Or other package managers like "bundler", "pip", etc.
+    directory: "/" # Location of your dependency file(s)
+    schedule:
+      interval: "daily" # Can also be "weekly" or "monthly"
