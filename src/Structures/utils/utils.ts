@@ -76,7 +76,7 @@ export class Utils {
    * ```
    * @returns Capitalized string
    */
-  public capitalise(text: string, boolean?: boolean) {
+  public capitalise(text: string, boolean: boolean = false) {
     if (boolean === true) {
       return text
         .split(' ')
@@ -217,10 +217,38 @@ export class Utils {
     }, timeout);
   }
 
+  public async uploadApplicationEmoji(client = Service('@sern/client'), name: string, imageUrl: string) {
+    const response = await fetch(imageUrl);
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const form = new FormData();
+    form.append('image', new Blob([buffer]), 'emoji.png');
+    form.append('name', name);
+
+    try {
+      const res = await fetch(`https://discord.com/api/v10/applications/${client.application!.id}/emojis`, {
+        method: 'POST',
+        body: form,
+        headers: {
+          Authorization: `Bot ${client.token}`
+        }
+      });
+
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+      const emoji = await res.json();
+      console.log(`Created new application emoji with name ${emoji.name}`);
+      return emoji;
+    } catch (error) {
+      console.error('Error creating application emoji:', error);
+    }
+  }
+
   /** Economy Functions */
   public async getUser() {}
 
-  /** *MORE FUNCTIONS TO COME */
+  /** MORE FUNCTIONS TO COME */
 }
 
 export enum IntegrationContextType {
