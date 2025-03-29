@@ -1,7 +1,13 @@
 import { publishConfig } from '#plugins';
 import { env, extractEmoji } from '#utils';
 import { commandModule, CommandType } from '@sern/handler';
-import { ApplicationCommandOptionType } from 'discord.js';
+import {
+  ActionRowBuilder,
+  ApplicationCommandOptionType,
+  AttachmentBuilder,
+  ButtonBuilder,
+  ButtonStyle
+} from 'discord.js';
 import su from 'superagent';
 
 export default commandModule({
@@ -28,7 +34,8 @@ export default commandModule({
       integrationTypes: ['User', 'Guild']
     })
   ],
-  async execute(ctx) {
+  async execute(ctx, { deps }) {
+    const utils = deps['@sern/client'].utils;
     const { options } = ctx;
     const emote1 = options.getString('emoji_1', true);
     const emote2 = options.getString('emoji_2', true);
@@ -92,17 +99,14 @@ export default commandModule({
       });
     }
 
-    const output = await su
-      .get('https://tenor.googleapis.com/v2/featured')
-      .query({
-        key: env.TENOR_API_KEY,
-        contentfilter: 'high',
-        media_filter: 'png_transparent',
-        compontent: 'proactive',
-        collection: 'emoji_kitchen_v5',
-        q: input.join('_')
-      })
-      .catch(() => {});
+    const output = await su.get('https://tenor.googleapis.com/v2/featured').query({
+      key: env.TENOR_API_KEY,
+      contentfilter: 'high',
+      media_filter: 'png_transparent',
+      compontent: 'proactive',
+      collection: 'emoji_kitchen_v5',
+      q: input.join('_')
+    });
 
     if (!output || output.body.results.length === 0) {
       return await ctx.reply({
@@ -111,8 +115,39 @@ export default commandModule({
       });
     }
 
-    return await ctx.reply({
-      content: output.body.results[0].url
+    const imageUrl = output.body.results[0].url;
+    const imageResponse = await su.get(imageUrl).buffer(true).parse(su.parse.image);
+
+    if (!imageResponse.body) {
+      return await ctx.reply({
+        ephemeral: true,
+        content: `An error occurred while fetching the mixed emoji. Please try again later.`
+      });
+    }
+    const imageBuffer = imageResponse.body;
+    const attachment = new AttachmentBuilder(imageBuffer, { name: 'mixed_emoji.png' });
+
+    await ctx.reply({
+      files: [attachment]
+    });
+
+    await ctx.interaction.followUp({
+      ephemeral: true,
+      content:
+        'Emojis made with this command can be uploaded to the bot application to be used (only by the bot) later. Would you like to submit this emoji?',
+      components: [
+        new ActionRowBuilder<ButtonBuilder>({
+          components: ['✅', '❌'].map(c => {
+            const op = c === '❌' ? 'no' : 'yes';
+            return new ButtonBuilder({
+              custom_id: `submit/${op}`,
+              emoji: c,
+              label: utils.capitalise(op),
+              style: op === 'no' ? ButtonStyle.Secondary : ButtonStyle.Success
+            });
+          })
+        })
+      ]
     });
   }
 });
