@@ -11,4 +11,4 @@ await makeDependencies(({ add, swap }) => {
   add('task-logger', new TaskLogger());
 });
 
-Sern.init({ commands: 'dist/commands', events: 'dist/events', defaultPrefix: '?', tasks: 'dist/tasks' });
+Sern.init({ commands: ['dist/commands', 'dist/components'], events: 'dist/events', defaultPrefix: '?', tasks: 'dist/tasks' });

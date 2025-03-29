@@ -6,6 +6,6 @@ export default commandModule({
   description: 'Sends a sticker in chat in response to welcome message.',
   execute: async (i, t) => {
     await i.deferUpdate();
-    await t.deps['@sern/client'].utils.sticker(i);
+    await t.deps['@sern/client'].utils.sticker(i, t.params!);
   }
 });
