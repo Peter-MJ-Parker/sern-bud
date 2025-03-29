@@ -8,4 +8,3 @@ export * from './adapters/BaseTaskLogger.js';
 export * from './adapters/Tasks/TaskLogger.js';
 export * from './adapters/Tasks/Birthdays.js';
 export * from './adapters/emojis.js';
-export { ClickWar } from './adapters/ClickWar.js';

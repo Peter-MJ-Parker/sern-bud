@@ -1,5 +1,5 @@
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
-import { ClickWar, env, Utils } from '#utils';
+import { env, Utils } from '#utils';
 
 export class BudBot extends Client {
   utils: Utils;
