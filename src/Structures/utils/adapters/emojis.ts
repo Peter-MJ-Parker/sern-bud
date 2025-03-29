@@ -1,13 +1,3 @@
-type EmojiData = {
-  emoji: string;
-  description: string;
-  category: string;
-  aliases: string[];
-  tags: string[];
-  unicode_version: string;
-  ios_version: string;
-};
-
 const emojiRegex =
   /[\u{1F300}-\u{1F5FF}\u{1F900}-\u{1F9FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{1F191}-\u{1F251}\u{1F004}\u{1F0CF}\u{1F170}-\u{1F171}\u{1F17E}-\u{1F17F}\u{1F18E}\u{3030}\u{2B50}\u{2B55}\u{2934}-\u{2935}\u{2B05}-\u{2B07}\u{2B1B}-\u{2B1C}\u{3297}\u{3299}\u{303D}\u{00A9}\u{00AE}\u{2122}\u{23F3}\u{24C2}\u{23E9}-\u{23EF}\u{25B6}\u{23F8}-\u{23FA}]/gu;
 
@@ -49,21 +39,44 @@ export function stripEmoji(str: string): string {
   return str.replace(emojiRegex, '');
 }
 
-// Note: This is a mock function. In a real implementation, you'd need a comprehensive
-// database of emoji data, which is beyond the scope of this example.
-export function getEmojiInfo(emoji: string): EmojiData | null {
-  // This would typically involve looking up the emoji in a database
-  // For this example, we'll just return a mock object for the 😀 emoji
-  if (emoji === '😀') {
-    return {
-      emoji: '😀',
-      description: 'grinning face',
-      category: 'Smileys & Emotion',
-      aliases: ['grinning'],
-      tags: ['smile', 'happy'],
-      unicode_version: '6.1',
-      ios_version: '6.0'
-    };
+type APIEmojiData = {
+  slug: string;
+  character: string;
+  unicodeName: string;
+  codePoint: string;
+  group: string;
+  subGroup: string;
+};
+
+type EmojiData = {
+  emoji: string;
+  description: string;
+  category: string;
+  aliases: string[];
+};
+
+export async function getEmojiInfo(emoji: string): Promise<EmojiData | null> {
+  const apiKey = '19d04b3ce18a4302b34c4d02c0bb81f0488afbd8';
+  const apiUrl = `https://emoji-api.com/emojis?search=${encodeURIComponent(emoji)}&access_key=${apiKey}`;
+
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      throw new Error('API request failed');
+    }
+    const data: APIEmojiData[] = await response.json();
+
+    if (data.length > 0) {
+      return {
+        emoji: data[0].character,
+        description: data[0].unicodeName,
+        category: data[0].group,
+        aliases: [data[0].slug],
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching emoji data:', error);
+    return null;
   }
-  return null;
 }
