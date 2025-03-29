@@ -72,7 +72,7 @@ export async function welcomeCreate(
         new ButtonBuilder({
           label: ` Wave to say hi!`,
           emoji: option(welcomeEmojis),
-          custom_id: 'welcome-wave',
+          custom_id: `welcome-wave/${member.id}`,
           style: ButtonStyle.Secondary
         })
       ]

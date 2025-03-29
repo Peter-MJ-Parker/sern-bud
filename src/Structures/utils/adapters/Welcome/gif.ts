@@ -46,11 +46,10 @@ export const gifs = [
 ];
 export const welcomeEmojis = ['💕', '👌', '🙌', '<a:SHROOOOM:1179060921260322886>'];
 
-export async function sticker(interaction: ButtonInteraction) {
+export async function sticker(interaction: ButtonInteraction,memberId:string) {
   const db = Service('prisma').customWelcomeMessages;
   const buttonMember = interaction.member as GuildMember;
 
-  const memberId = `${interaction.message.attachments.first()?.name?.split('-')[1].slice(0, -4)}`;
   if (interaction.user.id === memberId) {
     return await interaction.reply({
       content: "You don't need to wave to yourself...",
@@ -71,19 +70,18 @@ export async function sticker(interaction: ButtonInteraction) {
     } else {
       hello = memberQuestion.singleMessage ?? `:wave: Welcome to ${interaction.guild?.name}, {member}`;
     }
+  } else {
+    const contents = [
+      `:wave: Welcome to ${interaction.guild?.name}, {member}`,
+      `Hi {member}! Welcome to our community! Please make yourself at home!`,
+      `👋 Hello {member}`,
+      `I'm glad you're here, {member}! Please pass the joint!`
+    ];
+    hello = contents[option(contents)];
   }
-  let img = gifs[Math.floor(Math.random() * gifs.length)];
-
-  const contents = [
-    `:wave: Welcome to ${interaction.guild?.name}, {member}`,
-    `Hi {member}! Welcome to our community! Please make yourself at home!`,
-    `👋 Hello {member}`,
-    `I'm glad you're here, {member}! Please pass the joint!`
-  ];
-  hello = contents[option(contents)];
   hello.replace('{member}', `<@${memberId}>`);
-
-  await webhookCreate(interaction.channel as TextChannel, buttonMember, hello, img);
+  let img = gifs[Math.floor(Math.random() * gifs.length)];
+  await webhookCreate(interaction.channel as TextChannel, buttonMember, hello, img ?? null);
 }
 
 export async function webhookCreate(channel: TextChannel, user: GuildMember, msg: string, file?: string) {
