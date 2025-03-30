@@ -67,7 +67,6 @@ export async function sticker(interaction: ButtonInteraction, memberId: string) 
   if (memberQuestion) {
     if (memberQuestion.random && memberQuestion.messagesArray.length >= 2) {
       hello = memberQuestion.messagesArray[option(memberQuestion.messagesArray)];
-      hello.replace('{member}', `<@${memberId}>`);
     } else {
       hello = memberQuestion.singleMessage ?? `:wave: Welcome to ${interaction.guild?.name}, <@${memberId}>`;
     }
@@ -80,6 +79,8 @@ export async function sticker(interaction: ButtonInteraction, memberId: string) 
     ];
     hello = contents[option(contents)];
   }
+  console.log(hello);
+  hello.replace('{member}', `<@${memberId}>`);
   let img = gifs[option(gifs)];
   await webhookCreate(interaction.channel as TextChannel, buttonMember, hello, img ?? null);
 }
