@@ -67,7 +67,6 @@ export async function sticker(interaction: ButtonInteraction, memberId: string) 
   if (memberQuestion) {
     if (memberQuestion.random && memberQuestion.messagesArray.length >= 2) {
       hello = memberQuestion.messagesArray[option(memberQuestion.messagesArray)];
-      hello.replace('{member}', `<@${memberId}>`);
     } else {
       hello = memberQuestion.singleMessage ?? `:wave: Welcome to ${interaction.guild?.name}, <@${memberId}>`;
     }
@@ -79,6 +78,10 @@ export async function sticker(interaction: ButtonInteraction, memberId: string) 
       `I'm glad you're here, <@${memberId}>! Please pass the joint!`
     ];
     hello = contents[option(contents)];
+  }
+  if (hello.includes('{member}') || hello.includes('{guild}')) {
+    hello = hello.replaceAll('{guild}', interaction.guild?.name!);
+    hello = hello.replaceAll('{member}', `<@${memberId}>`);
   }
   console.log(hello);
   let img = gifs[option(gifs)];
