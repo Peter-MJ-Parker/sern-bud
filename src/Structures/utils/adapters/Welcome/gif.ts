@@ -83,7 +83,6 @@ export async function sticker(interaction: ButtonInteraction, memberId: string) 
     hello = hello.replaceAll('{guild}', interaction.guild?.name!);
     hello = hello.replaceAll('{member}', `<@${memberId}>`);
   }
-  console.log(hello);
   let img = gifs[option(gifs)];
   await webhookCreate(interaction.channel as TextChannel, buttonMember, hello, img ?? null);
 }
