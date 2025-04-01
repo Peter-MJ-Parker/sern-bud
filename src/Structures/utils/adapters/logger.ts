@@ -15,31 +15,96 @@ export class Sparky implements Logging {
   success(payload: LogPayload<unknown> | any): void {
     payload = payload.message || { payload }.payload;
     this._spark.success(
-      bold(italic(`${this._date.toLocaleString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })} => ${payload}`))
+      bold(
+        italic(
+          `${this._date.toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true,
+            timeZone: 'America/Chicago'
+          })} => ${payload}`
+        )
+      )
     );
   }
   info(payload: LogPayload<unknown> | any): void {
     payload = payload.message || { payload }.payload;
     this._spark.info(
-      bold(italic(`${this._date.toLocaleString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })} => ${payload}`))
+      bold(
+        italic(
+          `${this._date.toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true,
+            timeZone: 'America/Chicago'
+          })} => ${payload}`
+        )
+      )
     );
   }
   warning(payload: LogPayload<unknown> | any): void {
     payload = payload.message || { payload }.payload;
     this._spark.warn(
-      bold(italic(`${this._date.toLocaleString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })} => ${payload}`))
+      bold(
+        italic(
+          `${this._date.toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true,
+            timeZone: 'America/Chicago'
+          })} => ${payload}`
+        )
+      )
     );
   }
   debug(payload: LogPayload<unknown> | any): void {
     payload = payload.message || { payload }.payload;
     this._spark.debug(
-      bold(italic(`${this._date.toLocaleString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })} => ${payload}`))
+      bold(
+        italic(
+          `${this._date.toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true,
+            timeZone: 'America/Chicago'
+          })} => ${payload}`
+        )
+      )
     );
   }
   error(payload: LogPayload<unknown> | any): void {
     payload = payload.message || { payload }.payload;
     this._spark.error(
-      bold(italic(`${this._date.toLocaleString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })} => ${payload}`))
+      bold(
+        italic(
+          `${this._date.toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true,
+            timeZone: 'America/Chicago'
+          })} => ${payload}`
+        )
+      )
     );
   }
 }
