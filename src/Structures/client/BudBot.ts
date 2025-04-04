@@ -7,7 +7,7 @@ export class BudBot extends Client {
     super({
       intents: [
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildEmojisAndStickers,
+        GatewayIntentBits.GuildExpressions,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessageReactions,
         GatewayIntentBits.GuildMessages,
