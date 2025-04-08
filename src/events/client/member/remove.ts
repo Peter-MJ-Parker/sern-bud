@@ -1,9 +1,8 @@
 import { EventType, eventModule, Service } from '@sern/handler';
 import { EmbedBuilder, Events, Guild, GuildMember, TextChannel } from 'discord.js';
 
-export default eventModule({
+export default eventModule<Events.GuildMemberRemove>({
   type: EventType.Discord,
-  name: Events.GuildMemberRemove,
   execute: async (member: GuildMember) => {
     const prisma = Service('prisma');
     const Guild = await prisma.guild.findFirst({

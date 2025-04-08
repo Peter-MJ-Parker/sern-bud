@@ -1,8 +1,8 @@
-import { Services, discordEvent } from '@sern/handler';
+import { EventType, Services, eventModule } from '@sern/handler';
 import { EmbedBuilder, Events, TextChannel } from 'discord.js';
 
-export default discordEvent({
-  name: Events.MessageReactionAdd,
+export default eventModule<Events.MessageReactionAdd>({
+  type: EventType.Discord,
   execute: async (reaction, user) => {
     if (!reaction.message.inGuild()) return;
     const [{ utils }, prisma] = Services('@sern/client', 'prisma');
