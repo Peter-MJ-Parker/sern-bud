@@ -23,8 +23,15 @@ export default commandModule({
         ephemeral: true,
       });
     else {
-      let reaction = msg.reactions.cache.get(":tada:");
-      let users = await reaction!.users.fetch();
+        console.log('message: ', msg);
+      let reaction = msg.reactions.cache.find(r => r.emoji.name === "🎉");
+      if (!reaction) {
+        return await interaction.reply({
+          content: 'No reactions with 🎉 found on the message.',
+          ephemeral: true,
+        });
+      }
+      let users = await reaction.users.fetch();
 
       let userids: string[] = [];
 
@@ -37,6 +44,7 @@ export default commandModule({
 
       await interaction.reply({
         content: `🥁 Drum roll please 🥁 \n\n||<@${finnal}>||`,
+        ephemeral: true,
       });
     }
   },
