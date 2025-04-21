@@ -44,7 +44,7 @@ export default commandModule({
 
       const randomizer = Math.floor(Math.random() * userids.length);
       let final = userids[randomizer];
-      await client.utils.delay(3000)
+      await new Promise(resolve => setTimeout(resolve, 3000));
       await ctx.interaction.editReply({
         content: `<@${final}> is the winner!\n\n-# This is currently just for fun. No prizes will be given out for this.`,
       });
