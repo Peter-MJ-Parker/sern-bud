@@ -12,8 +12,7 @@ export default commandModule({
       required: true,
     },
   ],
-  execute: async (ctx, { deps }) => {
-    const client = deps["@sern/client"];
+  execute: async (ctx) => {
     const messageId = ctx.options.getString("message-id", true);
     const msg = await (ctx.channel as TextChannel).messages.fetch(
       messageId
