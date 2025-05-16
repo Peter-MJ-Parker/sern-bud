@@ -1,5 +1,5 @@
 import { commandModule, CommandType } from '@sern/handler';
-import { publishConfig } from '#plugins';
+import { publishConfig, IntegrationContextType } from '#plugins';
 import { ApplicationCommandOptionType, TextInputBuilder, TextInputStyle } from 'discord.js';
 
 export default commandModule({
@@ -8,7 +8,7 @@ export default commandModule({
   plugins: [
     publishConfig({
       integrationTypes: ['Guild'],
-      contexts: [0]
+      contexts: [IntegrationContextType.GUILD]
     })
   ],
   options: [
@@ -99,7 +99,7 @@ export default commandModule({
       `welcome-messages/${_random}`,
       _random === 'one'
         ? `Message to greet new users. ${_current?.singleMessage ? 'Any changes?' : ''}`
-        : `Messages to randomly greet new users${_current?.messagesArray?.length! > 0 ? 'changes?' : '.'}`,
+        : `Messages to randomly greet new users. ${_current?.messagesArray?.length! > 0 ? 'Any changes?' : ''}`,
       inputs
     );
 
