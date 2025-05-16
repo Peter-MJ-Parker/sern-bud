@@ -31,8 +31,9 @@ export default scheduledTask({
 
       if (todaysBirthdays.length > 0) {
         const birthdayNames = todaysBirthdays.map(b => `<@${b.userID}>`);
-        const message = `@everyone, We have ${birthdayNames.length > 1 ? `birthdays` : `a birthday`
-          } today!\n${getRandomMessage(birthdayNames)}`;
+        const message = `@everyone, We have ${
+          birthdayNames.length > 1 ? `birthdays` : `a birthday`
+        } today!\n${getRandomMessage(birthdayNames)}`;
 
         await birthdayChannel.send(message);
         totalCongratulations += todaysBirthdays.length;
@@ -40,7 +41,12 @@ export default scheduledTask({
     }
 
     if (totalCongratulations > 0) {
-      await i.channelSend(_guild, `Task: \`birthday\` congratulated ${totalCongratulations} people.`);
+      await i.channelSend(
+        _guild,
+        `Task: \`birthday\` congratulated ${
+          totalCongratulations === 1 ? `1 person` : `${totalCongratulations} people`
+        }.`
+      );
     } else {
       await i.channelSend(_guild, `Task: \`birthday\` had 0 people to congratulate.`);
     }
