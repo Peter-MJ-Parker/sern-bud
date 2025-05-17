@@ -88,31 +88,27 @@ export async function sticker(interaction: ButtonInteraction, memberId: string) 
 }
 
 export async function webhookCreate(channel: TextChannel, user: GuildMember, msg: string, file?: string) {
-  await channel
-    .createWebhook({
-      name: user.displayName,
-      avatar: user.displayAvatarURL()
-    })
-    .then(async s => {
-      if (file) {
-        await s.send({
-          content: msg,
-          files: [file],
-          allowedMentions: {
-            users: []
-          }
-        });
-      } else {
-        await s.send({
-          content: msg,
-          allowedMentions: {
-            users: []
-          }
-        });
+  const webhook = await channel.createWebhook({
+    name: user.displayName,
+    avatar: user.displayAvatarURL()
+  });
+  if (file) {
+    await webhook.send({
+      content: msg,
+      files: [file],
+      allowedMentions: {
+        users: []
       }
-
-      setTimeout(async () => {
-        await s.delete();
-      }, 5000);
     });
+  } else {
+    await webhook.send({
+      content: msg,
+      allowedMentions: {
+        users: []
+      }
+    });
+  }
+  setTimeout(async () => {
+    await webhook.delete();
+  }, 5000);
 }
