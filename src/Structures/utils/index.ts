@@ -7,4 +7,3 @@ export * from './adapters/Welcome/gif.js';
 export * from './adapters/BaseTaskLogger.js';
 export * from './adapters/Tasks/TaskLogger.js';
 export * from './adapters/Tasks/Birthdays.js';
-export * from './adapters/emojis.js';
