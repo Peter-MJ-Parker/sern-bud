@@ -12,15 +12,15 @@ export default commandModule({
       description: 'Set a birthday.',
       options: [
         {
-          type: ApplicationCommandOptionType.User,
-          name: 'user-to-add',
-          description: 'Select the user to add manually. (Only for Admins)'
-        },
-        {
           type: ApplicationCommandOptionType.String,
           name: 'date',
           description: 'Birthday in (MM/DD) format.',
           required: true
+        },
+        {
+          type: ApplicationCommandOptionType.User,
+          name: 'user-to-add',
+          description: 'Select the user to add manually. (Only for Admins)'
         }
       ]
     },
@@ -29,6 +29,12 @@ export default commandModule({
       name: 'edit',
       description: 'Edit a birthday.',
       options: [
+        {
+          type: ApplicationCommandOptionType.String,
+          name: 'date',
+          description: 'Birthday in (MM/DD) format.',
+          required: true
+        },
         {
           type: ApplicationCommandOptionType.String,
           name: 'user-to-edit',
@@ -54,12 +60,6 @@ export default commandModule({
               }));
             }
           }
-        },
-        {
-          type: ApplicationCommandOptionType.String,
-          name: 'date',
-          description: 'Birthday in (MM/DD) format.',
-          required: true
         }
       ]
     },
