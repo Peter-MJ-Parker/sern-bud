@@ -14,7 +14,7 @@ export default commandModule({
         {
           type: ApplicationCommandOptionType.User,
           name: 'user-to-add',
-          description: 'Select the user to add manually. (Only for Admins)',
+          description: 'Select the user to add manually.',
           required: true
         },
         {
@@ -166,13 +166,15 @@ export default commandModule({
 
     const actions = {
       set: async () => {
+        userToAdd = ctx.options.getUser('user-to-add', true);
+        if (!(ctx.member as GuildMember).permissions.has(PermissionFlagsBits.Administrator) && userToAdd !== ctx.user) {
+          return { flags: 64, content: "You do not have permission to manage other users' birthdays." };
+        }
         let date = ctx.options.getString('date', true);
         if (!date || !i.bdays.isValidDate(date)) {
           return { flags: 64, content: 'Please provide a date in format: `MM/DD`' };
         }
-        if (!userToAdd) {
-          userToAdd = ctx.user;
-        }
+
         if (userBirthday) {
           content = `I already have ${pronoun(userToAdd)} birthday saved in my memory as \`${userBirthday.date}\`.`;
         } else {
@@ -194,6 +196,7 @@ export default commandModule({
         return { flags: 64, content };
       },
       edit: async () => {
+        userToEdit = ctx.options.getString('user-to-edit', true);
         if (userToEdit === 'none') {
           return { flags: 64, content: 'No birthdays were found to edit.' };
         } else if (userToEdit === 'non-admin') {
@@ -203,9 +206,7 @@ export default commandModule({
         if (!date || !i.bdays.isValidDate(date)) {
           return { flags: 64, content: 'Please provide a new date in format: `MM/DD`' };
         }
-        if (!userToEdit) {
-          userToEdit = ctx.user.id;
-        }
+
         const { user: editableUser } = members.get(userToEdit)!;
         if (!userBirthday) {
           return {
@@ -230,6 +231,7 @@ export default commandModule({
         }
       },
       delete: async () => {
+        userToDelete = ctx.options.getString('user-to-delete', true);
         switch (userToDelete) {
           case 'none':
             content = 'No birthdays were found to delete.';
@@ -238,9 +240,6 @@ export default commandModule({
             content = "You do not have permission to manage other users' birthdays.";
             break;
           default:
-            if (!userToDelete) {
-              userToDelete = ctx.user.id;
-            }
             const { user: deletableUser } = members.get(userToDelete)!;
             const birthdayToDelete = guildBirthday.birthdays.find(b => b.userID === userToDelete);
             if (birthdayToDelete) {
