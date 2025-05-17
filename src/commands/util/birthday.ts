@@ -12,15 +12,16 @@ export default commandModule({
       description: 'Set a birthday.',
       options: [
         {
+          type: ApplicationCommandOptionType.User,
+          name: 'user-to-add',
+          description: 'Select the user to add manually. (Only for Admins)',
+          required: true
+        },
+        {
           type: ApplicationCommandOptionType.String,
           name: 'date',
           description: 'Birthday in (MM/DD) format.',
           required: true
-        },
-        {
-          type: ApplicationCommandOptionType.User,
-          name: 'user-to-add',
-          description: 'Select the user to add manually. (Only for Admins)'
         }
       ]
     },
@@ -31,21 +32,13 @@ export default commandModule({
       options: [
         {
           type: ApplicationCommandOptionType.String,
-          name: 'date',
-          description: 'Birthday in (MM/DD) format.',
-          required: true
-        },
-        {
-          type: ApplicationCommandOptionType.String,
           name: 'user-to-edit',
-          description: 'Select the user to edit manually. (Only for Admins)',
+          description: 'Select the user to edit manually.',
           autocomplete: true,
+          required: true,
           command: {
             onEvent: [],
             async execute(ctx, { deps }) {
-              if (!(ctx.member as GuildMember).permissions.has(PermissionFlagsBits.Administrator)) {
-                return [{ name: "You do not have permission to manage other users' birthdays.", value: 'non-admin' }];
-              }
               const guildBirthday = await deps.prisma.birthday.findFirst({
                 where: {
                   gID: ctx.guildId!
@@ -54,12 +47,24 @@ export default commandModule({
               });
               if (!guildBirthday) return [{ name: 'No birthdays found', value: 'none' }];
 
+              const userBirthday = guildBirthday.birthdays.find(b => b.userID === ctx.user.id);
+              if (!(ctx.member as GuildMember).permissions.has(PermissionFlagsBits.Administrator)) {
+                if (!userBirthday) {
+                  return [{ name: "You do not have permission to manage other users' birthdays.", value: 'non-admin' }];
+                } else return [{ name: `${userBirthday.username} (${userBirthday.date})`, value: userBirthday.userID }];
+              }
               return guildBirthday.birthdays.map(b => ({
-                name: `${b.nickname} (${b.date})`,
+                name: `${b.username} (${b.date})`,
                 value: b.userID
               }));
             }
           }
+        },
+        {
+          type: ApplicationCommandOptionType.String,
+          name: 'date',
+          description: 'Birthday in (MM/DD) format.',
+          required: true
         }
       ]
     },
@@ -71,14 +76,12 @@ export default commandModule({
         {
           type: ApplicationCommandOptionType.String,
           name: 'user-to-delete',
-          description: 'Select the user to delete manually. (Only for Admins)',
+          description: 'Select the user to delete manually.',
           autocomplete: true,
+          required: true,
           command: {
             onEvent: [],
             async execute(ctx, { deps }) {
-              if (!(ctx.member as GuildMember).permissions.has(PermissionFlagsBits.Administrator)) {
-                return [{ name: "You do not have permission to manage other users' birthdays.", value: 'non-admin' }];
-              }
               const guildBirthday = await deps.prisma.birthday.findFirst({
                 where: {
                   gID: ctx.guildId!
@@ -86,9 +89,14 @@ export default commandModule({
                 include: { birthdays: true }
               });
               if (!guildBirthday) return [{ name: 'No birthdays found', value: 'none' }];
-
+              const userBirthday = guildBirthday.birthdays.find(b => b.userID === ctx.user.id);
+              if (!(ctx.member as GuildMember).permissions.has(PermissionFlagsBits.Administrator)) {
+                if (!userBirthday) {
+                  return [{ name: "You do not have permission to manage other users' birthdays.", value: 'non-admin' }];
+                } else return [{ name: `${userBirthday.username} (${userBirthday.date})`, value: userBirthday.userID }];
+              }
               return guildBirthday.birthdays.map(b => ({
-                name: `${b.nickname} (${b.date})`,
+                name: `${b.username} (${b.date})`,
                 value: b.userID
               }));
             }
@@ -205,7 +213,6 @@ export default commandModule({
               userToDelete = ctx.user.id;
             }
             const { user: deletableUser } = members.get(userToDelete)!;
-            // Find the correct user's birthday here:
             const birthdayToDelete = guildBirthday.birthdays.find(b => b.userID === userToDelete);
             if (birthdayToDelete) {
               await birthdayModel.update({
