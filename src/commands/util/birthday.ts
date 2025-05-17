@@ -39,24 +39,38 @@ export default commandModule({
           command: {
             onEvent: [],
             async execute(ctx, { deps }) {
-              const guildBirthday = await deps.prisma.birthday.findFirst({
+              const focusedOption = ctx.options.getFocused().toLowerCase();
+              let res: { name: string; value: string }[] = [];
+              const guildBirthday = await deps.prisma.birthday.findUnique({
                 where: {
                   gID: ctx.guildId!
                 },
-                include: { birthdays: true }
+                select: { birthdays: true }
               });
-              if (!guildBirthday) return [{ name: 'No birthdays found', value: 'none' }];
+              if (!guildBirthday) {
+                res = [{ name: 'No birthdays found', value: 'none' }];
+                return await ctx.respond(res);
+              }
 
               const userBirthday = guildBirthday.birthdays.find(b => b.userID === ctx.user.id);
               if (!(ctx.member as GuildMember).permissions.has(PermissionFlagsBits.Administrator)) {
                 if (!userBirthday) {
-                  return [{ name: "You do not have permission to manage other users' birthdays.", value: 'non-admin' }];
-                } else return [{ name: `${userBirthday.username} (${userBirthday.date})`, value: userBirthday.userID }];
+                  res = [{ name: "You do not have permission to manage other users' birthdays.", value: 'non-admin' }];
+                  return await ctx.respond(res);
+                } else {
+                  res = [{ name: `${userBirthday.username} (${userBirthday.date})`, value: userBirthday.userID }];
+                  return await ctx.respond(res);
+                }
               }
-              return guildBirthday.birthdays.map(b => ({
+              res = guildBirthday.birthdays.map(b => ({
                 name: `${b.username} (${b.date})`,
                 value: b.userID
               }));
+              const filter = res
+                .filter(f => f.name.toLowerCase().startsWith(focusedOption))
+                .map(choice => ({ name: choice.name, value: choice.value }))
+                .slice(0, 25);
+              await ctx.respond(filter);
             }
           }
         },
@@ -82,23 +96,38 @@ export default commandModule({
           command: {
             onEvent: [],
             async execute(ctx, { deps }) {
-              const guildBirthday = await deps.prisma.birthday.findFirst({
+              const focusedOption = ctx.options.getFocused().toLowerCase();
+              let res: { name: string; value: string }[] = [];
+
+              const guildBirthday = await deps.prisma.birthday.findUnique({
                 where: {
                   gID: ctx.guildId!
                 },
-                include: { birthdays: true }
+                select: { birthdays: true }
               });
-              if (!guildBirthday) return [{ name: 'No birthdays found', value: 'none' }];
+              if (!guildBirthday) {
+                res = [{ name: 'No birthdays found', value: 'none' }];
+                return await ctx.respond(res);
+              }
               const userBirthday = guildBirthday.birthdays.find(b => b.userID === ctx.user.id);
               if (!(ctx.member as GuildMember).permissions.has(PermissionFlagsBits.Administrator)) {
                 if (!userBirthday) {
-                  return [{ name: "You do not have permission to manage other users' birthdays.", value: 'non-admin' }];
-                } else return [{ name: `${userBirthday.username} (${userBirthday.date})`, value: userBirthday.userID }];
+                  res = [{ name: "You do not have permission to manage other users' birthdays.", value: 'non-admin' }];
+                  return await ctx.respond(res);
+                } else {
+                  res = [{ name: `${userBirthday.username} (${userBirthday.date})`, value: userBirthday.userID }];
+                  return await ctx.respond(res);
+                }
               }
-              return guildBirthday.birthdays.map(b => ({
+              res = guildBirthday.birthdays.map(b => ({
                 name: `${b.username} (${b.date})`,
                 value: b.userID
               }));
+              const filter = res
+                .filter(f => f.name.toLowerCase().startsWith(focusedOption))
+                .map(choice => ({ name: choice.name, value: choice.value }))
+                .slice(0, 25);
+              await ctx.respond(filter);
             }
           }
         }
