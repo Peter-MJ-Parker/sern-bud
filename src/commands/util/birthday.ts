@@ -131,7 +131,7 @@ export default commandModule({
       set: async () => {
         let date = ctx.options.getString('date', true);
         if (!date || !i.bdays.isValidDate(date)) {
-          content = 'Please provide a date in format: `MM/DD`';
+          return { flags: 64, content: 'Please provide a date in format: `MM/DD`' };
         }
         if (!userToAdd) {
           userToAdd = ctx.user;
@@ -158,22 +158,25 @@ export default commandModule({
       },
       edit: async () => {
         if (userToEdit === 'none') {
-          content = 'No birthdays were found to edit.';
+          return { flags: 64, content: 'No birthdays were found to edit.' };
         } else if (userToEdit === 'non-admin') {
-          content = "You do not have permission to manage other users' birthdays.";
+          return { flags: 64, content: "You do not have permission to manage other users' birthdays." };
         }
         let date = ctx.options.getString('date', true);
         if (!date || !i.bdays.isValidDate(date)) {
-          content = 'Please provide a new date in format: `MM/DD`';
+          return { flags: 64, content: 'Please provide a new date in format: `MM/DD`' };
         }
         if (!userToEdit) {
           userToEdit = ctx.user.id;
         }
         const { user: editableUser } = members.get(userToEdit)!;
         if (!userBirthday) {
-          content = `I do not have ${pronoun(editableUser)} birthday saved in my memory. Please set it first.`;
+          return {
+            flags: 64,
+            content: `I do not have ${pronoun(editableUser)} birthday saved in my memory. Please set it first.`
+          };
         } else if (userBirthday.date === date) {
-          content = `That is the current date. Please use a different date.`;
+          return { flags: 64, content: `That is the current date. Please use a different date.` };
         } else {
           await birthdayModel.update({
             where: { id: guildBirthday.id },
@@ -186,9 +189,8 @@ export default commandModule({
               }
             }
           });
-          content = `I have updated ${pronoun(editableUser)} birthday to \`${date}\`.`;
+          return { flags: 64, content: `I have updated ${pronoun(editableUser)} birthday to \`${date}\`.` };
         }
-        return { flags: 64, content };
       },
       delete: async () => {
         switch (userToDelete) {
@@ -203,7 +205,9 @@ export default commandModule({
               userToDelete = ctx.user.id;
             }
             const { user: deletableUser } = members.get(userToDelete)!;
-            if (userBirthday) {
+            // Find the correct user's birthday here:
+            const birthdayToDelete = guildBirthday.birthdays.find(b => b.userID === userToDelete);
+            if (birthdayToDelete) {
               await birthdayModel.update({
                 where: { id: guildBirthday.id },
                 data: {
@@ -218,7 +222,6 @@ export default commandModule({
             }
             break;
         }
-
         return { flags: 64, content };
       }
     };
