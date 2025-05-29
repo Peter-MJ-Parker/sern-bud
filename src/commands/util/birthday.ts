@@ -162,7 +162,17 @@ export default commandModule({
       b => b.userID === (userToAdd?.id || userToEdit || userToDelete || ctx.user.id)
     );
 
-    const pronoun = (user: User) => (user.id === ctx.user.id ? 'your' : `${user}'s`);
+    const pronoun = (user: User | string | undefined) => {
+      let str = '';
+      if (user instanceof User) {
+        str = user.id === ctx.user.id ? 'your' : `${user}'s`;
+      } else if (typeof user === 'string') {
+        str = user === ctx.user.username ? 'your' : `${user}'s`;
+      } else {
+        str = 'unknown user';
+      }
+      return str;
+    };
 
     const actions = {
       set: async () => {
@@ -240,8 +250,12 @@ export default commandModule({
             content = "You do not have permission to manage other users' birthdays.";
             break;
           default:
-            const { user: deletableUser } = members.get(userToDelete)!;
-            const birthdayToDelete = guildBirthday.birthdays.find(b => b.userID === userToDelete);
+            const deletableUser = members.get(userToDelete)?.user;
+            const birthdayToDelete = guildBirthday.birthdays.find(b => b.userID === userToDelete)!;
+            let str = '';
+            if (!deletableUser) {
+              str = pronoun(birthdayToDelete.username);
+            }
             if (birthdayToDelete) {
               await birthdayModel.update({
                 where: { id: guildBirthday.id },
@@ -251,9 +265,9 @@ export default commandModule({
                   }
                 }
               });
-              content = `I have deleted ${pronoun(deletableUser)} birthday from my memory.`;
+              content = `I have deleted ${pronoun(str)} birthday from my memory.`;
             } else {
-              content = `I do not have ${pronoun(deletableUser)} birthday saved in my memory. Have you set it already?`;
+              content = `I do not have ${pronoun(str)} birthday saved in my memory. Have you set it already?`;
             }
             break;
         }
