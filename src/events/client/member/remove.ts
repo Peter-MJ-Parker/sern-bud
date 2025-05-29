@@ -1,10 +1,10 @@
-import { EventType, eventModule, Service } from '@sern/handler';
+import { EventType, eventModule, Services } from '@sern/handler';
 import { EmbedBuilder, Events, Guild, GuildMember, TextChannel } from 'discord.js';
 
 export default eventModule<Events.GuildMemberRemove>({
   type: EventType.Discord,
   execute: async (member: GuildMember) => {
-    const prisma = Service('prisma');
+    const [i, prisma] = Services('task-logger', 'prisma');
     const Guild = await prisma.guild.findFirst({
       where: { gID: member.guild.id }
     });
@@ -47,5 +47,33 @@ export default eventModule<Events.GuildMemberRemove>({
       ]
     });
     await msg.react('👋');
+
+    const guildBirthdays = await prisma.birthday.findFirst({
+      where: {
+        gID: guild.id
+      },
+      select: { birthdays: true }
+    });
+
+    const _birthdayExists = guildBirthdays?.birthdays.some(u => u.userID === member.id);
+
+    if (guildBirthdays && _birthdayExists) {
+      const updatedBirthdays = guildBirthdays.birthdays.filter(u => u.userID !== member.id);
+
+      await prisma.birthday.update({
+        where: { gID: guild.id },
+        data: { birthdays: updatedBirthdays }
+      });
+
+      const embed = EmbedBuilder.from(msg.embeds[0]);
+      embed.addFields({
+        name: 'Birthday Removed',
+        value: `Successfully deleted ${member.user.username}'s birthday from the database.`,
+        inline: false
+      });
+      await msg.edit({ embeds: [embed] });
+
+      await i.bdays.logBirthdays(member.guild);
+    }
   }
 });
