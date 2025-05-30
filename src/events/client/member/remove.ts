@@ -1,9 +1,10 @@
 import { EventType, eventModule, Services } from '@sern/handler';
-import { EmbedBuilder, Events, Guild, GuildMember, TextChannel } from 'discord.js';
+import { EmbedBuilder, Events, Guild, TextChannel } from 'discord.js';
 
 export default eventModule<Events.GuildMemberRemove>({
   type: EventType.Discord,
-  execute: async (member: GuildMember) => {
+  execute: async member => {
+    if (member.partial) await member.fetch();
     const [i, prisma] = Services('task-logger', 'prisma');
     const Guild = await prisma.guild.findFirst({
       where: { gID: member.guild.id }

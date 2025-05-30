@@ -5,9 +5,11 @@ export default eventModule<Events.MessageReactionAdd>({
   type: EventType.Discord,
   execute: async (reaction, user) => {
     if (!reaction.message.inGuild()) return;
+    let message = reaction.message;
+    if (message.partial) await message.fetch();
+    if (reaction.partial) await reaction.fetch();
     const [{ utils }, prisma] = Services('@sern/client', 'prisma');
 
-    let message = reaction.message!;
     if (reaction.emoji.name === '🎉') {
       await message.react('<:flame_party:1285284996264886352>');
     }
@@ -16,8 +18,6 @@ export default eventModule<Events.MessageReactionAdd>({
       bots: message.guild.members.cache.filter(m => m.user.bot).size!,
       total: message.guild.memberCount!
     };
-    if (message.partial) await message.fetch();
-    if (reaction.partial) await reaction.fetch();
 
     if (user.bot) return;
     if (!reaction.message.guild) return;

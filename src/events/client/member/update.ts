@@ -1,9 +1,11 @@
 import { EventType, eventModule, Service } from '@sern/handler';
-import { Events, GuildMember } from 'discord.js';
+import { Events } from 'discord.js';
 
 export default eventModule<Events.GuildMemberUpdate>({
   type: EventType.Discord,
-  async execute(oldMember: GuildMember, newMember: GuildMember) {
+  async execute(oldMember, newMember) {
+    if (oldMember.partial) await oldMember.fetch();
+    if (newMember.partial) await newMember.fetch();
     const prisma = Service('prisma');
     if (newMember.nickname !== oldMember.nickname) {
       let profile = await prisma.money.findFirst({

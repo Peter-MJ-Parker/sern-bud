@@ -6,13 +6,13 @@ import {
   ButtonStyle,
   EmbedBuilder,
   Events,
-  GuildMember,
   TextChannel
 } from 'discord.js';
 
 export default eventModule<Events.GuildMemberAdd>({
   type: EventType.Discord,
-  async execute(member: GuildMember) {
+  async execute(member) {
+    if (member.partial) await member.fetch();
     const prisma = Service('prisma');
     const Guild = await prisma.guild.findFirst({
       where: { gID: member.guild.id }

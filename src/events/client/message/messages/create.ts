@@ -1,4 +1,4 @@
-import { EventType, Services, discordEvent, eventModule } from '@sern/handler';
+import { EventType, Services, eventModule } from '@sern/handler';
 import { ChannelType, Events, TextChannel } from 'discord.js';
 
 export default eventModule<Events.MessageCreate>({
