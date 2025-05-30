@@ -4,7 +4,15 @@ import { EmbedBuilder, Events, Guild, TextChannel } from 'discord.js';
 export default eventModule<Events.GuildMemberRemove>({
   type: EventType.Discord,
   execute: async member => {
-    if (member.partial) await member.fetch();
+    console.log('Event: GuildMemberRemove triggered!');
+    console.log(
+      `Member: ${member.displayName} (${member.id}) has left the guild: ${member.guild.name} (${member.guild.id})`
+    );
+    if (member.partial) {
+      console.log('Partial Member: true');
+      await member.fetch();
+    }
+    console.log('Partial Member: false');
     const [i, prisma] = Services('task-logger', 'prisma');
     const Guild = await prisma.guild.findFirst({
       where: { gID: member.guild.id }
