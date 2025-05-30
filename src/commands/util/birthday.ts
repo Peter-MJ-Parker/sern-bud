@@ -177,6 +177,7 @@ export default commandModule({
     const actions = {
       set: async () => {
         userToAdd = ctx.options.getUser('user-to-add', true);
+        if (userToAdd.bot) return { flags: 64, content: 'You cannot add a bot to my database, geek!' };
         if (!(ctx.member as GuildMember).permissions.has(PermissionFlagsBits.Administrator) && userToAdd !== ctx.user) {
           return { flags: 64, content: "You do not have permission to manage other users' birthdays." };
         }
