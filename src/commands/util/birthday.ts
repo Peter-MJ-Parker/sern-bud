@@ -177,7 +177,7 @@ export default commandModule({
       if (user instanceof User) {
         str = user.id === ctx.user.id ? 'your' : `${user}'s`;
       } else if (typeof user === 'string') {
-        str = user === ctx.user.username ? 'your' : `${user}'s`;
+        str = user === ctx.user.id ? 'your' : `<@${user}>'s`;
       } else {
         str = 'unknown user';
       }
