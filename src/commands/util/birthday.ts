@@ -173,15 +173,14 @@ export default commandModule({
     );
 
     const pronoun = (user: User | string | undefined) => {
-      let str = '';
+      console.log(user);
       if (user instanceof User) {
-        str = user.id === ctx.user.id ? 'your' : `${user}'s`;
+        return user.id === ctx.user.id ? 'your' : `${user}'s`;
       } else if (typeof user === 'string') {
-        str = user === ctx.user.id ? 'your' : `<@${user}>'s`;
+        return user === ctx.user.id ? 'your' : `<@${user}>'s`;
       } else {
-        str = 'unknown user';
+        return 'unknown user';
       }
-      return str;
     };
 
     const actions = {
