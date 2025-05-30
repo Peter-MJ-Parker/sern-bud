@@ -33,5 +33,13 @@ export class BudBot extends Client {
     });
     this.utils = new Utils();
     this.login(env.DISCORD_TOKEN);
+    process.on('unhandledRejection', (err) => {
+      return console.error('Unhandled Rejection:', err);
+    }
+    );
+    process.on('uncaughtException', (err) => {
+      return console.error('Uncaught Exception:', err);
+    }
+    );
   }
 }
