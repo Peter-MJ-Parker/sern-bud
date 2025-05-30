@@ -135,13 +135,23 @@ export default commandModule({
     }
   ],
   async execute(ctx, { deps }) {
-    const [i, birthdayModel] = [deps['task-logger'], deps.prisma.birthday];
+    const [c, i, birthdayModel, guildModel] = [
+      deps['@sern/client'],
+      deps['task-logger'],
+      deps.prisma.birthday,
+      deps.prisma.guild
+    ];
     const sub = ctx.options.getSubcommand(true);
     const members = await ctx.guild?.members.fetch()!;
     let userToAdd = ctx.options.getUser('user-to-add', false);
     let userToEdit = ctx.options.getString('user-to-edit', false);
     let userToDelete = ctx.options.getString('user-to-delete', false);
     let content = '';
+    let _guild = await guildModel.findFirst({
+      where: {
+        gID: ctx.guildId!
+      }
+    });
 
     let guildBirthday = await birthdayModel.findFirst({
       where: {
@@ -203,6 +213,17 @@ export default commandModule({
             }
           });
           content = `I have set ${pronoun(userToAdd)} birthday as ${date}.`;
+
+          const currentYear = new Date().getFullYear();
+          const today = c.utils
+            .convertToISO(new Date().toLocaleDateString())
+            .split(`${currentYear}-`)[1]
+            .replace('-', '/');
+
+          if (userToAdd.id === ctx.user.id && date === today) {
+            content += `, 🎉 Happy Birthday! 🎂`;
+            await c.utils.bdayAnnouncement(ctx, [`<@${userToAdd.id}>`]);
+          }
         }
         return { flags: 64, content };
       },

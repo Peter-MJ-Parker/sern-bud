@@ -11,7 +11,7 @@ export default scheduledTask({
     const guilds = await p.guild.findMany({});
 
     const currentYear = new Date().getFullYear();
-    const today = convertToSIO(new Date().toLocaleDateString()).split(`${currentYear}-`)[1].replace('-', '/');
+    const today = c.utils.convertToISO(new Date().toLocaleDateString()).split(`${currentYear}-`)[1].replace('-', '/');
 
     let totalCongratulations = 0;
     let _guild;
@@ -33,7 +33,7 @@ export default scheduledTask({
         const birthdayNames = todaysBirthdays.map(b => `<@${b.userID}>`);
         const message = `@everyone, We have ${
           birthdayNames.length > 1 ? `birthdays` : `a birthday`
-        } today!\n${getRandomMessage(birthdayNames)}`;
+        } today!\n${c.utils.getRandomMessage(birthdayNames)}`;
 
         await birthdayChannel.send(message);
         totalCongratulations += todaysBirthdays.length;
@@ -52,37 +52,3 @@ export default scheduledTask({
     }
   }
 });
-
-function getRandomMessage(names: string[]): string {
-  const birthdayMessages = [
-    '🎉 Happy Birthday, {names}! May your day be filled with joy and laughter!',
-    "🎂 Wishing a fantastic birthday to {names}! Here's to another year of awesome!",
-    "🥳 It's party time for {names}! Happy Birthday and make it a great one!",
-    "🎈 Happy Birthday to the amazing {names}! Let's make some noise for the birthday crew!",
-    '🌟 Special day alert! Happy Birthday, {names}! Time to celebrate you!',
-    '🍰 Cake, candles, and good times await! Happy Birthday, {names}!',
-    '🎊 Another year, another adventure! Happy Birthday to the wonderful {names}!',
-    '🥂 Cheers to {names} on their birthday! Wishing you all the best today and always!',
-    "🎁 Surprise! It's a birthday bonanza for {names}! Hope it's the best one yet!",
-    '🌈 Happy Birthday to the one and only {names}! Your awesomeness deserves a celebration!'
-  ];
-  const randomIndex = Math.floor(Math.random() * birthdayMessages.length);
-  let message = birthdayMessages[randomIndex];
-
-  if (names.length === 1) {
-    message = message.replace('{names}', names[0]);
-  } else if (names.length === 2) {
-    message = message.replace('{names}', `${names[0]} and ${names[1]}`);
-  } else {
-    const lastPerson = names.pop();
-    message = message.replace('{names}', `${names.join(', ')}, and ${lastPerson}`);
-  }
-
-  return message;
-}
-
-function convertToSIO(date: string): string {
-  const [month, day, year] = date.split('/').map(part => part.padStart(2, '0'));
-
-  return `${year}-${month}-${day}`;
-}
