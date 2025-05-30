@@ -1,8 +1,9 @@
 import { EventType, Services, eventModule } from '@sern/handler';
 import { ChannelType, Events, TextChannel } from 'discord.js';
 
-export default eventModule<Events.MessageCreate>({
+export default eventModule({
   type: EventType.Discord,
+  name: Events.MessageCreate,
   execute: async message => {
     const [{ utils }, prisma] = Services('@sern/client', 'prisma');
     const msg = message.content.toLowerCase();

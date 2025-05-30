@@ -1,8 +1,9 @@
 import { EventType, eventModule, Service } from '@sern/handler';
 import { Events } from 'discord.js';
 
-export default eventModule<Events.GuildMemberUpdate>({
+export default eventModule({
   type: EventType.Discord,
+  name: Events.GuildMemberUpdate,
   async execute(oldMember, newMember) {
     if (oldMember.partial) await oldMember.fetch();
     if (newMember.partial) await newMember.fetch();

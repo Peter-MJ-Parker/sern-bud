@@ -1,8 +1,9 @@
 import { eventModule, EventType, Services } from '@sern/handler';
 import { Events } from 'discord.js';
 
-export default eventModule<Events.GuildCreate>({
+export default eventModule({
   type: EventType.Discord,
+  name: Events.GuildCreate,
   async execute(guild) {
     const [c, p] = Services('@sern/client', 'prisma');
     let guildData = await p.guild.findFirst({

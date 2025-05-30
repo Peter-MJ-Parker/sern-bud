@@ -9,9 +9,11 @@ import {
   TextChannel
 } from 'discord.js';
 
-export default eventModule<Events.GuildMemberAdd>({
+export default eventModule({
   type: EventType.Discord,
+  name: Events.GuildMemberAdd,
   async execute(member) {
+    console.log(`New member joined: ${member.user.username} (${member.id})`);
     if (member.partial) await member.fetch();
     const prisma = Service('prisma');
     const Guild = await prisma.guild.findFirst({

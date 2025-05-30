@@ -1,8 +1,9 @@
 import { EventType, Services, eventModule } from '@sern/handler';
 import { EmbedBuilder, Events, TextChannel } from 'discord.js';
 
-export default eventModule<Events.MessageReactionAdd>({
+export default eventModule({
   type: EventType.Discord,
+  name: Events.MessageReactionAdd,
   execute: async (reaction, user) => {
     if (!reaction.message.inGuild()) return;
     let message = reaction.message;

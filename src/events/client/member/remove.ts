@@ -1,8 +1,9 @@
 import { EventType, eventModule, Services } from '@sern/handler';
 import { EmbedBuilder, Events, Guild, TextChannel } from 'discord.js';
 
-export default eventModule<Events.GuildMemberRemove>({
+export default eventModule({
   type: EventType.Discord,
+  name: Events.GuildMemberRemove,
   execute: async member => {
     console.log('Event: GuildMemberRemove triggered!');
     console.log(

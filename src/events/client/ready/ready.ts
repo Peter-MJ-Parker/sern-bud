@@ -1,8 +1,9 @@
 import { EventType, Services, eventModule } from '@sern/handler';
 import { Events } from 'discord.js';
 
-export default eventModule<Events.ClientReady>({
+export default eventModule({
   type: EventType.Discord,
+  name: Events.ClientReady,
   execute: async () => {
     const [{ guilds, user }, logger, prisma, i] = Services('@sern/client', '@sern/logger', 'prisma', 'task-logger');
     logger.success('Logged into Discord as ' + user?.username);
