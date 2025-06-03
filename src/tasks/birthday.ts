@@ -10,9 +10,6 @@ export default scheduledTask({
     });
     const guilds = await p.guild.findMany({});
 
-    const currentYear = new Date().getFullYear();
-    const today = c.utils.convertToISO(new Date().toLocaleDateString()).split(`${currentYear}-`)[1].replace('-', '/');
-
     let totalCongratulations = 0;
     let _guild;
     for (const guildBirthday of guildBirthdays) {
@@ -27,7 +24,7 @@ export default scheduledTask({
       const birthdayChannel = guild.channels.cache.get(guildData.birthdayAnnounceChan);
       if (!birthdayChannel || !birthdayChannel.isTextBased()) return;
 
-      const todaysBirthdays = guildBirthday.birthdays.filter(b => b.date === today);
+      const todaysBirthdays = guildBirthday.birthdays.filter(b => b.date === c.utils.today);
 
       if (todaysBirthdays.length > 0) {
         const birthdayNames = todaysBirthdays.map(b => `<@${b.userID}>`);

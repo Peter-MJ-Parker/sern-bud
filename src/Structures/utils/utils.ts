@@ -69,6 +69,10 @@ export class Utils {
     return message;
   }
 
+  public today = this.convertToISO(new Date().toLocaleDateString())
+    .split(`${new Date().getFullYear()}-`)[1]
+    .replace('-', '/');
+
   public async bdayAnnouncement(ctx: Context, names: string[]) {
     if (!ctx.inGuild) return;
     const _guild = await Service('prisma').guild.findFirst({

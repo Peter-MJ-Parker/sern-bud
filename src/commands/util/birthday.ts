@@ -173,7 +173,6 @@ export default commandModule({
     );
 
     const pronoun = (user: User | string | undefined) => {
-      console.log(user);
       if (user instanceof User) {
         return user.id === ctx.user.id ? 'your' : `${user}'s`;
       } else if (typeof user === 'string') {
@@ -182,9 +181,6 @@ export default commandModule({
         return 'unknown user';
       }
     };
-
-    const currentYear = new Date().getFullYear();
-    const today = c.utils.convertToISO(new Date().toLocaleDateString()).split(`${currentYear}-`)[1].replace('-', '/');
 
     const actions = {
       set: async () => {
@@ -216,7 +212,7 @@ export default commandModule({
           });
           content = `I have set ${pronoun(userToAdd)} birthday as ${date}.`;
 
-          if (userToAdd.id === ctx.user.id && date === today) {
+          if (userToAdd.id === ctx.user.id && date === c.utils.today) {
             content += ` 🎉 Happy Birthday! 🎂`;
             await c.utils.bdayAnnouncement(ctx, [`<@${userToAdd.id}>`]);
           }
@@ -257,7 +253,7 @@ export default commandModule({
           });
 
           content = `I have updated ${pronoun(editableUser)} birthday to \`${date}\`.`;
-          if (userToEdit === ctx.user.id && date === today) {
+          if (userToEdit === ctx.user.id && date === c.utils.today) {
             content += ` 🎉 Happy Birthday! 🎂`;
             await c.utils.bdayAnnouncement(ctx, [`<@${userToEdit}>`]);
           }
