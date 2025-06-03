@@ -279,7 +279,7 @@ export default commandModule({
             const birthdayToDelete = guildBirthday.birthdays.find(b => b.userID === userToDelete)!;
             let str = '';
             if (!deletableUser) {
-              str = pronoun(birthdayToDelete.username);
+              str = pronoun(birthdayToDelete.userID);
             } else {
               str = pronoun(deletableUser);
             }
