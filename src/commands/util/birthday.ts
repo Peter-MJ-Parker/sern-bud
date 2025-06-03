@@ -76,7 +76,7 @@ export default commandModule({
         },
         {
           type: ApplicationCommandOptionType.String,
-          name: 'date',
+          name: 'edit-date',
           description: 'Birthday in (MM/DD) format.',
           required: true
         }
@@ -112,7 +112,7 @@ export default commandModule({
               const userBirthday = guildBirthday.birthdays.find(b => b.userID === ctx.user.id);
               if (!(ctx.member as GuildMember).permissions.has(PermissionFlagsBits.Administrator)) {
                 if (!userBirthday) {
-                  res = [{ name: "You do not have permission to manage other users' birthdays.", value: 'non-admin' }];
+                  res = [{ name: 'Your birthday is not set!', value: 'non-admin' }];
                   return await ctx.respond(res);
                 } else {
                   res = [{ name: `${userBirthday.username} (${userBirthday.date})`, value: userBirthday.userID }];
@@ -183,6 +183,9 @@ export default commandModule({
       }
     };
 
+    const currentYear = new Date().getFullYear();
+    const today = c.utils.convertToISO(new Date().toLocaleDateString()).split(`${currentYear}-`)[1].replace('-', '/');
+
     const actions = {
       set: async () => {
         userToAdd = ctx.options.getUser('user-to-add', true);
@@ -213,14 +216,8 @@ export default commandModule({
           });
           content = `I have set ${pronoun(userToAdd)} birthday as ${date}.`;
 
-          const currentYear = new Date().getFullYear();
-          const today = c.utils
-            .convertToISO(new Date().toLocaleDateString())
-            .split(`${currentYear}-`)[1]
-            .replace('-', '/');
-
           if (userToAdd.id === ctx.user.id && date === today) {
-            content += `, 🎉 Happy Birthday! 🎂`;
+            content += ` 🎉 Happy Birthday! 🎂`;
             await c.utils.bdayAnnouncement(ctx, [`<@${userToAdd.id}>`]);
           }
         }
@@ -231,9 +228,9 @@ export default commandModule({
         if (userToEdit === 'none') {
           return { flags: 64, content: 'No birthdays were found to edit.' };
         } else if (userToEdit === 'non-admin') {
-          return { flags: 64, content: "You do not have permission to manage other users' birthdays." };
+          return { flags: 64, content: 'You do not have your birthday set.' };
         }
-        let date = ctx.options.getString('date', true);
+        let date = ctx.options.getString('edit-date', true);
         if (!date || !i.bdays.isValidDate(date)) {
           return { flags: 64, content: 'Please provide a new date in format: `MM/DD`' };
         }
@@ -258,7 +255,14 @@ export default commandModule({
               }
             }
           });
-          return { flags: 64, content: `I have updated ${pronoun(editableUser)} birthday to \`${date}\`.` };
+
+          content = `I have updated ${pronoun(editableUser)} birthday to \`${date}\`.`;
+          if (userToEdit === ctx.user.id && date === today) {
+            content += ` 🎉 Happy Birthday! 🎂`;
+            await c.utils.bdayAnnouncement(ctx, [`<@${userToEdit}>`]);
+          }
+
+          return { flags: 64, content };
         }
       },
       delete: async () => {
@@ -268,7 +272,7 @@ export default commandModule({
             content = 'No birthdays were found to delete.';
             break;
           case 'non-admin':
-            content = "You do not have permission to manage other users' birthdays.";
+            content = 'You do not have your birthday set.';
             break;
           default:
             const deletableUser = members.get(userToDelete)?.user;
@@ -276,6 +280,8 @@ export default commandModule({
             let str = '';
             if (!deletableUser) {
               str = pronoun(birthdayToDelete.username);
+            } else {
+              str = pronoun(deletableUser);
             }
             if (birthdayToDelete) {
               await birthdayModel.update({
@@ -286,9 +292,9 @@ export default commandModule({
                   }
                 }
               });
-              content = `I have deleted ${pronoun(str)} birthday from my memory.`;
+              content = `I have deleted ${str} birthday from my memory.`;
             } else {
-              content = `I do not have ${pronoun(str)} birthday saved in my memory. Have you set it already?`;
+              content = `I do not have ${str} birthday saved in my memory. Have you set it already?`;
             }
             break;
         }
