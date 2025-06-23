@@ -47,5 +47,6 @@ export default scheduledTask({
     } else {
       await i.channelSend(_guild, `Task: \`birthday\` had 0 people to congratulate.`);
     }
+    await i.secondarySend(_guild, `Task: \`birthday\` was executed successfully on:`);
   }
 });

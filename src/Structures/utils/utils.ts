@@ -69,10 +69,6 @@ export class Utils {
     return message;
   }
 
-  public today = this.convertToISO(new Date().toLocaleDateString())
-    .split(`${new Date().getFullYear()}-`)[1]
-    .replace('-', '/');
-
   public async bdayAnnouncement(ctx: Context, names: string[]) {
     if (!ctx.inGuild) return;
     const _guild = await Service('prisma').guild.findFirst({
@@ -85,15 +81,17 @@ export class Utils {
     const message = `@everyone, We have ${
       names.length > 1 ? `birthdays` : `a birthday`
     } today!\n${this.getRandomMessage(names)}`;
-    await channel.send(message);
+    await channel.send(message).then(msg => {
+      msg.react('🎉').catch(err => logger.error(`Failed to react with 🎉: ${err}`));
+    });
   }
 
-  public convertToISO(date: string): string {
-    const [month, day, year] = date.split('/').map(part => part.padStart(2, '0'));
-
-    return `${year}-${month}-${day}`;
-  }
-
+  public today: string = (() => {
+    const date = new Date();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${month}/${day}`;
+  })();
   /**
    *
    * @param {string} mention The stringified mention to destructure.

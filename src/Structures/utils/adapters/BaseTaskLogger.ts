@@ -47,4 +47,58 @@ export abstract class BaseTaskLogger {
       });
     }
   }
+
+  async secondarySend(guild: Guild, info: string) {
+    const channel = await guild.channels.fetch('742730720450969671');
+    if (!channel || !channel.isTextBased()) return;
+
+    const messages = await channel.messages.fetch();
+    const message = messages.find(
+      m => m.author.id === this.client.user?.id && m.embeds[0]?.title === 'Birthday Dates Checked'
+    );
+
+    if (message) {
+      const currentEmbed = EmbedBuilder.from(message.embeds[0]);
+      const description = currentEmbed.data.description || '';
+      let newDescription = description;
+      const today = `\`${this.client.utils.today}\``;
+
+      if (!description.includes(today)) {
+        if (description.trim().length > 0) {
+          newDescription = `${description}, ${today}`;
+        } else {
+          newDescription = today;
+        }
+      }
+
+      currentEmbed.setDescription(newDescription);
+      await message.edit({
+        embeds: [currentEmbed]
+      });
+
+      await this.db.taskMessages.upsert({
+        where: { messageId: message.id },
+        create: { messageId: message.id },
+        update: { messageId: message.id }
+      });
+    } else {
+      const embed = new EmbedBuilder({
+        title: 'Birthday Dates Checked',
+        description: info + `\n\`${this.client.utils.today}\``,
+        color: Colors.Green,
+        timestamp: Date.now(),
+        footer: {
+          text: this.client.user?.username ?? '',
+          icon_url: this.client.user?.displayAvatarURL() ?? ''
+        }
+      });
+      const newMessage = await channel.send({
+        embeds: [embed]
+      });
+
+      await this.db.taskMessages.create({
+        data: { messageId: newMessage.id }
+      });
+    }
+  }
 }
