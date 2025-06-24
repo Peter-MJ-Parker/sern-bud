@@ -21,7 +21,7 @@ export enum IntegrationContextType {
 
 export function getUser() {}
 
-export const owners = env.ownerIDs[0].replaceAll(/[\[\]"]/g, '').split(', ');
+export const owners = env.ownerIDs.split(',');
 /**
  *
  * @param time Amount of time in seconds to wait before going to next line in code.

@@ -20,8 +20,9 @@
 
 import { CommandType, CommandControlPlugin, controller } from '@sern/handler';
 import { owners } from '#utils';
+
 export function ownerOnly(override?: string[]) {
-  return CommandControlPlugin<CommandType.Both>((ctx, { deps }) => {
+  return CommandControlPlugin<CommandType.Both>(ctx => {
     if ((override ?? owners).includes(ctx.user.id)) return controller.next();
     return controller.stop();
   });

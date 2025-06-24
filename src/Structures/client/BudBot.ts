@@ -1,5 +1,4 @@
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
-import { env } from '#utils';
 
 export class BudBot extends Client {
   constructor() {
@@ -30,7 +29,7 @@ export class BudBot extends Client {
         parse: ['everyone', 'roles', 'users']
       }
     });
-    this.login(env.DISCORD_TOKEN);
+    this.login();
     process.on('unhandledRejection', err => {
       return console.error('Unhandled Rejection:', err);
     });
