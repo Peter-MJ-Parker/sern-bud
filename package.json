@@ -5,7 +5,7 @@
   "type": "module",
   "main": "dist/Structures/client/index.js",
   "scripts": {
-    "build": "rm -rf ./dist && tsc",
+    "build": "rm -rf ./dist && sern build",
     "tsc:watch": "rm -rf ./dist && tsc -w",
     "start/dev": "nodemon ./dist/Structures/client/index.js",
     "start/node": "node ./dist/Structures/client/index.js"

@@ -11,7 +11,8 @@ import {
   TextChannel,
   TextInputBuilder
 } from 'discord.js';
-import { env, logger } from './index.js';
+import { logger } from './adapters/logger.js';
+import { env } from './adapters/load.js';
 
 export enum IntegrationContextType {
   GUILD = 0,

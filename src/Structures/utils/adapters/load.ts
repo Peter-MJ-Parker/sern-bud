@@ -50,6 +50,5 @@ export const env = load({
   defaultPrefix: String,
   GIPHY: String,
   ownerIDs: String,
-  NODE_ENV: String,
-  TENOR_API_KEY: String
+  NODE_ENV: String
 });
