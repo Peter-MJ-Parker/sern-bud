@@ -1,5 +1,11 @@
 import { commandModule, CommandType } from '@sern/handler';
-import { ActionRowBuilder, StringSelectMenuBuilder, TextChannel } from 'discord.js';
+import {
+  ActionRowBuilder,
+  APIActionRowComponent,
+  APIStringSelectComponent,
+  StringSelectMenuBuilder,
+  TextChannel
+} from 'discord.js';
 
 export default commandModule({
   type: CommandType.StringSelect,
@@ -59,11 +65,9 @@ export default commandModule({
       options = options.filter(option => !rolesToRemove.has(option.value));
     }
 
-    const apiRow = msg.components[0];
-    const iRow = ActionRowBuilder.from(apiRow.toJSON());
-    const iMenu = StringSelectMenuBuilder.from(
-      iRow.components[0].toJSON ? iRow.components[0].toJSON() : iRow.components[0]
-    );
+    const comp = msg.components[0] as unknown as APIActionRowComponent<APIStringSelectComponent>;
+    const iRow = ActionRowBuilder.from(comp);
+    const iMenu = StringSelectMenuBuilder.from(iRow.components[0] as StringSelectMenuBuilder);
     iMenu.setOptions(options);
     iMenu.setMaxValues(options.length);
 
