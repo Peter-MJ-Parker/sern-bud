@@ -20,7 +20,7 @@ export default commandModule({
     const roles = selectedRoles.map(roleId => interaction.guild!.roles.cache.get(roleId));
 
     if (!roles || roles.some(role => !role)) {
-      return interaction.reply({ content: 'One or more roles not found.', flags: 64, });
+      return interaction.reply({ content: 'One or more roles not found.', flags: 64 });
     }
 
     let options = _menu.roles.map(role => ({
@@ -59,8 +59,11 @@ export default commandModule({
       options = options.filter(option => !rolesToRemove.has(option.value));
     }
 
-    const iRow = ActionRowBuilder.from(msg.components[0]) as ActionRowBuilder;
-    const iMenu = StringSelectMenuBuilder.from(iRow.components[0] as StringSelectMenuBuilder);
+    const apiRow = msg.components[0];
+    const iRow = ActionRowBuilder.from(apiRow.toJSON());
+    const iMenu = StringSelectMenuBuilder.from(
+      iRow.components[0].toJSON ? iRow.components[0].toJSON() : iRow.components[0]
+    );
     iMenu.setOptions(options);
     iMenu.setMaxValues(options.length);
 
@@ -94,6 +97,6 @@ export default commandModule({
         }
       }
     });
-    return interaction.reply({ content: 'Select menu updated successfully!', flags: 64, });
+    return interaction.reply({ content: 'Select menu updated successfully!', flags: 64 });
   }
 });

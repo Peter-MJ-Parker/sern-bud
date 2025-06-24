@@ -1,4 +1,5 @@
 import { scheduledTask } from '@sern/handler';
+import { getRandomMessage, today } from '#utils';
 
 export default scheduledTask({
   timezone: 'America/Chicago',
@@ -24,13 +25,13 @@ export default scheduledTask({
       const birthdayChannel = guild.channels.cache.get(guildData.birthdayAnnounceChan);
       if (!birthdayChannel || !birthdayChannel.isTextBased()) return;
 
-      const todaysBirthdays = guildBirthday.birthdays.filter(b => b.date === c.utils.today);
+      const todaysBirthdays = guildBirthday.birthdays.filter(b => b.date === today);
 
       if (todaysBirthdays.length > 0) {
         const birthdayNames = todaysBirthdays.map(b => `<@${b.userID}>`);
         const message = `@everyone, We have ${
           birthdayNames.length > 1 ? `birthdays` : `a birthday`
-        } today!\n${c.utils.getRandomMessage(birthdayNames)}`;
+        } today!\n${getRandomMessage(birthdayNames)}`;
 
         await birthdayChannel.send(message);
         totalCongratulations += todaysBirthdays.length;

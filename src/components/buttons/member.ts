@@ -1,3 +1,4 @@
+import { channelUpdater, createModal, welcomeCreate } from '#utils';
 import { commandModule, CommandType } from '@sern/handler';
 import { EmbedBuilder, type GuildMember, TextInputBuilder, TextInputStyle, type TextChannel } from 'discord.js';
 
@@ -35,7 +36,7 @@ export default commandModule({
     switch (params) {
       case 'ban':
         await button.showModal(
-          c.utils.createModal('ban-modal', `Ban ${member.user.username}`, [
+          createModal('ban-modal', `Ban ${member.user.username}`, [
             new TextInputBuilder({
               custom_id: 'ban-modal-reason',
               label: `Reason`,
@@ -89,7 +90,7 @@ export default commandModule({
         break;
       case 'kick':
         await button.showModal(
-          c.utils.createModal('kick-modal', `Kick ${member.user.username}`, [
+          createModal('kick-modal', `Kick ${member.user.username}`, [
             new TextInputBuilder({
               custom_id: 'kick-modal-reason',
               label: `Reason`,
@@ -168,24 +169,22 @@ export default commandModule({
           bots: member.guild?.members.cache.filter(m => m.user.bot).size!,
           total: member.guild?.memberCount!
         };
-        await c.utils
-          .welcomeCreate(member, member.guild.name, counts.users, welcome, {
-            intro: guild.introC,
-            roles: guild.rolesChannelId
-          })
-          .then(async () => {
-            await p.guild.update({
-              where: {
-                gID: member.guild.id
-              },
-              data: {
-                allCount: counts.total,
-                userCount: counts.users
-              }
-            });
-
-            await c.utils.channelUpdater(member.guild);
+        await welcomeCreate(member, member.guild.name, counts.users, welcome, {
+          intro: guild.introC,
+          roles: guild.rolesChannelId
+        }).then(async () => {
+          await p.guild.update({
+            where: {
+              gID: member.guild.id
+            },
+            data: {
+              allCount: counts.total,
+              userCount: counts.users
+            }
           });
+
+          await channelUpdater(member.guild);
+        });
         break;
     }
   }

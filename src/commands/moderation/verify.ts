@@ -1,3 +1,4 @@
+import { channelUpdater, deleteOnTimeout, isValidSnowflake, welcomeCreate } from '#utils';
 import { commandModule, CommandType } from '@sern/handler';
 import { Channel, ChannelType, Collection, EmbedBuilder, Message, Snowflake, TextChannel } from 'discord.js';
 
@@ -6,8 +7,7 @@ export default commandModule({
   plugins: [],
   description: 'Manually verifies a user.',
   execute: async (ctx, { deps }) => {
-    const [{ utils }, prisma] = [deps['@sern/client'], deps['prisma']];
-    const { channelUpdater, deleteOnTimeout, isValidSnowflake, welcomeCreate } = utils;
+    const prisma = deps['prisma'];
     const guild = await prisma.guild.findFirst({ where: { gID: ctx.guildId! } });
     if (!guild) return;
     if (!ctx.options[0]) {

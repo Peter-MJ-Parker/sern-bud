@@ -1,5 +1,6 @@
 import { Colors, EmbedBuilder, Guild } from 'discord.js';
 import { Service } from '@sern/handler';
+import { today } from '#utils';
 
 export abstract class BaseTaskLogger {
   constructor() {}
@@ -61,13 +62,13 @@ export abstract class BaseTaskLogger {
       const currentEmbed = EmbedBuilder.from(message.embeds[0]);
       const description = currentEmbed.data.description || '';
       let newDescription = description;
-      const today = `\`${this.client.utils.today}\``;
+      const date = `\`${today}\``;
 
-      if (!description.includes(today)) {
+      if (!description.includes(date)) {
         if (description.trim().length > 0) {
-          newDescription = `${description}, ${today}`;
+          newDescription = `${description}, ${date}`;
         } else {
-          newDescription = today;
+          newDescription = date;
         }
       }
 
@@ -84,7 +85,7 @@ export abstract class BaseTaskLogger {
     } else {
       const embed = new EmbedBuilder({
         title: 'Birthday Dates Checked',
-        description: info + `\n\`${this.client.utils.today}\``,
+        description: info + `\n\`${today}\``,
         color: Colors.Green,
         timestamp: Date.now(),
         footer: {

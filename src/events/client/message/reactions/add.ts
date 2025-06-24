@@ -1,5 +1,6 @@
-import { EventType, Services, eventModule } from '@sern/handler';
+import { EventType, Service, eventModule } from '@sern/handler';
 import { EmbedBuilder, Events, TextChannel } from 'discord.js';
+import { channelUpdater, welcomeCreate } from '#utils';
 
 export default eventModule({
   type: EventType.Discord,
@@ -9,7 +10,7 @@ export default eventModule({
     let message = reaction.message;
     if (message.partial) await message.fetch();
     if (reaction.partial) await reaction.fetch();
-    const [{ utils }, prisma] = Services('@sern/client', 'prisma');
+    const prisma = Service('prisma');
 
     if (reaction.emoji.name === '🎉') {
       await message.react('<:flame_party:1285284996264886352>');
@@ -51,39 +52,37 @@ export default eventModule({
             }, 5 * 1000);
           });
         const WelcomeChannel = mmm.guild.channels.cache.get(Guild.welcomeC) as TextChannel;
-        await utils
-          .welcomeCreate(mmm, mmm.guild.name, counts.users, mmm.guild.systemChannel ?? WelcomeChannel, {
-            intro: Guild.introC,
-            roles: Guild.rolesChannelId
-          })
-          .then(async () => {
-            const Verification = await prisma.member.findFirst({
-              where: { memberId: mmm.id }
-            });
-            if (!Verification) return;
-            const channel = (await message.guild?.channels.fetch(Guild.modC)) as TextChannel;
-            const msg = await channel.messages.fetch(Verification.messageId);
-            await msg
-              .edit({
-                components: [],
-                embeds: [
-                  EmbedBuilder.from(msg.embeds[0])
-                    .setFields([
-                      {
-                        name: 'Verification: ',
-                        value: `✅ - ${mmm} successfully verified!`
-                      }
-                    ])
-                    .setFooter(null)
-                ]
-              })
-              .then(async () => {
-                await prisma.member.delete({ where: { id: Verification.id } });
-              })
-              .finally(async () => {
-                await utils.channelUpdater(mmm.guild);
-              });
+        await welcomeCreate(mmm, mmm.guild.name, counts.users, mmm.guild.systemChannel ?? WelcomeChannel, {
+          intro: Guild.introC,
+          roles: Guild.rolesChannelId
+        }).then(async () => {
+          const Verification = await prisma.member.findFirst({
+            where: { memberId: mmm.id }
           });
+          if (!Verification) return;
+          const channel = (await message.guild?.channels.fetch(Guild.modC)) as TextChannel;
+          const msg = await channel.messages.fetch(Verification.messageId);
+          await msg
+            .edit({
+              components: [],
+              embeds: [
+                EmbedBuilder.from(msg.embeds[0])
+                  .setFields([
+                    {
+                      name: 'Verification: ',
+                      value: `✅ - ${mmm} successfully verified!`
+                    }
+                  ])
+                  .setFooter(null)
+              ]
+            })
+            .then(async () => {
+              await prisma.member.delete({ where: { id: Verification.id } });
+            })
+            .finally(async () => {
+              await channelUpdater(mmm.guild);
+            });
+        });
       }
     }
   }

@@ -1,6 +1,7 @@
 import { commandModule, CommandType } from '@sern/handler';
 import { publishConfig, IntegrationContextType } from '#plugins';
 import { ApplicationCommandOptionType, TextInputBuilder, TextInputStyle } from 'discord.js';
+import { createModal } from '#utils';
 
 export default commandModule({
   type: CommandType.Slash,
@@ -28,8 +29,6 @@ export default commandModule({
       }
     });
 
-    const utils = tbd.deps['@sern/client'].utils,
-      m = utils.createModal;
     const _random = ctx.options.getString('randomized-messages', true);
     const placeholder = (bool = true) =>
       `Welcome to Joint Streaming, {member}! ${
@@ -95,7 +94,7 @@ export default commandModule({
               required: false
             })
           ];
-    const modal = m(
+    const modal = createModal(
       `welcome-messages/${_random}`,
       _random === 'one'
         ? `Message to greet new users. ${_current?.singleMessage ? 'Any changes?' : ''}`

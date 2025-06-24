@@ -1,3 +1,4 @@
+import { bdayAnnouncement, today } from '#utils';
 import { commandModule, CommandType } from '@sern/handler';
 import { ApplicationCommandOptionType, GuildMember, PermissionFlagsBits, User } from 'discord.js';
 
@@ -212,9 +213,9 @@ export default commandModule({
           });
           content = `I have set ${pronoun(userToAdd)} birthday as ${date}.`;
 
-          if (userToAdd.id === ctx.user.id && date === c.utils.today) {
+          if (userToAdd.id === ctx.user.id && date === today) {
             content += ` 🎉 Happy Birthday! 🎂`;
-            await c.utils.bdayAnnouncement(ctx, [`<@${userToAdd.id}>`]);
+            await bdayAnnouncement(ctx, [`<@${userToAdd.id}>`]);
           }
         }
         return { flags: 64, content };
@@ -253,9 +254,9 @@ export default commandModule({
           });
 
           content = `I have updated ${pronoun(editableUser)} birthday to \`${date}\`.`;
-          if (userToEdit === ctx.user.id && date === c.utils.today) {
+          if (userToEdit === ctx.user.id && date === today) {
             content += ` 🎉 Happy Birthday! 🎂`;
-            await c.utils.bdayAnnouncement(ctx, [`<@${userToEdit}>`]);
+            await bdayAnnouncement(ctx, [`<@${userToEdit}>`]);
           }
 
           return { flags: 64, content };

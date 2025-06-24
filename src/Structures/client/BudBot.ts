@@ -1,8 +1,7 @@
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
-import { env, Utils } from '#utils';
+import { env } from '#utils';
 
 export class BudBot extends Client {
-  utils: Utils;
   constructor() {
     super({
       intents: [
@@ -31,15 +30,12 @@ export class BudBot extends Client {
         parse: ['everyone', 'roles', 'users']
       }
     });
-    this.utils = new Utils();
     this.login(env.DISCORD_TOKEN);
-    process.on('unhandledRejection', (err) => {
+    process.on('unhandledRejection', err => {
       return console.error('Unhandled Rejection:', err);
-    }
-    );
-    process.on('uncaughtException', (err) => {
+    });
+    process.on('uncaughtException', err => {
       return console.error('Uncaught Exception:', err);
-    }
-    );
+    });
   }
 }

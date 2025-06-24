@@ -1,11 +1,12 @@
-import { EventType, Services, eventModule } from '@sern/handler';
+import { env } from '#utils';
+import { EventType, Service, eventModule } from '@sern/handler';
 import { ChannelType, Events, TextChannel } from 'discord.js';
 
 export default eventModule({
   type: EventType.Discord,
   name: Events.MessageCreate,
   execute: async message => {
-    const [{ utils }, prisma] = Services('@sern/client', 'prisma');
+    const prisma = Service('prisma');
     const msg = message.content.toLowerCase();
     const prefixRegex = new RegExp(`^(<@!?${message.client.user.id}>)\\s*`);
     if (prefixRegex.test(message.content)) {
@@ -49,7 +50,7 @@ export default eventModule({
       });
     }
     try {
-      if (!msg.startsWith(utils.env.defaultPrefix)) {
+      if (!msg.startsWith(env.defaultPrefix)) {
         const coinsToAdd = Math.floor(Math.random() * 50) + 1;
         await prisma.money.update({
           where: {

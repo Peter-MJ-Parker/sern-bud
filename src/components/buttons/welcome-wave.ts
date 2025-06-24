@@ -1,3 +1,4 @@
+import { sticker } from '#utils';
 import { commandModule, CommandType } from '@sern/handler';
 
 export default commandModule({
@@ -6,6 +7,6 @@ export default commandModule({
   description: 'Sends a sticker in chat in response to welcome message.',
   execute: async (i, t) => {
     await i.deferUpdate();
-    await t.deps['@sern/client'].utils.sticker(i, t.params!);
+    await sticker(i, t.params!);
   }
 });
