@@ -213,8 +213,10 @@ export default commandModule({
           });
           content = `I have set ${pronoun(userToAdd)} birthday as ${date}.`;
 
-          if (userToAdd.id === ctx.user.id && date === today) {
-            content += ` 🎉 Happy Birthday! 🎂`;
+          if (date === today) {
+            if (userToAdd.id === ctx.user.id) {
+              content += ` 🎉 Happy Birthday! 🎂`;
+            }
             await bdayAnnouncement(ctx, [`<@${userToAdd.id}>`]);
           }
         }
@@ -254,8 +256,10 @@ export default commandModule({
           });
 
           content = `I have updated ${pronoun(editableUser)} birthday to \`${date}\`.`;
-          if (userToEdit === ctx.user.id && date === today) {
-            content += ` 🎉 Happy Birthday! 🎂`;
+          if (date === today) {
+            if (userToEdit === ctx.user.id) {
+              content += ` 🎉 Happy Birthday! 🎂`;
+            }
             await bdayAnnouncement(ctx, [`<@${userToEdit}>`]);
           }
 
@@ -306,7 +310,6 @@ export default commandModule({
       await ctx.reply(result);
     }
 
-    //integrate multiguild separation
     await i.bdays.logBirthdays(ctx.guild!);
   }
 });
