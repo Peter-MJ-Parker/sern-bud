@@ -118,8 +118,9 @@ type User {
 }
 
 model Counter {
-    id      String @id @map("_id")
+    id      String  @id @map("_id")
     channel String
+    active  Boolean @default(false)
     users   User[]
     count   Int
 }

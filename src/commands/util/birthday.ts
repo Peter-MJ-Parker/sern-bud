@@ -148,11 +148,6 @@ export default commandModule({
     let userToEdit = ctx.options.getString('user-to-edit', false);
     let userToDelete = ctx.options.getString('user-to-delete', false);
     let content = '';
-    let _guild = await guildModel.findFirst({
-      where: {
-        gID: ctx.guildId!
-      }
-    });
 
     let guildBirthday = await birthdayModel.findFirst({
       where: {
@@ -213,7 +208,7 @@ export default commandModule({
           });
           content = `I have set ${pronoun(userToAdd)} birthday as ${date}.`;
 
-          if (date === today) {
+          if (date === today()) {
             if (userToAdd.id === ctx.user.id) {
               content += ` 🎉 Happy Birthday! 🎂`;
             }
@@ -256,7 +251,7 @@ export default commandModule({
           });
 
           content = `I have updated ${pronoun(editableUser)} birthday to \`${date}\`.`;
-          if (date === today) {
+          if (date === today()) {
             if (userToEdit === ctx.user.id) {
               content += ` 🎉 Happy Birthday! 🎂`;
             }

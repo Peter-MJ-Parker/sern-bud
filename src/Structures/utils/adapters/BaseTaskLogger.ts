@@ -58,23 +58,23 @@ export abstract class BaseTaskLogger {
       m => m.author.id === this.client.user?.id && m.embeds[0]?.title === 'Birthday Dates Checked'
     );
 
+    const date = info.trim();
+
     if (message) {
-      const currentEmbed = EmbedBuilder.from(message.embeds[0]);
-      const description = currentEmbed.data.description || '';
-      let newDescription = description;
-      const date = `\`${today}\``;
+      const embed = EmbedBuilder.from(message.embeds[0]);
+      let description = embed.data.description!.trim();
+      const todayDate = today();
 
       if (!description.includes(date)) {
-        if (description.trim().length > 0) {
-          newDescription = `${description}, ${date}`;
+        if (description.length > 0) {
+          description += `, \`${todayDate}\``;
         } else {
-          newDescription = date;
+          description = `\`${todayDate}\``;
         }
       }
-
-      currentEmbed.setDescription(newDescription);
+      embed.setDescription(description);
       await message.edit({
-        embeds: [currentEmbed]
+        embeds: [embed]
       });
 
       await this.db.taskMessages.upsert({
@@ -85,7 +85,7 @@ export abstract class BaseTaskLogger {
     } else {
       const embed = new EmbedBuilder({
         title: 'Birthday Dates Checked',
-        description: info + `\n\`${today}\``,
+        description: `Task: \`birthday\` was executed successfully on:\n\`${date}\``,
         color: Colors.Green,
         timestamp: Date.now(),
         footer: {
