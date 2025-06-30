@@ -35,7 +35,6 @@ model Guild {
     birthdayLogMessageId      String @default("")
     birthdayMonthLogMessageId String @default("")
     birthdayLogChannelId      String @default("")
-    countingChan              String @default("")
     gamingChannelId           String @default("")
     taskLogsChannelId         String @default("")
     verifiedRole              String @default("")
@@ -112,20 +111,30 @@ model LeaderBoards {
     id String @id @map("_id")
 }
 
-type User {
-    id      String
-    numbers String[]
-}
-
 model Counter {
-    id      String  @id @map("_id")
-    channel String
-    active  Boolean @default(false)
-    users   User[]
-    count   Int
+    id           String          @id @map("_id")
+    channel      String
+    active       Boolean         @default(false)
+    count        Int
+    saves        CountingSaves
+    roles        CountingRoles[]
+    lastUser     String?
+    lastCount    Int?
+    highestCount Int
+    users        CountingUser[]
 }
 
-model CountingRoles {
-    id   String @id @map("_id")
-    name String @unique
+type CountingRoles {
+    id   String
+    name String
+}
+
+type CountingSaves {
+    enabled Boolean @default(false)
+    amount  Int
+}
+
+type CountingUser {
+    id    String
+    coins Int
 }
