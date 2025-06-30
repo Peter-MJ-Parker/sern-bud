@@ -9,6 +9,13 @@ export default eventModule({
     const prisma = Service('prisma');
     const msg = message.content.toLowerCase();
     const prefixRegex = new RegExp(`^(<@!?${message.client.user.id}>)\\s*`);
+    const counting = await prisma.counter.findFirst({
+      where: {
+        id: message.guildId!
+      }
+    });
+    if (counting && message.channel.id !== counting.channel) return;
+
     if (prefixRegex.test(message.content)) {
       await message.delete();
       const stamp = `${message.client.readyTimestamp! / 1000}`;
