@@ -133,6 +133,19 @@ export default commandModule({
           }
         }
       ]
+    },
+    {
+      name: 'get',
+      type: ApplicationCommandOptionType.Subcommand,
+      description: 'Check birthdays in my memory.',
+      options: [
+        {
+          type: ApplicationCommandOptionType.User,
+          name: 'user-to-get',
+          description: 'Select the user to get their birthday. (No selection: yourself)',
+          required: false,
+        }
+      ]
     }
   ],
   async execute(ctx, { deps }) {
@@ -179,6 +192,18 @@ export default commandModule({
     };
 
     const actions = {
+      get: async () => {
+        const userToGet = ctx.options.getUser('user-to-get', true);
+        if (userToGet.bot) return { flags: 64, content: 'You cannot get a bot\'s birthday.' };
+        if (!guildBirthday.birthdays.length) {
+          return { flags: 64, content: 'I do not have any birthdays saved in my memory.' };
+        }
+        const birthday = guildBirthday.birthdays.find(b => b.userID === userToGet.id);
+        if (!birthday) {
+          return { flags: 64, content: `I do not have ${pronoun(userToGet)} birthday saved in my memory.` };
+        }
+        return { flags: 64, content: `${pronoun(userToGet)} birthday is set to \`${birthday.date}\`.` };
+      },
       set: async () => {
         userToAdd = ctx.options.getUser('user-to-add', true);
         if (userToAdd.bot) return { flags: 64, content: 'You cannot add a bot to my database, geek!' };
